@@ -37,8 +37,8 @@ $router->group([
         $router->post('read', 'Admin\AppController@read');
         $router->post('create', 'Admin\AppController@create');
         $router->post('update', 'Admin\AppController@update');
-//        $router->post('enable', 'Admin\AppController@enable');
-//        $router->post('disable', 'Admin\AppController@disable');
+        //$router->post('enable', 'Admin\AppController@enable');
+        //$router->post('disable', 'Admin\AppController@disable');
     });
 
     // 巨量
@@ -49,10 +49,9 @@ $router->group([
             $router->post('select', 'Admin\Ocean\AccountController@select');
             $router->post('get', 'Admin\Ocean\AccountController@get');
             $router->post('read', 'Admin\Ocean\AccountController@read');
-//            $router->post('enable', 'Admin\Ocean\AccountController@enable');
-//            $router->post('disable', 'Admin\Ocean\AccountController@disable');
             $router->post('update', 'Admin\Ocean\AccountController@update');
-
+            //$router->post('enable', 'Admin\Ocean\AccountController@enable');
+            //$router->post('disable', 'Admin\Ocean\AccountController@disable');
         });
     });
 });
