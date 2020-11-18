@@ -22,7 +22,12 @@ class AppController extends AdminController
         parent::__construct();
     }
 
-
+    /**
+     * @param $advAlias
+     * @param $appId
+     * @throws CustomException
+     * app是否存在
+     */
     public function exist($advAlias,$appId){
         $tmp = $this->model
             ->where('adv_alias',$advAlias)
@@ -36,10 +41,12 @@ class AppController extends AdminController
         }
     }
 
-
+    /**
+     * 创建预处理
+     */
     public function createPrepare(){
         $this->curdService->addField('name')->addValidRule('required|max:16|min:2');
-        $this->curdService->addField('adv_alias')->addValidEnum(AdvAliasEnum::class);
+        $this->curdService->addField('adv_alias')->addValidRule('required')->addValidEnum(AdvAliasEnum::class);
         $this->curdService->addField('app_id')->addValidRule('required|alpha_num|max:32|min:1');
         $this->curdService->addField('secret')->addValidRule('required');
         $this->curdService->addField('status')->addValidEnum(StatusEnum::class)->addDefaultValue(StatusEnum::ENABLE);
@@ -50,10 +57,12 @@ class AppController extends AdminController
         });
     }
 
-
+    /**
+     * 更新预处理
+     */
     public function updatePrepare(){
         $this->curdService->addField('name')->addValidRule('required|max:16|min:2');
-        $this->curdService->addField('adv_alias')->addValidEnum(AdvAliasEnum::class);
+        $this->curdService->addField('adv_alias')->addValidRule('required')->addValidEnum(AdvAliasEnum::class);
         $this->curdService->addField('app_id')->addValidRule('required|alpha_num|max:32|min:1');
         $this->curdService->addField('secret')->addValidRule('required');
         $this->curdService->addField('status')->addValidEnum(StatusEnum::class)->addDefaultValue(StatusEnum::ENABLE);
@@ -69,12 +78,13 @@ class AppController extends AdminController
         });
     }
 
+    /**
+     * 详情预处理
+     */
     public function readPrepare(){
         $this->curdService->findAfter(function (){
 
             $this->curdService->findData->makeVisible('secret');
         });
     }
-
-
 }

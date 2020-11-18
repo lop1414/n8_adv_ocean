@@ -21,9 +21,10 @@ class AccountController extends AdminController
         parent::__construct();
     }
 
-
+    /**
+     * 更新预处理
+     */
     public function updatePrepare(){
-
         $this->curdService->addField('name')->addValidRule('required|max:16|min:2');
         $this->curdService->addField('admin_id')->addValidRule('required');
 
@@ -39,7 +40,6 @@ class AccountController extends AdminController
                 ]);
             }
         });
-
 
         // 限制修改的字段
         $this->curdService->handleAfter(function (){

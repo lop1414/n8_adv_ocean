@@ -20,15 +20,6 @@ class OceanAccountModel extends BaseModel
      */
     protected $primaryKey = 'id';
 
-    /**
-     * 隐藏字段
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'token','refresh_token'
-    ];
-
 
     /**
      * 属性访问器
