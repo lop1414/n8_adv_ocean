@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
+use App\Console\Commands\Task\OceanImageUploadCommand;
+use App\Console\Commands\Task\OceanVideoUploadCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +16,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        SyncJrttAccountCommand::class,
+        OceanVideoUploadCommand::class,
+        OceanImageUploadCommand::class,
     ];
 
     /**
@@ -24,6 +29,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        // 二版
+        $schedule->command('second_version:sync_jrtt_account')->cron('5 * * * *');
+
+        // 任务
+        $schedule->command('task:ocean_image_upload')->cron('* * * * *');
+        $schedule->command('task:ocean_video_upload')->cron('* * * * *');
     }
 }

@@ -43,7 +43,6 @@ $router->group([
 
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
-
         // 账户
         $router->group(['prefix' => 'account'], function () use ($router) {
             $router->post('select', 'Admin\Ocean\AccountController@select');
@@ -52,6 +51,16 @@ $router->group([
             $router->post('update', 'Admin\Ocean\AccountController@update');
             //$router->post('enable', 'Admin\Ocean\AccountController@enable');
             //$router->post('disable', 'Admin\Ocean\AccountController@disable');
+        });
+
+        // 视频
+        $router->group(['prefix' => 'video'], function () use ($router) {
+            $router->post('batch_upload', 'Admin\Ocean\VideoController@batchUpload');
+        });
+
+        // 图片
+        $router->group(['prefix' => 'image'], function () use ($router) {
+            $router->post('batch_upload', 'Admin\Ocean\ImageController@batchUpload');
         });
     });
 });
