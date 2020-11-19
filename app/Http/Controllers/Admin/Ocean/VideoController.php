@@ -102,6 +102,6 @@ class VideoController extends AdminController
             'task_id' => $taskId,
             'account_count' => $accounts->count(),
             'video_count' => count($videos),
-        ], [], '批量上传任务已提交【任务id:'. $taskId .'】');
+        ], [], '批量上传任务已提交【任务id:'. $taskId .'】，执行结果后续同步到飞书，请注意查收！');
     }
 }
