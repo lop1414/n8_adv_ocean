@@ -32,7 +32,6 @@ class OceanImageUploadCommand extends BaseCommand
     }
 
     /**
-     * @throws \Exception
      * 处理
      */
     public function handle(){
