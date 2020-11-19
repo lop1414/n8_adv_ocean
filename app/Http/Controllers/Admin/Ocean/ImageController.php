@@ -31,12 +31,10 @@ class ImageController extends AdminController
      */
     public function batchUpload(Request $request){
         $this->validRule($request->post(), [
-            'app_id' => 'required',
             'account_ids' => 'required|array',
             'image_ids' => 'required|array'
         ]);
 
-        $appId = $request->post('app_id');
         $accountIds = $request->post('account_ids');
         $imageIds = $request->post('image_ids');
 
@@ -55,8 +53,7 @@ class ImageController extends AdminController
 
         // 获取账户
         $oceanAccountModel = new OceanAccountModel();
-        $builder = $oceanAccountModel->where('app_id', $appId)
-            ->whereIn('account_id', $accountIds);
+        $builder = $oceanAccountModel->whereIn('account_id', $accountIds);
 
         // 非管理员
         if(!$adminUserInfo['is_admin']){
