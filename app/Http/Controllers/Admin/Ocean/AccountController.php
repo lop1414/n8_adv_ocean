@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Ocean;
 
 use App\Common\Controllers\Admin\AdminController;
 use App\Common\Enums\StatusEnum;
+use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Tools\CustomException;
 use App\Models\OceanAccountModel;
@@ -19,6 +20,34 @@ class AccountController extends AdminController
         $this->model = new OceanAccountModel();
 
         parent::__construct();
+    }
+
+    /**
+     * 分页列表预处理
+     */
+    public function selectPrepare(){
+        $this->curdService->selectQueryBefore(function(){
+            $this->curdService->customBuilder(function($builder){
+                $adminUserInfo = Functions::getGlobalData('admin_user_info');
+                if(!$adminUserInfo['is_admin']){
+                    $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
+                }
+            });
+        });
+    }
+
+    /**
+     * 列表预处理
+     */
+    public function getPrepare(){
+        $this->curdService->getQueryBefore(function(){
+            $this->curdService->customBuilder(function($builder){
+                $adminUserInfo = Functions::getGlobalData('admin_user_info');
+                if(!$adminUserInfo['is_admin']){
+                    $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
+                }
+            });
+        });
     }
 
     /**

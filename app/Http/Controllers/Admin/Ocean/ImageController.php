@@ -42,15 +42,34 @@ class ImageController extends AdminController
 
         // 获取图片
         $materialApiService = new MaterialApiService();
-        $videos = $materialApiService->apiGetImages($imageIds);
+        $images = $materialApiService->apiGetImages($imageIds);
+        if(empty($images)){
+            throw new CustomException([
+                'code' => 'NOT_FOUND_IMAGE',
+                'message' => '找不到对应图片',
+            ]);
+        }
+
+        // 获取后台用户信息
+        $adminUserInfo = Functions::getGlobalData('admin_user_info');
 
         // 获取账户
         $oceanAccountModel = new OceanAccountModel();
-        $accounts = $oceanAccountModel->where('app_id', $appId)
-            ->whereIn('account_id', $accountIds)
-            ->get();
+        $builder = $oceanAccountModel->where('app_id', $appId)
+            ->whereIn('account_id', $accountIds);
 
-        $adminUserInfo = Functions::getGlobalData('admin_user_info');
+        // 非管理员
+        if(!$adminUserInfo['is_admin']){
+            $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
+        }
+
+        $accounts = $builder->get();
+        if(!$accounts->count()){
+            throw new CustomException([
+                'code' => 'NOT_FOUND_ACCOUNT',
+                'message' => '找不到对应账户',
+            ]);
+        }
 
         // 创建任务
         $taskService = new TaskService();
@@ -71,13 +90,13 @@ class ImageController extends AdminController
         // 创建子任务
         $taskOceanImageUploadService = new TaskOceanImageUploadService();
         foreach($accounts as $account){
-            foreach($videos as $video){
+            foreach($images as $image){
                 $taskOceanImageUploadService->create([
                     'task_id' => $taskId,
                     'app_id' => $account->app_id,
                     'account_id' => $account->account_id,
-                    'n8_material_image_path' => $video['path'],
-                    'n8_material_image_name' => $video['name'],
+                    'n8_material_image_path' => $image['path'],
+                    'n8_material_image_name' => $image['name'],
                     'admin_id' => $adminUserInfo['admin_user']['id'],
                 ]);
             }
@@ -86,7 +105,7 @@ class ImageController extends AdminController
         return $this->success([
             'task_id' => $taskId,
             'account_count' => $accounts->count(),
-            'video_count' => count($videos),
+            'image_count' => count($images),
         ], [], '批量上传任务已提交【任务id:'. $taskId .'】');
     }
 }
