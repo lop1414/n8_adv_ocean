@@ -8,6 +8,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
 use App\Models\OceanAccountModel;
+use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\TaskOceanVideoUploadService;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
@@ -44,6 +45,28 @@ class VideoController extends AdminController
             throw new CustomException([
                 'code' => 'NOT_FOUND_VIDEO',
                 'message' => '找不到对应视频',
+            ]);
+        }
+
+        // 视频校验
+        $invalidVideos = [];
+        $oceanEngine = new OceanEngine('');
+        foreach($videos as $video){
+            $valid = $oceanEngine->validVideo($video['width'], $video['height'], $video['size'], $video['duration']);
+            if(!$valid){
+                $invalidVideos[] = $video;
+            }
+        }
+
+        if(!empty($invalidVideos)){
+            $invalidVideoNames = array_column($invalidVideos, 'name');
+            $invalidVideoNamesStr = implode(",", $invalidVideoNames);
+            throw new CustomException([
+                'code' => 'VIDEO_INVALID',
+                'message' => "非法尺寸视频 ({$invalidVideoNamesStr})",
+                'data' => [
+                    'invalid_videos' => $invalidVideos,
+                ],
             ]);
         }
 

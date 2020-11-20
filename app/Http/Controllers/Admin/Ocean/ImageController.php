@@ -8,8 +8,8 @@ use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
 use App\Models\OceanAccountModel;
+use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\TaskOceanImageUploadService;
-use App\Services\TaskOceanVideoUploadService;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
 
@@ -45,6 +45,28 @@ class ImageController extends AdminController
             throw new CustomException([
                 'code' => 'NOT_FOUND_IMAGE',
                 'message' => '找不到对应图片',
+            ]);
+        }
+
+        // 图片尺寸校验
+        $invalidImages = [];
+        $oceanEngine = new OceanEngine('');
+        foreach($images as $image){
+            $valid = $oceanEngine->validImage($image['width'], $image['height'], $image['size']);
+            if(!$valid){
+                $invalidImages[] = $image;
+            }
+        }
+
+        if(!empty($invalidImages)){
+            $invalidImageNames = array_column($invalidImages, 'name');
+            $invalidImageNamesStr = implode(",", $invalidImageNames);
+            throw new CustomException([
+                'code' => 'IMAGE_INVALID',
+                'message' => "非法尺寸图片 ({$invalidImageNamesStr})",
+                'data' => [
+                    'invalid_images' => $invalidImages,
+                ],
             ]);
         }
 
