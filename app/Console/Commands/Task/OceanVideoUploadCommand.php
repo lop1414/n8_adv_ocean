@@ -37,10 +37,12 @@ class OceanVideoUploadCommand extends BaseCommand
     public function handle(){
         try{
             $oceanVideoUploadTaskService = new TaskOceanVideoUploadService();
+            $option = ['log' => true];
             $this->lockRun(
                 [$oceanVideoUploadTaskService, 'run'],
                 'task_ocean_video_upload',
-                3600
+                3600,
+                $option
             );
         }catch(CustomException $e){
             $errorInfo = $e->getErrorInfo();
