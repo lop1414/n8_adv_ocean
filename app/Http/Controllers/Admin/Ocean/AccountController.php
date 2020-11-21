@@ -29,9 +29,9 @@ class AccountController extends AdminController
         $this->curdService->selectQueryBefore(function(){
             $this->curdService->customBuilder(function($builder){
                 $adminUserInfo = Functions::getGlobalData('admin_user_info');
-                //if(!$adminUserInfo['is_admin']){
+                if(!$adminUserInfo['is_admin']){
                     $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
-                //}
+                }
             });
         });
     }
@@ -43,9 +43,9 @@ class AccountController extends AdminController
         $this->curdService->getQueryBefore(function(){
             $this->curdService->customBuilder(function($builder){
                 $adminUserInfo = Functions::getGlobalData('admin_user_info');
-                //if(!$adminUserInfo['is_admin']){
+                if(!$adminUserInfo['is_admin']){
                     $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
-                //}
+                }
             });
         });
     }
