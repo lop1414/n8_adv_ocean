@@ -41,76 +41,65 @@ class SyncJrttAccountCommand extends BaseCommand
      * 处理
      */
     public function handle(){
-        try{
-            // 已同步账户
-            $oceanAccountModel = new OceanAccountModel();
-            $oceanAccounts = $oceanAccountModel->where('belong_platform', AdvAccountBelongTypeEnum::SECOND_VERSION)->get();
+        // 已同步账户
+        $oceanAccountModel = new OceanAccountModel();
+        $oceanAccounts = $oceanAccountModel->where('belong_platform', AdvAccountBelongTypeEnum::SECOND_VERSION)->get();
 
-            // 映射
-            $accountMap = [];
-            foreach($oceanAccounts as $oceanAccount){
-                $accountMap[$oceanAccount['app_id']][$oceanAccount['account_id']] = $oceanAccount->toArray();
-            }
-
-            // 获取二版账户
-            $secondVersionService = new SecondVersionService();
-            if(!Functions::isDebug()){
-                $tmp = $secondVersionService->getJrttAdvAccounts(1, 10);
-                $secondVersionAccounts = $tmp['list'];
-            }else{
-                $secondVersionAccounts = $secondVersionService->getJrttAllAdvAccount();
-            }
-
-            // 管理员映射
-            $centerApiService = new CenterApiService();
-            $adminUsers = $centerApiService->apiGetAdminUsers();
-            $adminUserMap = array_column($adminUsers, 'id', 'name');
-
-            $data = [];
-            foreach($secondVersionAccounts as $account){
-                if(isset($accountMap[$account['app_id']][$account['adv_id']])){
-                    // 已同步过的账户, 只更新部分字段
-                    $tmp = $accountMap[$account['app_id']][$account['adv_id']];
-                    $tmp['access_token'] = $account['token'];
-                    $tmp['fail_at'] = $account['fail_at'];
-                    $tmp['extend'] = json_encode($tmp['extend']);
-                    $data[] = $tmp;
-                }else{
-                    // 未同步过的账户
-                    $data[] = [
-                        'app_id' => $account['app_id'],
-                        'name' => $account['name'],
-                        'account_role' => '',
-                        'belong_platform' => AdvAccountBelongTypeEnum::SECOND_VERSION,
-                        'account_id' => $account['adv_id'],
-                        'access_token' => $account['token'],
-                        'refresh_token' => '',
-                        'fail_at' => $account['fail_at'],
-                        'created_at' => date('Y-m-d H:i:s', TIMESTAMP),
-                        'updated_at' => date('Y-m-d H:i:s', TIMESTAMP),
-                        'extend' => json_encode([]),
-                        'parent_id' => $account['parent_adv_id'],
-                        'status' => StatusEnum::ENABLE,
-                        'admin_id' => $adminUserMap[$account['admin_name']] ?? 0,
-                    ];
-                }
-            }
-
-            // 批量插入更新
-            $oceanAccountModel->batchInsertOrUpdate($data);
-
-            // 更新账户角色
-            //$this->updateAccountRole();
-        }catch(CustomException $e){
-            $errorInfo = $e->getErrorInfo();
-            var_dump($errorInfo);
-            $errorLogService = new ErrorLogService();
-            $errorLogService->catch($e);
-        }catch(\Exception $e){
-            var_dump($e->getMessage());
-            $errorLogService = new ErrorLogService();
-            $errorLogService->catch($e);
+        // 映射
+        $accountMap = [];
+        foreach($oceanAccounts as $oceanAccount){
+            $accountMap[$oceanAccount['app_id']][$oceanAccount['account_id']] = $oceanAccount->toArray();
         }
+
+        // 获取二版账户
+        $secondVersionService = new SecondVersionService();
+        if(!Functions::isDebug()){
+            $tmp = $secondVersionService->getJrttAdvAccounts(1, 10);
+            $secondVersionAccounts = $tmp['list'];
+        }else{
+            $secondVersionAccounts = $secondVersionService->getJrttAllAdvAccount();
+        }
+
+        // 管理员映射
+        $centerApiService = new CenterApiService();
+        $adminUsers = $centerApiService->apiGetAdminUsers();
+        $adminUserMap = array_column($adminUsers, 'id', 'name');
+
+        $data = [];
+        foreach($secondVersionAccounts as $account){
+            if(isset($accountMap[$account['app_id']][$account['adv_id']])){
+                // 已同步过的账户, 只更新部分字段
+                $tmp = $accountMap[$account['app_id']][$account['adv_id']];
+                $tmp['access_token'] = $account['token'];
+                $tmp['fail_at'] = $account['fail_at'];
+                $tmp['extend'] = json_encode($tmp['extend']);
+                $data[] = $tmp;
+            }else{
+                // 未同步过的账户
+                $data[] = [
+                    'app_id' => $account['app_id'],
+                    'name' => $account['name'],
+                    'account_role' => '',
+                    'belong_platform' => AdvAccountBelongTypeEnum::SECOND_VERSION,
+                    'account_id' => $account['adv_id'],
+                    'access_token' => $account['token'],
+                    'refresh_token' => '',
+                    'fail_at' => $account['fail_at'],
+                    'created_at' => date('Y-m-d H:i:s', TIMESTAMP),
+                    'updated_at' => date('Y-m-d H:i:s', TIMESTAMP),
+                    'extend' => json_encode([]),
+                    'parent_id' => $account['parent_adv_id'],
+                    'status' => StatusEnum::ENABLE,
+                    'admin_id' => $adminUserMap[$account['admin_name']] ?? 0,
+                ];
+            }
+        }
+
+        // 批量插入更新
+        $oceanAccountModel->batchInsertOrUpdate($data);
+
+        // 更新账户角色
+        //$this->updateAccountRole();
     }
 
     /**

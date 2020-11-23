@@ -35,24 +35,13 @@ class OceanVideoUploadCommand extends BaseCommand
      * 处理
      */
     public function handle(){
-        try{
-            $oceanVideoUploadTaskService = new TaskOceanVideoUploadService();
-            $option = ['log' => true];
-            $this->lockRun(
-                [$oceanVideoUploadTaskService, 'run'],
-                'task_ocean_video_upload',
-                3600,
-                $option
-            );
-        }catch(CustomException $e){
-            $errorInfo = $e->getErrorInfo();
-            var_dump($errorInfo);
-            $errorLogService = new ErrorLogService();
-            $errorLogService->catch($e);
-        }catch(\Exception $e){
-            var_dump($e->getMessage());
-            $errorLogService = new ErrorLogService();
-            $errorLogService->catch($e);
-        }
+        $oceanVideoUploadTaskService = new TaskOceanVideoUploadService();
+        $option = ['log' => true];
+        $this->lockRun(
+            [$oceanVideoUploadTaskService, 'run'],
+            'task_ocean_video_upload',
+            3600,
+            $option
+        );
     }
 }
