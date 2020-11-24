@@ -115,4 +115,21 @@ class OceanEngineService extends BaseService
 
         return $this->sdk->uploadImage($accountId, $signature, $file, $filename);
     }
+
+    /**
+     * @param $uri
+     * @param array $param
+     * @param string $method
+     * @param array $header
+     * @return mixed
+     * @throws CustomException
+     * 转发
+     */
+    public function forward($uri, $param = [], $method = 'GET', $header = []){
+        $this->setAccessToken();
+
+        $url = OceanEngine::BASE_URL .'/'. ltrim($uri);
+
+        return $this->sdk->authRequest($url, $param, $method, $header);
+    }
 }

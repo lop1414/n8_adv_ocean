@@ -29,7 +29,6 @@ $router->group([
     'prefix' => 'admin',
     'middleware' => ['center_menu_auth', 'admin_request_log', 'access_control_allow_origin']
 ], function () use ($router) {
-
     // APP应用
     $router->group(['prefix' => 'app'], function () use ($router) {
         $router->post('select', 'Admin\AppController@select');
@@ -61,6 +60,11 @@ $router->group([
         // 图片
         $router->group(['prefix' => 'image'], function () use ($router) {
             $router->post('batch_upload', 'Admin\Ocean\ImageController@batchUpload');
+        });
+
+        // 工具
+        $router->group(['prefix' => 'tool'], function () use ($router) {
+            $router->post('forward', 'Admin\Ocean\ToolController@forward');
         });
     });
 });
