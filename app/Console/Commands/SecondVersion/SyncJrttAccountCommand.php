@@ -73,6 +73,7 @@ class SyncJrttAccountCommand extends BaseCommand
                 $tmp['access_token'] = $account['token'];
                 $tmp['fail_at'] = $account['fail_at'];
                 $tmp['extend'] = json_encode($tmp['extend']);
+                $tmp['admin_id'] = $adminUserMap[$account['admin_name']] ?? 0;
                 $data[] = $tmp;
             }else{
                 // 未同步过的账户
