@@ -47,6 +47,7 @@ class AccountController extends AdminController
                 if(!$adminUserInfo['is_admin']){
                     $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
                 }
+                $builder->where('parent_id', '<>', 0);
             });
         });
     }
