@@ -90,7 +90,6 @@ class TaskOceanVideoUploadService extends BaseService
                 // 公共请求返回空, 任务状态修改为待执行
                 if(
                     $errorInfo['code'] == 'PUBLIC_REQUEST_ERROR' &&
-                    isset($errorInfo['data']['result']) &&
                     empty($errorInfo['data']['result'])
                 ){
                     $taskStatus = TaskStatusEnum::WAITING;
