@@ -84,10 +84,22 @@ class TaskOceanVideoUploadService extends BaseService
                 // 更改任务状态
                 $taskService->updateTaskStatus($task, TaskStatusEnum::SUCCESS);
             }catch(CustomException $e){
-                // 更改任务状态
-                $taskService->updateTaskStatus($task, TaskStatusEnum::FAIL);
+                $taskStatus = TaskStatusEnum::FAIL;
+                $errorInfo = $e->getErrorInfo(true);
 
-                throw new CustomException($e->getErrorInfo(true));
+                // 公共请求返回空, 任务状态修改为待执行
+                if(
+                    $errorInfo['code'] == 'PUBLIC_REQUEST_ERROR' &&
+                    isset($errorInfo['data']['result']) &&
+                    empty($errorInfo['data']['result'])
+                ){
+                    $taskStatus = TaskStatusEnum::WAITING;
+                }
+
+                // 更改任务状态
+                $taskService->updateTaskStatus($task, $taskStatus);
+
+                throw new CustomException($errorInfo);
             }catch(\Exception $e){
                 // 更改任务状态
                 $taskService->updateTaskStatus($task, TaskStatusEnum::FAIL);
