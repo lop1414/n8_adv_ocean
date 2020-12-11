@@ -2,11 +2,12 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
-use App\Console\Commands\Ocean\SyncOceanCampaignCommand;
-use App\Console\Commands\Task\OceanImageUploadCommand;
-use App\Console\Commands\Task\OceanVideoSyncCommand;
-use App\Console\Commands\Task\OceanVideoUploadCommand;
+use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
+use App\Console\Commands\Task\TaskOceanImageUploadCommand;
+use App\Console\Commands\Task\TaskOceanVideoSyncCommand;
+use App\Console\Commands\Task\TaskOceanVideoUploadCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -19,10 +20,11 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         SyncJrttAccountCommand::class,
-        OceanVideoUploadCommand::class,
-        OceanImageUploadCommand::class,
-        SyncOceanCampaignCommand::class,
-        OceanVideoSyncCommand::class,
+        TaskOceanVideoUploadCommand::class,
+        TaskOceanImageUploadCommand::class,
+        OceanSyncCampaignCommand::class,
+        OceanSyncVideoCommand::class,
+        TaskOceanVideoSyncCommand::class,
     ];
 
     /**

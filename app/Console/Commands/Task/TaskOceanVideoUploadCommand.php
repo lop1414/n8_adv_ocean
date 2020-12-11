@@ -7,7 +7,7 @@ use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Services\TaskOceanVideoUploadService;
 
-class OceanVideoUploadCommand extends BaseCommand
+class TaskOceanVideoUploadCommand extends BaseCommand
 {
     /**
      * 命令行执行命令

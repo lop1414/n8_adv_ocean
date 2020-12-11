@@ -8,7 +8,7 @@ use App\Common\Tools\CustomException;
 use App\Services\TaskOceanImageUploadService;
 use mysql_xdevapi\Exception;
 
-class OceanImageUploadCommand extends BaseCommand
+class TaskOceanImageUploadCommand extends BaseCommand
 {
     /**
      * 命令行执行命令

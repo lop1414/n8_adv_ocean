@@ -8,7 +8,7 @@ use App\Common\Tools\CustomException;
 use App\Services\TaskOceanVideoSyncService;
 use App\Services\TaskOceanVideoUploadService;
 
-class OceanVideoSyncCommand extends BaseCommand
+class TaskOceanVideoSyncCommand extends BaseCommand
 {
     /**
      * 命令行执行命令

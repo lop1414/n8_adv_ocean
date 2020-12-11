@@ -5,7 +5,7 @@ namespace App\Console\Commands\Ocean;
 use App\Common\Console\BaseCommand;
 use App\Services\Ocean\OceanCampaignService;
 
-class SyncOceanCampaignCommand extends BaseCommand
+class OceanSyncCampaignCommand extends BaseCommand
 {
     /**
      * 命令行执行命令
@@ -34,8 +34,15 @@ class SyncOceanCampaignCommand extends BaseCommand
      * 处理
      */
     public function handle(){
-        $option = $this->option();
-        $oceanService = new OceanCampaignService();
-        $oceanService->syncCampaign($option);
+        $param = $this->option();
+        $oceanCampaignService = new OceanCampaignService();
+        $option = ['log' => true];
+        $this->lockRun(
+            [$oceanCampaignService, 'syncCampaign'],
+            'ocean_sync_campaign',
+            3600,
+            $option,
+            $param
+        );
     }
 }
