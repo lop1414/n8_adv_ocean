@@ -13,7 +13,7 @@ trait Image
      * 上传
      */
     public function uploadImage($accountId, $signature, $file, $filename = ''){
-        $url = self::BASE_URL .'/2/file/image/ad/';
+        $url = $this->getUrl('/2/file/image/ad/');
 
         $param = [
             'advertiser_id' => $accountId,

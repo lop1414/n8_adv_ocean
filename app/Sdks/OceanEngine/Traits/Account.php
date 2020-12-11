@@ -43,7 +43,7 @@ trait Account
      * 获取账户信息
      */
     public function getAccountInfo(array $accountIds){
-        $url = self::BASE_URL .'/2/advertiser/info/';
+        $url = $this->getUrl('/2/advertiser/info/');
 
         $param = [
             'advertiser_ids' => $accountIds
@@ -58,7 +58,7 @@ trait Account
      * 获取账户公共信息
      */
     public function getAccountPublicInfo(array $accountIds){
-        $url = self::BASE_URL .'/2/advertiser/public_info/';
+        $url = $this->getUrl('/2/advertiser/public_info/');
 
         $param = [
             'advertiser_ids' => $accountIds

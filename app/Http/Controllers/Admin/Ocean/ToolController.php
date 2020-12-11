@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin\Ocean;
 use App\Common\Controllers\Admin\AdminController;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
-use App\Models\OceanAccountModel;
-use App\Services\OceanEngineService;
+use App\Models\Ocean\OceanAccountModel;
+use App\Services\Ocean\OceanService;
 use Illuminate\Http\Request;
 
 class ToolController extends AdminController
@@ -18,6 +18,11 @@ class ToolController extends AdminController
     public function __construct()
     {
         parent::__construct();
+    }
+
+    public function random(){
+        sleep(5);
+        return $this->success(['random' => rand(1000, 9999)]);
     }
 
     /**
@@ -55,9 +60,9 @@ class ToolController extends AdminController
             ]);
         }
 
-        $oceanEngineService = new OceanEngineService($account->app_id);
-        $oceanEngineService->setAccountId($account->account_id);
-        $data = $oceanEngineService->forward($uri, $param, $method, $header);
+        $OceanService = new OceanService($account->app_id);
+        $OceanService->setAccountId($account->account_id);
+        $data = $OceanService->forward($uri, $param, $method, $header);
 
         return $this->success($data);
     }

@@ -5,9 +5,15 @@ namespace App\Services;
 use App\Common\Enums\ExecStatusEnum;
 use App\Common\Enums\TaskStatusEnum;
 use App\Common\Enums\TaskTypeEnum;
+use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
+use App\Models\Ocean\OceanAccountModel;
+use App\Models\Ocean\OceanAccountVideoModel;
+use App\Models\Ocean\OceanVideoModel;
 use App\Models\TaskOceanVideoUploadModel;
+use App\Services\Ocean\OceanMaterialService;
+use App\Services\Ocean\OceanVideoService;
 
 class TaskOceanVideoUploadService extends BaseService
 {
@@ -29,10 +35,13 @@ class TaskOceanVideoUploadService extends BaseService
         $this->model->task_id = $data['task_id'];
         $this->model->app_id = $data['app_id'];
         $this->model->account_id = $data['account_id'];
+        $this->model->n8_material_video_id = $data['n8_material_video_id'];
         $this->model->n8_material_video_path = $data['n8_material_video_path'];
         $this->model->n8_material_video_name = $data['n8_material_video_name'];
+        $this->model->n8_material_video_signature = $data['n8_material_video_signature'];
         $this->model->exec_status = ExecStatusEnum::WAITING;
         $this->model->admin_id = $data['admin_id'];
+        $this->model->extends = $data['extends'] ?? [];
         return $this->model->save();
     }
 
@@ -63,23 +72,8 @@ class TaskOceanVideoUploadService extends BaseService
 
         foreach($tasks as $task){
             try{
-                // 获取子任务
-                $subTasks = $this->getWaitingSubTasks($task->id);
-                foreach($subTasks as $subTask){
-                    // 下载
-                    $file = $this->download($subTask->n8_material_video_path);
-
-                    // 上传
-                    $oceanEngineService = new OceanEngineService($subTask->app_id);
-                    $oceanEngineService->setAccountId($subTask->account_id);
-                    $oceanEngineService->uploadVideo($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_video_name);
-
-                    // 删除临时文件
-                    unlink($file['path']);
-
-                    $subTask->exec_status = ExecStatusEnum::SUCCESS;
-                    $subTask->save();
-                }
+                // 执行子任务
+                $this->runSubTask($task);
 
                 // 更改任务状态
                 $taskService->updateTaskStatus($task, TaskStatusEnum::SUCCESS);
@@ -108,6 +102,83 @@ class TaskOceanVideoUploadService extends BaseService
         }
 
         return true;
+    }
+
+    /**
+     * @param $task
+     * @return bool
+     * @throws CustomException
+     * 执行子任务
+     */
+    public function runSubTask($task){
+        // 获取子任务
+        $subTasks = $this->getWaitingSubTasks($task->id);
+
+        // 子任务视频签名
+        $videoSignatures = $subTasks->pluck('n8_material_video_signature');
+
+        foreach($subTasks as $subTask){
+            // 获取可推送视频
+            $canPushVideos = $this->getCanPushVideos($videoSignatures);
+
+            // 可推送视频签名
+            $canPushVideoSignatures = array_column($canPushVideos, 'signature');
+
+            // 可推送视频映射
+            $canPushVideoMap = array_column($canPushVideos, null, 'signature');
+
+            if(!in_array($subTask->n8_material_video_signature, $canPushVideoSignatures)){
+Functions::consoleDump('upload');
+                // 下载
+                $file = $this->download($subTask->n8_material_video_path);
+
+                // 上传
+                $oceanVideoService = new OceanVideoService($subTask->app_id);
+                $oceanVideoService->setAccountId($subTask->account_id);
+                $oceanVideoService->uploadVideo($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_video_name);
+
+                // 删除临时文件
+                unlink($file['path']);
+            }else{
+                $canPushVideo = $canPushVideoMap[$subTask->n8_material_video_signature];
+Functions::consoleDump('push');
+                // 推送
+                $oceanMaterialService = new OceanMaterialService($subTask->app_id);
+                $oceanMaterialService->setAccountId($canPushVideo['account_id']);
+                $oceanMaterialService->pushMaterial($canPushVideo['account_id'], [$subTask->account_id], [$canPushVideo['video_id']]);
+            }
+
+            $subTask->exec_status = ExecStatusEnum::SUCCESS;
+            $subTask->save();
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $videoSignatures
+     * @return array
+     * 获取可推送视频
+     */
+    private function getCanPushVideos($videoSignatures){
+        $oceanVideoModel = new OceanVideoModel();
+        $oceanVideos = $oceanVideoModel->whereIn('signature', $videoSignatures)->get();
+
+        $canPushVideos = [];
+        foreach($oceanVideos as $oceanVideo){
+            $oceanAccountVideoModel = new OceanAccountVideoModel();
+            $oceanAccountVideo = $oceanAccountVideoModel->where('video_id', $oceanVideo->video_id)->first();
+
+            if(empty($oceanAccountVideo)){
+                continue;
+            }
+
+            $oceanVideo->account_id = $oceanAccountVideo['account_id'];
+
+            $canPushVideos[] = $oceanVideo->toArray();
+        }
+
+        return $canPushVideos;
     }
 
     /**

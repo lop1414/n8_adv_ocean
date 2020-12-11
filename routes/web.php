@@ -15,7 +15,7 @@ $router->get('/', function () use ($router) {
     return 'hello';
 });
 
-
+$router->post('random', 'Admin\Ocean\ToolController@random');
 
 // 后台公共权限接口
 $router->group([
@@ -65,6 +65,14 @@ $router->group([
         // 工具
         $router->group(['prefix' => 'tool'], function () use ($router) {
             $router->post('forward', 'Admin\Ocean\ToolController@forward');
+        });
+
+        // 广告组
+        $router->group(['prefix' => 'campaign'], function () use ($router) {
+            $router->post('select', 'Admin\Ocean\CampaignController@select');
+            $router->post('get', 'Admin\Ocean\CampaignController@get');
+            $router->post('read', 'Admin\Ocean\CampaignController@read');
+            $router->post('sync', 'Admin\Ocean\CampaignController@sync');
         });
     });
 });

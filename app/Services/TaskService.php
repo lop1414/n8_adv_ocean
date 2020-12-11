@@ -71,18 +71,20 @@ class TaskService extends BaseService
         $task->task_status = $taskStatus;
         $ret = $task->save();
 
-        $taskStatusName = Functions::getEnumMapName(TaskStatusEnum::class, $taskStatus);
-        $taskTypeName = Functions::getEnumMapName(TaskTypeEnum::class, $task->task_type);
+        if($task->admin_id > 0){
+            $taskStatusName = Functions::getEnumMapName(TaskStatusEnum::class, $taskStatus);
+            $taskTypeName = Functions::getEnumMapName(TaskTypeEnum::class, $task->task_type);
 
-        // 发送通知
-        $title = "你有一个任务{$taskStatusName}";
-        $content = implode("<br>", [
-            "任务id: {$task->id}",
-            "任务名称: {$task->name}",
-            "任务类型: {$taskTypeName}",
-        ]);
-        $noticeApiService = new NoticeApiService();
-        $noticeApiService->apiSendFeishuMessage($title, $content, $task->admin_id);
+            // 发送通知
+            $title = "你有一个任务{$taskStatusName}";
+            $content = implode("<br>", [
+                "任务id: {$task->id}",
+                "任务名称: {$task->name}",
+                "任务类型: {$taskTypeName}",
+            ]);
+            $noticeApiService = new NoticeApiService();
+            $noticeApiService->apiSendFeishuMessage($title, $content, $task->admin_id);
+        }
 
         return $ret;
     }

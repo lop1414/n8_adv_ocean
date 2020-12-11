@@ -4,14 +4,14 @@ namespace App\Models;
 
 use App\Common\Models\BaseModel;
 
-class TaskOceanVideoUploadModel extends BaseModel
+class TaskOceanVideoSyncModel extends BaseModel
 {
     /**
      * 关联到模型的数据表
      *
      * @var string
      */
-    protected $table = 'task_ocean_video_uploads';
+    protected $table = 'task_ocean_video_syncs';
 
     /**
      * 关联到模型数据表的主键

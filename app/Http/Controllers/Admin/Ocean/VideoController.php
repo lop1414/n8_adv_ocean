@@ -7,7 +7,7 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
-use App\Models\OceanAccountModel;
+use App\Models\Ocean\OceanAccountModel;
 use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\TaskOceanVideoUploadService;
 use App\Services\TaskService;
@@ -114,8 +114,10 @@ class VideoController extends AdminController
                     'task_id' => $taskId,
                     'app_id' => $account->app_id,
                     'account_id' => $account->account_id,
+                    'n8_material_video_id' => $video['id'],
                     'n8_material_video_path' => $video['path'],
                     'n8_material_video_name' => $video['name'],
+                    'n8_material_video_signature' => $video['signature'],
                     'admin_id' => $adminUserInfo['admin_user']['id'],
                 ]);
             }

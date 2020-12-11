@@ -7,7 +7,7 @@ use App\Common\Enums\StatusEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Tools\CustomException;
-use App\Models\OceanAccountModel;
+use App\Models\Ocean\OceanAccountModel;
 
 class AccountController extends AdminController
 {

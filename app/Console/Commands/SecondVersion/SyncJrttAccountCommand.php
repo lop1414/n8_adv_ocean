@@ -6,11 +6,10 @@ use App\Common\Console\BaseCommand;
 use App\Common\Enums\AdvAccountBelongTypeEnum;
 use App\Common\Enums\StatusEnum;
 use App\Common\Helpers\Functions;
-use App\Common\Services\ErrorLogService;
 use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Tools\CustomException;
-use App\Models\OceanAccountModel;
-use App\Services\OceanEngineService;
+use App\Models\Ocean\OceanAccountModel;
+use App\Services\Ocean\OceanService;
 use App\Services\SecondVersionService;
 
 class SyncJrttAccountCommand extends BaseCommand
@@ -116,9 +115,9 @@ class SyncJrttAccountCommand extends BaseCommand
 
         // 获取账户角色
         foreach($oceanAccounts as $oceanAccount){
-            $oceanEngineService = new OceanEngineService($oceanAccount->app_id);
-            $oceanEngineService->setAccountId($oceanAccount->account_id);
-            dd($oceanEngineService->getAccountInfo([$oceanAccount->account_id]));
+            $OceanService = new OceanService($oceanAccount->app_id);
+            $OceanService->setAccountId($oceanAccount->account_id);
+            dd($OceanService->getAccountInfo([$oceanAccount->account_id]));
             #TODO:更新账户角色
         }
     }

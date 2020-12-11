@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Ocean;
 
 use App\Common\Models\BaseModel;
 

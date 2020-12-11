@@ -7,7 +7,7 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
-use App\Models\OceanAccountModel;
+use App\Models\Ocean\OceanAccountModel;
 use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\TaskOceanImageUploadService;
 use App\Services\TaskService;

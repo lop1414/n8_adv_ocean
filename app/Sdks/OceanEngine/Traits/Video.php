@@ -13,7 +13,7 @@ trait Video
      * 上传
      */
     public function uploadVideo($accountId, $signature, $file, $filename = ''){
-        $url = self::BASE_URL .'/2/file/video/ad/';
+        $url = $this->getUrl('/2/file/video/ad/');
 
         $param = [
             'advertiser_id' => $accountId,
@@ -87,5 +87,20 @@ trait Video
         }
 
         return $valid;
+    }
+
+    /**
+     * @param array $accountIds
+     * @param $accessToken
+     * @param array $filtering
+     * @param int $page
+     * @param int $pageSize
+     * @return mixed
+     * 并发获取视频列表
+     */
+    public function multiGetVideoList(array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10){
+        $url = $this->getUrl('2/file/video/get/');
+
+        return $this->multiGetPageList($url, $accountIds, $accessToken, $filtering, $page, $pageSize);
     }
 }

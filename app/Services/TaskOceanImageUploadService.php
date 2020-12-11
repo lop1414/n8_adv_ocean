@@ -8,6 +8,7 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Models\TaskOceanImageUploadModel;
+use App\Services\Ocean\OceanImageService;
 
 class TaskOceanImageUploadService extends BaseService
 {
@@ -70,9 +71,9 @@ class TaskOceanImageUploadService extends BaseService
                     $file = $this->download($subTask->n8_material_image_path);
 
                     // 上传
-                    $oceanEngineService = new OceanEngineService($subTask->app_id);
-                    $oceanEngineService->setAccountId($subTask->account_id);
-                    $oceanEngineService->uploadImage($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_image_name);
+                    $oceanImageService = new OceanImageService($subTask->app_id);
+                    $oceanImageService->setAccountId($subTask->account_id);
+                    $oceanImageService->uploadImage($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_image_name);
 
                     // 删除临时文件
                     unlink($file['path']);
