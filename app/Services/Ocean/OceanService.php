@@ -246,6 +246,22 @@ class OceanService extends BaseService
     }
 
     /**
+     * @return mixed
+     * 获取有效账户
+     */
+    public function getValidAccount(){
+        $datetime = date('Y-m-d H:i:s', time());
+
+        $oceanAccountModel = new OceanAccountModel();
+        $oceanAccount = $oceanAccountModel->where('status', StatusEnum::ENABLE)
+            ->where('fail_at', '>', $datetime)
+            ->where('access_token', '<>', '')
+            ->first();
+
+        return $oceanAccount;
+    }
+
+    /**
      * @param $uri
      * @param array $param
      * @param string $method

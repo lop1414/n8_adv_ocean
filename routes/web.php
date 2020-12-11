@@ -15,8 +15,6 @@ $router->get('/', function () use ($router) {
     return 'hello';
 });
 
-$router->post('random', 'Admin\Ocean\ToolController@random');
-
 // 后台公共权限接口
 $router->group([
     'middleware' => ['center_login_auth', 'admin_request_log', 'access_control_allow_origin']
@@ -73,6 +71,16 @@ $router->group([
             $router->post('get', 'Admin\Ocean\CampaignController@get');
             $router->post('read', 'Admin\Ocean\CampaignController@read');
             $router->post('sync', 'Admin\Ocean\CampaignController@sync');
+        });
+
+        // 城市
+        $router->group(['prefix' => 'city'], function () use ($router) {
+            $router->post('get', 'Admin\Ocean\CityController@get');
+        });
+
+        // 商圈
+        $router->group(['prefix' => 'region'], function () use ($router) {
+            $router->post('get', 'Admin\Ocean\RegionController@get');
         });
     });
 });

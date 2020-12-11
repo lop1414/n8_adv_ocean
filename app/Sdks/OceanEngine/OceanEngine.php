@@ -6,9 +6,11 @@ use App\Sdks\OceanEngine\Traits\AccessToken;
 use App\Sdks\OceanEngine\Traits\Account;
 use App\Sdks\OceanEngine\Traits\App;
 use App\Sdks\OceanEngine\Traits\Campaign;
+use App\Sdks\OceanEngine\Traits\City;
 use App\Sdks\OceanEngine\Traits\Image;
 use App\Sdks\OceanEngine\Traits\Material;
 use App\Sdks\OceanEngine\Traits\Multi;
+use App\Sdks\OceanEngine\Traits\Region;
 use App\Sdks\OceanEngine\Traits\Request;
 use App\Sdks\OceanEngine\Traits\Video;
 
@@ -23,6 +25,8 @@ class OceanEngine
     use Campaign;
     use Multi;
     use Material;
+    use Region;
+    use City;
 
     /**
      * 公共接口地址
@@ -44,5 +48,16 @@ class OceanEngine
      */
     public function getUrl($uri){
         return self::BASE_URL .'/'. ltrim($uri, '/');
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     * 获取 sdk 路径
+     */
+    public function getSdkPath($path = ''){
+        $path = trim($path, '/');
+        $sdkPath = trim(__DIR__ .'/'. $path, '/');
+        return $sdkPath;
     }
 }

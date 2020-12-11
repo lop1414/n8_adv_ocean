@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Ocean\OceanSyncCityCommand;
+use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
@@ -19,12 +21,19 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        // 二版
         SyncJrttAccountCommand::class,
+
+        // 任务
         TaskOceanVideoUploadCommand::class,
         TaskOceanImageUploadCommand::class,
+        TaskOceanVideoSyncCommand::class,
+
+        // 巨量
         OceanSyncCampaignCommand::class,
         OceanSyncVideoCommand::class,
-        TaskOceanVideoSyncCommand::class,
+        OceanSyncRegionCommand::class,
+        OceanSyncCityCommand::class,
     ];
 
     /**

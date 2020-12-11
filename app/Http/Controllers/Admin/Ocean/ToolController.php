@@ -20,11 +20,6 @@ class ToolController extends AdminController
         parent::__construct();
     }
 
-    public function random(){
-        sleep(5);
-        return $this->success(['random' => rand(1000, 9999)]);
-    }
-
     /**
      * @param Request $request
      * @return mixed
