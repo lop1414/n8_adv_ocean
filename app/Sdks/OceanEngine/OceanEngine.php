@@ -56,7 +56,7 @@ class OceanEngine
      * 获取 sdk 路径
      */
     public function getSdkPath($path = ''){
-        $path = trim($path, '/');
+        $path = rtrim($path, '/');
         $sdkPath = trim(__DIR__ .'/'. $path, '/');
         return $sdkPath;
     }
