@@ -92,9 +92,12 @@ class OceanService extends BaseService
             if($oceanAccount->belong_platform == AdvAccountBelongTypeEnum::SECOND_VERSION){
                 $secondVersionService = new SecondVersionService();
                 $secondVersionAccount = $secondVersionService->getJrttAdvAccount($oceanAccount->app_id, $oceanAccount->account_id);
-                $oceanAccount->access_token = $secondVersionAccount['token'];
-                $oceanAccount->fail_at = $secondVersionAccount['fail_at'];
-                $oceanAccount->save();
+
+                if(!empty($secondVersionAccount)){
+                    $oceanAccount->access_token = $secondVersionAccount['token'];
+                    $oceanAccount->fail_at = $secondVersionAccount['fail_at'];
+                    $oceanAccount->save();
+                }
             }
         }
         return $oceanAccount;
