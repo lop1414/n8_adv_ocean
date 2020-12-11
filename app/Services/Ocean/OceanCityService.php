@@ -41,6 +41,7 @@ class OceanCityService extends OceanService
 
             $i++;
         }
+        echo "\n";
 
         return true;
     }
