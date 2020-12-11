@@ -57,7 +57,7 @@ class OceanEngine
      */
     public function getSdkPath($path = ''){
         $path = rtrim($path, '/');
-        $sdkPath = trim(__DIR__ .'/'. $path, '/');
+        $sdkPath = rtrim(__DIR__ .'/'. $path, '/');
         return $sdkPath;
     }
 }
