@@ -127,8 +127,11 @@ class TaskOceanVideoUploadService extends BaseService
             // 可推送视频映射
             $canPushVideoMap = array_column($canPushVideos, null, 'signature');
 
+            $uploadType = '';
+
             if(!in_array($subTask->n8_material_video_signature, $canPushVideoSignatures)){
-Functions::consoleDump('upload');
+                $uploadType = 'upload';
+
                 // 下载
                 $file = $this->download($subTask->n8_material_video_path);
 
@@ -140,15 +143,21 @@ Functions::consoleDump('upload');
                 // 删除临时文件
                 unlink($file['path']);
             }else{
+                $uploadType = 'push';
+
                 $canPushVideo = $canPushVideoMap[$subTask->n8_material_video_signature];
-Functions::consoleDump('push');
+
                 // 推送
                 $oceanMaterialService = new OceanMaterialService($subTask->app_id);
                 $oceanMaterialService->setAccountId($canPushVideo['account_id']);
                 $oceanMaterialService->pushMaterial($canPushVideo['account_id'], [$subTask->account_id], [$canPushVideo['video_id']]);
             }
 
+            Functions::consoleDump($uploadType);
+
             $subTask->exec_status = ExecStatusEnum::SUCCESS;
+            // 上传类型
+            $subTask->extends = array_merge($subTask->extends, ['upload_type' => $uploadType]);
             $subTask->save();
         }
 
