@@ -44,7 +44,7 @@ class OceanService extends BaseService
      * @throws CustomException
      * 获取账户信息
      */
-    public function getAccountInfo($accountIds){
+    public function getAccountInfoList($accountIds){
         $this->setAccessToken();
 
 //        return $this->sdk->getAccountInfo($accountIds);

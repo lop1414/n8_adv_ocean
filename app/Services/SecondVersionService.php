@@ -2,8 +2,14 @@
 
 namespace App\Services;
 
+use App\Common\Enums\AdvAccountBelongTypeEnum;
+use App\Common\Enums\StatusEnum;
 use App\Common\Services\BaseService;
+use App\Common\Services\ErrorLogService;
+use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Tools\CustomException;
+use App\Models\Ocean\OceanAccountModel;
+use App\Services\Ocean\OceanService;
 
 class SecondVersionService extends BaseService
 {
@@ -197,5 +203,92 @@ class SecondVersionService extends BaseService
         curl_close($ch);
 
         return $result;
+    }
+
+    /**
+     * @throws CustomException
+     * 同步头条账户
+     */
+    public function syncJrttAccount(){
+        // 获取账户
+        $secondVersionAccounts = $this->getJrttAllAdvAccount();
+//$tmp = $this->getJrttAdvAccounts(1, 10);
+//$secondVersionAccounts = $tmp['list'];
+
+        // 管理员映射
+        $centerApiService = new CenterApiService();
+        $adminUsers = $centerApiService->apiGetAdminUsers();
+        $adminUserMap = array_column($adminUsers, 'id', 'name');
+
+        foreach($secondVersionAccounts as $account){
+            // 查找
+            $oceanAccountModel = new OceanAccountModel();
+            $oceanAccount = $oceanAccountModel->where('belong_platform', AdvAccountBelongTypeEnum::SECOND_VERSION)
+                ->where('app_id', $account['app_id'])
+                ->where('account_id', $account['adv_id'])
+                ->first();
+
+            if(empty($oceanAccount)){
+                // 新增
+                $oceanAccount = new OceanAccountModel();
+                $oceanAccount->app_id = $account['app_id'];
+                $oceanAccount->name = $account['name'];
+                $oceanAccount->account_role = '';
+                $oceanAccount->belong_platform = AdvAccountBelongTypeEnum::SECOND_VERSION;
+                $oceanAccount->account_id = $account['adv_id'];
+                $oceanAccount->access_token = $account['token'];
+                $oceanAccount->refresh_token = '';
+                $oceanAccount->fail_at = $account['fail_at'];
+                $oceanAccount->extend = [];
+                $oceanAccount->parent_id = $account['parent_adv_id'];
+                $oceanAccount->status = StatusEnum::ENABLE;
+                $oceanAccount->admin_id = $adminUserMap[$account['admin_name']] ?? 0;
+            }else{
+                // 更新
+                $oceanAccount->access_token = $account['token'];
+                $oceanAccount->fail_at = $account['fail_at'];
+                $oceanAccount->admin_id = $adminUserMap[$account['admin_name']] ?? 0;
+            }
+
+            // 保存
+            $oceanAccount->save();
+        }
+
+        // 同步头条账号信息
+        $this->syncJrttAccountInfo();
+    }
+
+    /**
+     * @return bool
+     * 同步头条账户信息
+     */
+    public function syncJrttAccountInfo(){
+        // 获取公司为空的账户
+        $oceanAccountModel = new OceanAccountModel();
+        $oceanAccounts = $oceanAccountModel->where('belong_platform', AdvAccountBelongTypeEnum::SECOND_VERSION)
+            ->where('company', '')
+            ->get();
+
+        foreach($oceanAccounts as $oceanAccount){
+            try{
+                // 获取账户信息
+                $oceanService = new OceanService($oceanAccount->app_id);
+                $oceanService->setAccountId($oceanAccount->account_id);
+                $accountInfoList = $oceanService->getAccountInfoList([$oceanAccount->account_id]);
+                $accountInfo = current($accountInfoList);
+
+                // 保存
+                $oceanAccount->company = $accountInfo['company'] ?? '';
+                $oceanAccount->save();
+            }catch(CustomException $e){
+                $errorLogService = new ErrorLogService();
+                $errorLogService->catch($e);
+            }catch(\Exception $e){
+                $errorLogService = new ErrorLogService();
+                $errorLogService->catch($e);
+            }
+        }
+
+        return true;
     }
 }
