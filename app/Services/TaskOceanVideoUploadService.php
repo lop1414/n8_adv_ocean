@@ -14,6 +14,7 @@ use App\Models\Ocean\OceanVideoModel;
 use App\Models\TaskOceanVideoUploadModel;
 use App\Services\Ocean\OceanMaterialService;
 use App\Services\Ocean\OceanVideoService;
+use Illuminate\Support\Facades\DB;
 
 class TaskOceanVideoUploadService extends BaseService
 {
@@ -114,22 +115,25 @@ class TaskOceanVideoUploadService extends BaseService
         // 获取子任务
         $subTasks = $this->getWaitingSubTasks($task->id);
 
-        // 子任务视频签名
-        $videoSignatures = $subTasks->pluck('n8_material_video_signature');
-
         foreach($subTasks as $subTask){
+            // 获取账户信息
+            $oceanAccountModel = new OceanAccountModel();
+            $oceanAccount = $oceanAccountModel->where('app_id', $subTask->app_id)
+                ->where('account_id', $subTask->account_id)
+                ->first();
+
             // 获取可推送视频
-            $canPushVideos = $this->getCanPushVideos($videoSignatures);
+            $video = $this->getCanPushVideo($subTask->n8_material_video_signature, $oceanAccount->company);
 
-            // 可推送视频签名
-            $canPushVideoSignatures = array_column($canPushVideos, 'signature');
+            if(!empty($video)){
+                // 推送
+                $uploadType = 'push';
 
-            // 可推送视频映射
-            $canPushVideoMap = array_column($canPushVideos, null, 'signature');
-
-            $uploadType = '';
-
-            if(!in_array($subTask->n8_material_video_signature, $canPushVideoSignatures)){
+                $oceanMaterialService = new OceanMaterialService($subTask->app_id);
+                $oceanMaterialService->setAccountId($video->account_id);
+                $oceanMaterialService->pushMaterial($video->account_id, [$subTask->account_id], [$video->video_id]);
+            }else{
+                // 上传
                 $uploadType = 'upload';
 
                 // 下载
@@ -142,18 +146,7 @@ class TaskOceanVideoUploadService extends BaseService
 
                 // 删除临时文件
                 unlink($file['path']);
-            }else{
-                $uploadType = 'push';
-
-                $canPushVideo = $canPushVideoMap[$subTask->n8_material_video_signature];
-
-                // 推送
-                $oceanMaterialService = new OceanMaterialService($subTask->app_id);
-                $oceanMaterialService->setAccountId($canPushVideo['account_id']);
-                $oceanMaterialService->pushMaterial($canPushVideo['account_id'], [$subTask->account_id], [$canPushVideo['video_id']]);
             }
-
-            Functions::consoleDump($uploadType);
 
             $subTask->exec_status = ExecStatusEnum::SUCCESS;
             // 上传类型
@@ -165,29 +158,30 @@ class TaskOceanVideoUploadService extends BaseService
     }
 
     /**
-     * @param $videoSignatures
-     * @return array
+     * @param $signature
+     * @param $company
+     * @return bool|mixed
      * 获取可推送视频
      */
-    private function getCanPushVideos($videoSignatures){
-        $oceanVideoModel = new OceanVideoModel();
-        $oceanVideos = $oceanVideoModel->whereIn('signature', $videoSignatures)->get();
+    public function getCanPushVideo($signature, $company){
+        $items = DB::select("
+            SELECT
+                v.video_id, v.signature, a.account_id
+            FROM
+                ocean_videos v
+            LEFT JOIN ocean_accounts_videos av ON v.video_id = av.video_id
+            LEFT JOIN ocean_accounts a ON av.account_id = a.account_id
+            WHERE
+                v.signature = '{$signature}'
+            AND a.company = '{$company}'
+            LIMIT 1
+        ");
 
-        $canPushVideos = [];
-        foreach($oceanVideos as $oceanVideo){
-            $oceanAccountVideoModel = new OceanAccountVideoModel();
-            $oceanAccountVideo = $oceanAccountVideoModel->where('video_id', $oceanVideo->video_id)->first();
-
-            if(empty($oceanAccountVideo)){
-                continue;
-            }
-
-            $oceanVideo->account_id = $oceanAccountVideo['account_id'];
-
-            $canPushVideos[] = $oceanVideo->toArray();
+        if(empty($items)){
+            return false;
         }
 
-        return $canPushVideos;
+        return current($items);
     }
 
     /**
