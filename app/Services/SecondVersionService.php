@@ -267,6 +267,7 @@ class SecondVersionService extends BaseService
         $oceanAccountModel = new OceanAccountModel();
         $oceanAccounts = $oceanAccountModel->where('belong_platform', AdvAccountBelongTypeEnum::SECOND_VERSION)
             ->where('company', '')
+            ->where('parent_id', '<>', 0)
             ->get();
 
         foreach($oceanAccounts as $oceanAccount){
