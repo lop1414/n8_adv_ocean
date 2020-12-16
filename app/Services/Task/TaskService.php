@@ -7,7 +7,7 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Services\SystemApi\NoticeApiService;
-use App\Models\TaskModel;
+use App\Models\Task\TaskModel;
 
 class TaskService extends BaseService
 {

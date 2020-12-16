@@ -8,7 +8,7 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
-use App\Models\TaskOceanVideoUploadModel;
+use App\Models\Task\TaskOceanVideoUploadModel;
 use App\Services\Ocean\OceanMaterialService;
 use App\Services\Ocean\OceanVideoService;
 use Illuminate\Support\Facades\DB;

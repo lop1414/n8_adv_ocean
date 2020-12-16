@@ -7,7 +7,7 @@ use App\Common\Enums\TaskStatusEnum;
 use App\Common\Enums\TaskTypeEnum;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
-use App\Models\TaskOceanVideoSyncModel;
+use App\Models\Task\TaskOceanVideoSyncModel;
 use App\Services\Ocean\OceanVideoService;
 
 class TaskOceanVideoSyncService extends BaseService

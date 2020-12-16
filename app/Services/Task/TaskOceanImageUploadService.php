@@ -7,7 +7,7 @@ use App\Common\Enums\TaskStatusEnum;
 use App\Common\Enums\TaskTypeEnum;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
-use App\Models\TaskOceanImageUploadModel;
+use App\Models\Task\TaskOceanImageUploadModel;
 use App\Services\Ocean\OceanImageService;
 
 class TaskOceanImageUploadService extends BaseService
