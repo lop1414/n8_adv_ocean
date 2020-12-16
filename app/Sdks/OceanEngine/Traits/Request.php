@@ -27,7 +27,7 @@ trait Request
      */
     public function authRequest($url, $param = [], $method = 'GET', $header = [], $option = []){
         // 无过滤
-        if(empty($param['filtering'])){
+        if(isset($param['filtering']) && empty($param['filtering'])){
             unset($param['filtering']);
         }
 
