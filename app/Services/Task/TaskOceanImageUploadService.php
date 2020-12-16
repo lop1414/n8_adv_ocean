@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Task;
 
 use App\Common\Enums\ExecStatusEnum;
 use App\Common\Enums\TaskStatusEnum;

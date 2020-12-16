@@ -7,8 +7,8 @@ use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountVideoModel;
 use App\Models\Ocean\OceanVideoModel;
-use App\Services\TaskOceanVideoSyncService;
-use App\Services\TaskService;
+use App\Services\Task\TaskOceanVideoSyncService;
+use App\Services\Task\TaskService;
 
 class OceanVideoService extends OceanService
 {

@@ -5,7 +5,7 @@ namespace App\Console\Commands\Task;
 use App\Common\Console\BaseCommand;
 use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
-use App\Services\TaskOceanVideoUploadService;
+use App\Services\Task\TaskOceanVideoUploadService;
 
 class TaskOceanVideoUploadCommand extends BaseCommand
 {

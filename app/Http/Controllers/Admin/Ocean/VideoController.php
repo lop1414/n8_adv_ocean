@@ -9,8 +9,8 @@ use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
 use App\Sdks\OceanEngine\OceanEngine;
-use App\Services\TaskOceanVideoUploadService;
-use App\Services\TaskService;
+use App\Services\Task\TaskOceanVideoUploadService;
+use App\Services\Task\TaskService;
 use Illuminate\Http\Request;
 
 class VideoController extends AdminController
