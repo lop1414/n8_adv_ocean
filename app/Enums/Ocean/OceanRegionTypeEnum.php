@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Skds\OceanEngine\Enums;
+namespace App\Enums\Ocean;
 
 class OceanRegionTypeEnum
 {

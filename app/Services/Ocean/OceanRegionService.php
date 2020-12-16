@@ -2,11 +2,10 @@
 
 namespace App\Services\Ocean;
 
-use App\Common\Enums\StatusEnum;
-use App\Models\Ocean\OceanAccountModel;
+use App\Common\Helpers\Functions;
+use App\Enums\Ocean\OceanRegionLevelEnum;
+use App\Enums\Ocean\OceanRegionTypeEnum;
 use App\Models\Ocean\OceanRegionModel;
-use App\Skds\OceanEngine\Enums\OceanRegionLevelEnum;
-use App\Skds\OceanEngine\Enums\OceanRegionTypeEnum;
 
 class OceanRegionService extends OceanService
 {
@@ -27,6 +26,12 @@ class OceanRegionService extends OceanService
      */
     public function getRegionList($regionType, $regionLevel = ''){
         $this->setAccessToken();
+
+        Functions::hasEnum(OceanRegionTypeEnum::class, $regionType);
+
+        if(!empty($regionLevel)){
+            Functions::hasEnum(OceanRegionLevelEnum::class, $regionLevel);
+        }
 
         return $this->sdk->getRegionList($regionType, $regionLevel);
     }
