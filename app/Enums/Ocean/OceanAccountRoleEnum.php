@@ -2,7 +2,7 @@
 
 namespace App\Enums\Ocean;
 
-class AccountRoleEnum
+class OceanAccountRoleEnum
 {
     const ADVERTISER = 'ADVERTISER';
     const CUSTOMER_ADMIN = 'CUSTOMER_ADMIN';
