@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Admin\Ocean;
 
 use App\Common\Controllers\Admin\AdminController;
-use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
 use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\Task\TaskOceanVideoUploadService;
-use App\Services\Task\TaskService;
 use Illuminate\Http\Request;
 
 class VideoController extends AdminController
@@ -91,27 +89,15 @@ class VideoController extends AdminController
         }
 
         // 创建任务
-        $taskService = new TaskService();
+        $taskOceanVideoUploadService = new TaskOceanVideoUploadService();
         $task = [
             'name' => '批量上传巨量视频',
-            'task_type' => TaskTypeEnum::OCEAN_VIDEO_UPLOAD,
             'admin_id' => $adminUserInfo['admin_user']['id'],
         ];
-        $ret = $taskService->create($task);
-        if(!$ret){
-            throw new CustomException([
-                'code' => 'CREATE_UPLOAD_VIDEO_TASK_ERROR',
-                'message' => '创建上传视频任务失败',
-            ]);
-        }
-        $taskId = $taskService->getModel()->id;
-
-        // 创建子任务
-        $oceanVideoUploadTaskService = new TaskOceanVideoUploadService();
+        $subs = [];
         foreach($accounts as $account){
             foreach($videos as $video){
-                $oceanVideoUploadTaskService->create([
-                    'task_id' => $taskId,
+                $subs[] = [
                     'app_id' => $account->app_id,
                     'account_id' => $account->account_id,
                     'n8_material_video_id' => $video['id'],
@@ -119,14 +105,15 @@ class VideoController extends AdminController
                     'n8_material_video_name' => $video['name'],
                     'n8_material_video_signature' => $video['signature'],
                     'admin_id' => $adminUserInfo['admin_user']['id'],
-                ]);
+                ];
             }
         }
+        $taskOceanVideoUploadService->create($task, $subs);
 
         return $this->success([
-            'task_id' => $taskId,
+            'task_id' => $taskOceanVideoUploadService->taskId,
             'account_count' => $accounts->count(),
             'video_count' => count($videos),
-        ], [], '批量上传任务已提交【任务id:'. $taskId .'】，执行结果后续同步到飞书，请注意查收！');
+        ], [], '批量上传任务已提交【任务id:'. $taskOceanVideoUploadService->taskId .'】，执行结果后续同步到飞书，请注意查收！');
     }
 }

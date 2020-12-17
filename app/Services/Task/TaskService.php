@@ -7,56 +7,178 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Services\SystemApi\NoticeApiService;
+use App\Common\Tools\CustomException;
 use App\Models\Task\TaskModel;
+use Illuminate\Support\Facades\DB;
 
 class TaskService extends BaseService
 {
     /**
-     * TaskService constructor.
+     * @var
+     * 任务id
      */
-    public function __construct()
+    public $taskId;
+
+    /**
+     * @var
+     * 任务类型
+     */
+    public $taskType;
+
+    /**
+     * TaskService constructor.
+     * @param $taskType
+     * @throws CustomException
+     */
+    public function __construct($taskType)
     {
         parent::__construct();
+
+        // 任务类型
+        Functions::hasEnum(TaskTypeEnum::class, $taskType);
+        $this->taskType = $taskType;
     }
 
     /**
      * @param $data
+     * @param $subs
      * @return bool
-     * @throws \App\Common\Tools\CustomException
+     * @throws CustomException
      * 创建
      */
-    public function create($data){
+    public function create($data, $subs){
+        // 验证
+        $this->validRule($data, [
+            'name' => 'required',
+        ]);
+
         // 任务类型
-        Functions::hasEnum(TaskTypeEnum::class, $data['task_type']);
+        Functions::hasEnum(TaskTypeEnum::class, $this->taskType);
 
-        $this->model = new TaskModel();
-        $this->model->name = $data['name'];
-        $this->model->task_type = $data['task_type'];
-        $this->model->task_status = TaskStatusEnum::WAITING;
-        $this->model->admin_id = $data['admin_id'];
-        $ret = $this->model->save();
+        try{
+            // 开启事务
+            DB::beginTransaction();
 
-        return $ret;
+            $taskModel = new TaskModel();
+            $taskModel->name = $data['name'];
+            $taskModel->task_type = $this->taskType;
+            $taskModel->task_status = TaskStatusEnum::WAITING;
+            $taskModel->admin_id = $data['admin_id'] ?? 0;
+
+            $ret = $taskModel->save();
+            if(!$ret){
+                throw new CustomException([
+                    'code' => 'CREATE_TASK_ERROR',
+                    'message' => '任务创建失败',
+                ]);
+            }
+
+            $this->taskId = $taskModel->id;
+
+            foreach($subs as $sub){
+                $this->createSub($taskModel->id, $sub);
+            }
+
+            DB::commit();
+
+            return true;
+        }catch(CustomException $e){
+            DB::rollBack();
+            throw new CustomException($e->getErrorInfo(true));
+        }catch(\Exception $e){
+            DB::rollBack();
+            throw new \Exception($e->getMessage());
+        }
     }
 
     /**
-     * @param $taskType
+     * @param $taskId
+     * @param $data
+     * @throws CustomException
+     * 创建子任务
+     */
+    public function createSub($taskId, $data){
+        throw new CustomException([
+            'code' => 'PLEASE_WRITE_CREATE_SUB_CODE',
+            'message' => '请书写子任务创建代码',
+        ]);
+    }
+
+    /**
      * @return mixed
-     * @throws \App\Common\Tools\CustomException
+     * @throws CustomException
      * 获取待执行任务
      */
-    public function getWaitingTasks($taskType){
+    public function getWaitingTasks(){
         // 任务类型
-        Functions::hasEnum(TaskTypeEnum::class, $taskType);
+        Functions::hasEnum(TaskTypeEnum::class, $this->taskType);
 
         // 待执行任务
         $taskModel = new TaskModel();
-        $waitingTasks = $taskModel->where('task_type', $taskType)
+        $waitingTasks = $taskModel->where('task_type', $this->taskType)
             ->where('task_status', TaskStatusEnum::WAITING)
             ->orderBy('id', 'asc')
             ->get();
 
         return $waitingTasks;
+    }
+
+    /**
+     * @param array $option
+     * @return bool
+     * @throws CustomException
+     * 执行
+     */
+    public function run($option = []){
+        $tasks = $this->getWaitingTasks();
+
+        foreach($tasks as $task){
+            try{
+                // 执行子任务
+                $ret = $this->runSub($task, $option);
+
+                if(!!$ret){
+                    // 更改任务状态
+                    $this->updateTaskStatus($task, TaskStatusEnum::SUCCESS);
+                }
+            }catch(CustomException $e){
+                $taskStatus = TaskStatusEnum::FAIL;
+                $errorInfo = $e->getErrorInfo(true);
+
+                // 公共请求返回空, 任务状态修改为待执行
+                if(
+                    $errorInfo['code'] == 'PUBLIC_REQUEST_ERROR' &&
+                    empty($errorInfo['data']['result'])
+                ){
+                    $taskStatus = TaskStatusEnum::WAITING;
+                }
+
+                // 更改任务状态
+                $this->updateTaskStatus($task, $taskStatus);
+
+                throw new CustomException($errorInfo);
+            }catch(\Exception $e){
+                // 更改任务状态
+                $this->updateTaskStatus($task, TaskStatusEnum::FAIL);
+
+                throw new \Exception($e->getMessage());
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $task
+     * @param $option
+     * @throws CustomException
+     * 执行子任务
+     */
+    public function runSub($task, $option){
+        throw new CustomException([
+            'code' => 'PLEASE_WRITE_RUN_SUB_CODE',
+            'message' => '请书写执行子任务代码',
+        ]);
     }
 
     /**

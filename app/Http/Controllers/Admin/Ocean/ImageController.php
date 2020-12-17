@@ -91,40 +91,30 @@ class ImageController extends AdminController
         }
 
         // 创建任务
-        $taskService = new TaskService();
+        $taskOceanImageUploadService = new TaskOceanImageUploadService();
         $task = [
             'name' => '批量上传巨量图片',
-            'task_type' => TaskTypeEnum::OCEAN_IMAGE_UPLOAD,
             'admin_id' => $adminUserInfo['admin_user']['id'],
         ];
-        $ret = $taskService->create($task);
-        if(!$ret){
-            throw new CustomException([
-                'code' => 'CREATE_UPLOAD_VIDEO_TASK_ERROR',
-                'message' => '创建上传图片任务失败',
-            ]);
-        }
-        $taskId = $taskService->getModel()->id;
-
-        // 创建子任务
-        $taskOceanImageUploadService = new TaskOceanImageUploadService();
+        $subs = [];
         foreach($accounts as $account){
             foreach($images as $image){
-                $taskOceanImageUploadService->create([
-                    'task_id' => $taskId,
+                $subs[] = [
                     'app_id' => $account->app_id,
                     'account_id' => $account->account_id,
                     'n8_material_image_path' => $image['path'],
                     'n8_material_image_name' => $image['name'],
                     'admin_id' => $adminUserInfo['admin_user']['id'],
-                ]);
+                ];
             }
         }
+        $taskOceanImageUploadService->create($task, $subs);
+
 
         return $this->success([
-            'task_id' => $taskId,
+            'task_id' => $taskOceanImageUploadService->taskId,
             'account_count' => $accounts->count(),
             'image_count' => count($images),
-        ], [], '批量上传任务已提交【任务id:'. $taskId .'】，执行结果后续同步到飞书，请注意查收！');
+        ], [], '批量上传任务已提交【任务id:'. $taskOceanImageUploadService->taskId .'】，执行结果后续同步到飞书，请注意查收！');
     }
 }

@@ -2,13 +2,12 @@
 
 namespace App\Services\Ocean;
 
-use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Models\Ocean\OceanAccountVideoModel;
 use App\Models\Ocean\OceanVideoModel;
-use App\Services\Task\TaskOceanVideoSyncService;
-use App\Services\Task\TaskService;
+use App\Services\Task\TaskOceanSyncService;
 
 class OceanVideoService extends OceanService
 {
@@ -36,33 +35,21 @@ class OceanVideoService extends OceanService
 Functions::consoleDump($ret);
         // 同步
         if(!empty($ret['video_id'])){
-            $taskService = new TaskService();
-            $taskData = [
+            $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
+            $task = [
                 'name' => '同步巨量视频',
-                'task_type' => TaskTypeEnum::OCEAN_VIDEO_SYNC,
                 'admin_id' => 0,
             ];
-            $taskRet = $taskService->create($taskData);
-            if(!$taskRet){
-                throw new CustomException([
-                    'code' => 'CREATE_TASK_ERROR',
-                    'message' => '创建任务失败',
-                    'data' => [
-                        'task_data' => $taskData,
-                    ],
-                ]);
-            }
-            $taskId = $taskService->getModel()->id;
-
-            $taskOceanVideoSyncService = new TaskOceanVideoSyncService();
-            $subTaskData = [
-                'task_id' => $taskId,
+            $subs = [];
+            $subs[] = [
                 'app_id' => $this->sdk->getAppId(),
                 'account_id' => $accountId,
-                'video_id' => $ret['video_id'],
                 'admin_id' => 0,
+                'extends' => [
+                    'video_id' => $ret['video_id']
+                ],
             ];
-            $taskOceanVideoSyncService->create($subTaskData);
+            $taskOceanSyncService->create($task, $subs);
         }
 
         return $ret;

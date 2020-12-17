@@ -3,7 +3,8 @@
 namespace App\Console\Commands\Task;
 
 use App\Common\Console\BaseCommand;
-use App\Services\Task\TaskOceanVideoSyncService;
+use App\Enums\Ocean\OceanSyncTypeEnum;
+use App\Services\Task\TaskOceanSyncService;
 
 class TaskOceanVideoSyncCommand extends BaseCommand
 {
@@ -33,10 +34,10 @@ class TaskOceanVideoSyncCommand extends BaseCommand
      * 处理
      */
     public function handle(){
-        $taskOceanVideoSyncService = new TaskOceanVideoSyncService();
+        $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
         $option = ['log' => true];
         $this->lockRun(
-            [$taskOceanVideoSyncService, 'run'],
+            [$taskOceanSyncService, 'run'],
             'task_ocean_video_sync',
             3600,
             $option

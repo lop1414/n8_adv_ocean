@@ -215,6 +215,7 @@ class OceanService extends BaseService
 
             foreach($v['data']['list'] as $item){
                 $item['advertiser_id'] = $param['advertiser_id'];
+                $item['account_id'] = $param['advertiser_id'];
                 $list[] = $item;
             }
         }

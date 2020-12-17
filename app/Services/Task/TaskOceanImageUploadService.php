@@ -3,38 +3,47 @@
 namespace App\Services\Task;
 
 use App\Common\Enums\ExecStatusEnum;
-use App\Common\Enums\TaskStatusEnum;
 use App\Common\Enums\TaskTypeEnum;
-use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Models\Task\TaskOceanImageUploadModel;
 use App\Services\Ocean\OceanImageService;
 
-class TaskOceanImageUploadService extends BaseService
+class TaskOceanImageUploadService extends TaskService
 {
     /**
      * TaskOceanImageUploadService constructor.
      */
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct(TaskTypeEnum::OCEAN_IMAGE_UPLOAD);
     }
 
     /**
+     * @param $taskId
      * @param $data
-     * @return bool
+     * @return bool|void
+     * @throws CustomException
      * 创建
      */
-    public function create($data){
-        $this->model = new TaskOceanImageUploadModel();
-        $this->model->task_id = $data['task_id'];
-        $this->model->app_id = $data['app_id'];
-        $this->model->account_id = $data['account_id'];
-        $this->model->n8_material_image_path = $data['n8_material_image_path'];
-        $this->model->n8_material_image_name = $data['n8_material_image_name'];
-        $this->model->exec_status = ExecStatusEnum::WAITING;
-        $this->model->admin_id = $data['admin_id'];
-        return $this->model->save();
+    public function createSub($taskId, $data){
+        // 验证
+        $this->validRule($data, [
+            'app_id' => 'required',
+            'account_id' => 'required',
+            'n8_material_image_path' => 'required',
+            'n8_material_image_name' => 'required',
+        ]);
+
+        $model = new TaskOceanImageUploadModel();
+        $model->task_id = $taskId;
+        $model->app_id = $data['app_id'];
+        $model->account_id = $data['account_id'];
+        $model->n8_material_image_path = $data['n8_material_image_path'];
+        $model->n8_material_image_name = $data['n8_material_image_name'];
+        $model->exec_status = ExecStatusEnum::WAITING;
+        $model->admin_id = $data['admin_id'] ?? 0;
+
+        return $model->save();
     }
 
     /**
@@ -54,58 +63,30 @@ class TaskOceanImageUploadService extends BaseService
     }
 
     /**
-     * @return bool
+     * @param $task
+     * @param $option
+     * @return bool|void
      * @throws CustomException
-     * 执行
+     * 执行子任务
      */
-    public function run(){
-        $taskService = new TaskService();
-        $tasks = $taskService->getWaitingTasks(TaskTypeEnum::OCEAN_IMAGE_UPLOAD);
+    public function runSub($task, $option){
+        // 获取子任务
+        $subTasks = $this->getWaitingSubTasks($task->id);
 
-        foreach($tasks as $task){
-            try{
-                // 获取子任务
-                $subTasks = $this->getWaitingSubTasks($task->id);
-                foreach($subTasks as $subTask){
-                    // 下载
-                    $file = $this->download($subTask->n8_material_image_path);
+        foreach($subTasks as $subTask){
+            // 下载
+            $file = $this->download($subTask->n8_material_image_path);
 
-                    // 上传
-                    $oceanImageService = new OceanImageService($subTask->app_id);
-                    $oceanImageService->setAccountId($subTask->account_id);
-                    $oceanImageService->uploadImage($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_image_name);
+            // 上传
+            $oceanImageService = new OceanImageService($subTask->app_id);
+            $oceanImageService->setAccountId($subTask->account_id);
+            $oceanImageService->uploadImage($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_image_name);
 
-                    // 删除临时文件
-                    unlink($file['path']);
+            // 删除临时文件
+            unlink($file['path']);
 
-                    $subTask->exec_status = ExecStatusEnum::SUCCESS;
-                    $subTask->save();
-                }
-
-                // 更改任务状态
-                $taskService->updateTaskStatus($task, TaskStatusEnum::SUCCESS);
-            }catch(CustomException $e){
-                $taskStatus = TaskStatusEnum::FAIL;
-                $errorInfo = $e->getErrorInfo(true);
-
-                // 公共请求返回空, 任务状态修改为待执行
-                if(
-                    $errorInfo['code'] == 'PUBLIC_REQUEST_ERROR' &&
-                    empty($errorInfo['data']['result'])
-                ){
-                    $taskStatus = TaskStatusEnum::WAITING;
-                }
-
-                // 更改任务状态
-                $taskService->updateTaskStatus($task, $taskStatus);
-
-                throw new CustomException($errorInfo);
-            }catch(\Exception $e){
-                // 更改任务状态
-                $taskService->updateTaskStatus($task, TaskStatusEnum::FAIL);
-
-                throw new \Exception($e->getMessage());
-            }
+            $subTask->exec_status = ExecStatusEnum::SUCCESS;
+            $subTask->save();
         }
 
         return true;
