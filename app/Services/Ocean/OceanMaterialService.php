@@ -2,10 +2,8 @@
 
 namespace App\Services\Ocean;
 
-use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountVideoModel;
-use App\Models\Ocean\OceanVideoModel;
 
 class OceanMaterialService extends OceanService
 {

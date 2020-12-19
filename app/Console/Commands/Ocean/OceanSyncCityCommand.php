@@ -4,7 +4,6 @@ namespace App\Console\Commands\Ocean;
 
 use App\Common\Console\BaseCommand;
 use App\Services\Ocean\OceanCityService;
-use App\Services\Ocean\OceanRegionService;
 
 class OceanSyncCityCommand extends BaseCommand
 {

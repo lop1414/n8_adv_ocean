@@ -118,13 +118,13 @@ Functions::consoleDump($ret);
      */
     public function saveVideo($video){
         $oceanVideoModel = new OceanVideoModel();
-        $oceanVideo = $oceanVideoModel->where('video_id', $video['id'])->first();
+        $oceanVideo = $oceanVideoModel->where('id', $video['id'])->first();
 
         if(empty($oceanVideo)){
             $oceanVideo = new OceanVideoModel();
         }
 
-        $oceanVideo->video_id = $video['id'];
+        $oceanVideo->id = $video['id'];
         $oceanVideo->size = $video['size'];
         $oceanVideo->width = $video['width'];
         $oceanVideo->height = $video['height'];

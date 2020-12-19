@@ -19,4 +19,16 @@ class OceanVideoModel extends BaseModel
      * @var string
      */
     protected $primaryKey = 'id';
+
+    /**
+     * @var string
+     * 主键数据类型
+     */
+    public $keyType = 'string';
+
+    /**
+     * @var bool
+     * 是否自增
+     */
+    public $incrementing = false;
 }
