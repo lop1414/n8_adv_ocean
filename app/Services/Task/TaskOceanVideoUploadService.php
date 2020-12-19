@@ -97,7 +97,7 @@ class TaskOceanVideoUploadService extends TaskService
 
                 $oceanMaterialService = new OceanMaterialService($subTask->app_id);
                 $oceanMaterialService->setAccountId($video->account_id);
-                $oceanMaterialService->pushMaterial($video->account_id, [$subTask->account_id], [$video->video_id]);
+                $oceanMaterialService->pushMaterial($video->account_id, [$subTask->account_id], [$video->id]);
             }else{
                 // 上传
                 $uploadType = 'upload';
@@ -132,10 +132,10 @@ class TaskOceanVideoUploadService extends TaskService
     public function getCanPushVideo($signature, $company){
         $items = DB::select("
             SELECT
-                v.video_id, v.signature, a.account_id
+                v.id, v.signature, a.account_id
             FROM
                 ocean_videos v
-            LEFT JOIN ocean_accounts_videos av ON v.video_id = av.video_id
+            LEFT JOIN ocean_accounts_videos av ON v.id = av.video_id
             LEFT JOIN ocean_accounts a ON av.account_id = a.account_id
             WHERE
                 v.signature = '{$signature}'
