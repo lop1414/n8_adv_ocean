@@ -7,6 +7,7 @@ use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
+use App\Console\Commands\Task\TaskOceanCampaignSyncCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
 use App\Console\Commands\Task\TaskOceanVideoSyncCommand;
 use App\Console\Commands\Task\TaskOceanVideoUploadCommand;
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         TaskOceanVideoUploadCommand::class,
         TaskOceanImageUploadCommand::class,
         TaskOceanVideoSyncCommand::class,
+        TaskOceanCampaignSyncCommand::class,
 
         // 巨量
         OceanSyncCampaignCommand::class,

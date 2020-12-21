@@ -2,9 +2,7 @@
 
 namespace App\Models\Ocean;
 
-use App\Common\Models\BaseModel;
-
-class OceanCampaignModel extends BaseModel
+class OceanCampaignModel extends OceanModel
 {
     /**
      * 关联到模型的数据表
@@ -20,6 +18,17 @@ class OceanCampaignModel extends BaseModel
      */
     protected $primaryKey = 'id';
 
+    /**
+     * @var string
+     * 主键数据类型
+     */
+    public $keyType = 'string';
+
+    /**
+     * @var bool
+     * 是否自增
+     */
+    public $incrementing = false;
 
     /**
      * 属性访问器

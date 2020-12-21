@@ -70,6 +70,7 @@ $router->group([
             $router->post('select', 'Admin\Ocean\CampaignController@select');
             $router->post('get', 'Admin\Ocean\CampaignController@get');
             $router->post('read', 'Admin\Ocean\CampaignController@read');
+            $router->post('create', 'Admin\Ocean\CampaignController@create');
             $router->post('sync', 'Admin\Ocean\CampaignController@sync');
         });
 

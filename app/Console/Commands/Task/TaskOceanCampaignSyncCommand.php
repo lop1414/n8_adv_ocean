@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Console\Commands\Ocean;
+namespace App\Console\Commands\Task;
 
 use App\Common\Console\BaseCommand;
-use App\Services\Ocean\OceanCampaignService;
-use mysql_xdevapi\Exception;
+use App\Enums\Ocean\OceanSyncTypeEnum;
+use App\Services\Task\TaskOceanSyncService;
 
-class OceanSyncCampaignCommand extends BaseCommand
+class TaskOceanCampaignSyncCommand extends BaseCommand
 {
     /**
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_campaign  {--create_date=} {--account_ids=} {--status=}';
+    protected $signature = 'task:ocean_campaign_sync';
 
     /**
      * 命令描述
      *
      * @var string
      */
-    protected $description = '同步头条广告组';
+    protected $description = '巨量广告组同步任务';
 
     /**
      * Create a new command instance.
@@ -31,16 +31,15 @@ class OceanSyncCampaignCommand extends BaseCommand
     }
 
     /**
-     * @throws \App\Common\Tools\CustomException
      * 处理
      */
     public function handle(){
         $param = $this->option();
-        $oceanCampaignService = new OceanCampaignService();
+        $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::CAMPAIGN);
         $option = ['log' => true];
         $this->lockRun(
-            [$oceanCampaignService, 'syncCampaign'],
-            'ocean_sync_campaign',
+            [$taskOceanSyncService, 'run'],
+            'task_ocean_campaign_sync',
             3600,
             $option,
             $param

@@ -4,6 +4,7 @@ namespace App\Services\Ocean;
 
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanCampaignStatusEnum;
 use App\Models\Ocean\OceanCampaignModel;
 
 class OceanCampaignService extends OceanService
@@ -30,11 +31,14 @@ class OceanCampaignService extends OceanService
 
     /**
      * @param array $option
+     * @return bool
      * @throws CustomException
      * 同步
      */
     public function syncCampaign($option = []){
         ini_set('memory_limit', '2048M');
+
+        $t = microtime(1);
 
         $accountIds = [];
         // 账户id过滤
@@ -43,13 +47,21 @@ class OceanCampaignService extends OceanService
         }
 
         $filtering = [];
-        if(!empty($option['date'])){
-            $filtering['campaign_create_time'] = Functions::getDate($option['date']);
+
+        // 创建日期
+        if(!empty($option['create_date'])){
+            $filtering['campaign_create_time'] = Functions::getDate($option['create_date']);
         }
 
-        $accountGroup = $this->getSubAccountGroup($accountIds);
+        // 状态
+        if(!empty($option['status'])){
+            $status = strtoupper($option['status']);
+            Functions::hasEnum(OceanCampaignStatusEnum::class, $status);
+            $filtering['status'] = $status;
+        }
 
-        $t = microtime(1);
+        // 获取子账户组
+        $accountGroup = $this->getSubAccountGroup($accountIds);
 
         $pageSize = 100;
         $campaigns = [];
@@ -64,7 +76,9 @@ class OceanCampaignService extends OceanService
         }
 
         $t = microtime(1) - $t;
-        var_dump($t);
+        Functions::consoleDump($t);
+
+        return true;
     }
 
     /**
@@ -73,26 +87,8 @@ class OceanCampaignService extends OceanService
      * 保存
      */
     public function saveCampaign($campaign){
-        $oceanCampaignModel = new OceanCampaignModel();
-        $oceanCampaign = $oceanCampaignModel->where('campaign_id', $campaign['id'])->first();
-
-        if(empty($oceanCampaign)){
-            $oceanCampaign = new OceanCampaignModel();
-        }
-
-        $oceanCampaign->account_id = $campaign['advertiser_id'];
-        $oceanCampaign->campaign_id = $campaign['id'];
-        $oceanCampaign->name = $campaign['name'];
-        $oceanCampaign->budget = $campaign['budget'];
-        $oceanCampaign->budget_mode = $campaign['budget_mode'];
-        $oceanCampaign->landing_type = $campaign['landing_type'];
-        $oceanCampaign->modify_time = $campaign['modify_time'];
-        $oceanCampaign->status = $campaign['status'];
-        $oceanCampaign->campaign_create_time = $campaign['campaign_create_time'];
-        $oceanCampaign->campaign_modify_time = $campaign['campaign_modify_time'];
-        $oceanCampaign->delivery_related_num = $campaign['delivery_related_num'];
-        $oceanCampaign->delivery_mode = $campaign['delivery_mode'];
-
-        return $oceanCampaign->save();
+        $where = ['id', '=', $campaign['id']];
+        $ret = Functions::saveChange(OceanCampaignModel::class, $where, $campaign);
+        return $ret;
     }
 }

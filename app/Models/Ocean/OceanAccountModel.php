@@ -20,7 +20,6 @@ class OceanAccountModel extends BaseModel
      */
     protected $primaryKey = 'id';
 
-
     /**
      * 属性访问器
      * @param $value
