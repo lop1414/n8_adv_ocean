@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\Ocean\OceanSyncCityCommand;
+use App\Console\Commands\Ocean\OceanSyncIndustryCommand;
 use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
@@ -36,6 +37,7 @@ class Kernel extends ConsoleKernel
         OceanSyncVideoCommand::class,
         OceanSyncRegionCommand::class,
         OceanSyncCityCommand::class,
+        OceanSyncIndustryCommand::class,
     ];
 
     /**

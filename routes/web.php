@@ -83,6 +83,11 @@ $router->group([
         $router->group(['prefix' => 'region'], function () use ($router) {
             $router->post('get', 'Admin\Ocean\RegionController@get');
         });
+
+        // 行业
+        $router->group(['prefix' => 'industry'], function () use ($router) {
+            $router->post('get', 'Admin\Ocean\IndustryController@get');
+        });
     });
 });
 

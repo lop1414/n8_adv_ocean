@@ -8,6 +8,7 @@ use App\Sdks\OceanEngine\Traits\App;
 use App\Sdks\OceanEngine\Traits\Campaign;
 use App\Sdks\OceanEngine\Traits\City;
 use App\Sdks\OceanEngine\Traits\Image;
+use App\Sdks\OceanEngine\Traits\Industry;
 use App\Sdks\OceanEngine\Traits\Material;
 use App\Sdks\OceanEngine\Traits\Multi;
 use App\Sdks\OceanEngine\Traits\Region;
@@ -27,6 +28,7 @@ class OceanEngine
     use Material;
     use Region;
     use City;
+    use Industry;
 
     /**
      * 公共接口地址

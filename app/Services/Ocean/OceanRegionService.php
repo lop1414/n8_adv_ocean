@@ -76,7 +76,6 @@ class OceanRegionService extends OceanService
 
         if(!$ret){
             var_dump($region);
-            dd('插入失败');
         }
 
         return $ret;

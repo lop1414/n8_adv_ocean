@@ -248,16 +248,15 @@ class OceanService extends BaseService
 
     /**
      * @return mixed
+     * @throws CustomException
      * 获取有效账户
      */
     public function getValidAccount(){
-        $datetime = date('Y-m-d H:i:s', time());
-
         $oceanAccountModel = new OceanAccountModel();
-        $oceanAccount = $oceanAccountModel->where('status', StatusEnum::ENABLE)
-            ->where('fail_at', '>', $datetime)
-            ->where('access_token', '<>', '')
-            ->first();
+        $oceanAccount = $oceanAccountModel->where('status', StatusEnum::ENABLE)->first();
+
+        // 重载
+        $oceanAccount = $this->reloadFailAccessToken($oceanAccount);
 
         return $oceanAccount;
     }
