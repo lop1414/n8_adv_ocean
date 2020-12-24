@@ -2,10 +2,9 @@
 
 namespace App\Services\Ocean;
 
-use App\Common\Enums\ExceptionTypeEnum;
-use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
-use App\Models\Ocean\OceanAccountVideoModel;
+use App\Enums\Ocean\OceanSyncTypeEnum;
+use App\Services\Task\TaskOceanSyncService;
 
 class OceanMaterialService extends OceanService
 {
@@ -30,38 +29,22 @@ class OceanMaterialService extends OceanService
         $this->setAccessToken();
 
         $ret = $this->sdk->pushMaterial($accountId, $targetAccountIds, $videoIds, $imageIds);
-#DEBUG
-if(!empty($ret['fail_list'])){
-    $errorLogService = new ErrorLogService();
-    $errorLogService->create('DEBUG', 'PUSH_MATERIAL_DEBUG', [
-        'account_id' => $accountId,
-        'target_account_ids' => $targetAccountIds,
-        'video_ids' => $videoIds,
-        'image_ids' => $imageIds,
-        'ret' => $ret,
-    ], ExceptionTypeEnum::CUSTOM);
-}
-        // 错误列表
-        $failList = $ret['fail_list'] ?? [];
-        foreach($failList as $v){
-            $failReason = $v['fail_reason'] ?? '';
-            if(!empty($v['video_id']) && $failReason == 'VIDEO_BINDING_EXISTED'){
-                // 保存关联关系
-                $oceanAccountVideoModel = new OceanAccountVideoModel();
-                $oceanAccountVideo = $oceanAccountVideoModel->where('account_id', $v['target_advertiser_id'])
-                    ->where('video_id', $v['video_id'])
-                    ->first();
 
-                if(empty($oceanAccountVideo)){
-                    $oceanAccountVideo = new OceanAccountVideoModel();
-                    $oceanAccountVideo->account_id = $v['target_advertiser_id'];
-                    $oceanAccountVideo->video_id = $v['video_id'];
-                    $oceanAccountVideo->save();
-                }
-
-            }elseif(!empty($v['image_id']) && $failReason == 'IMAGE_BINDING_EXISTED'){
-                #图片
-            }
+        // 同步
+        if(!empty($ret)){
+            $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
+            $task = [
+                'name' => '同步巨量视频',
+                'admin_id' => 0,
+            ];
+            $subs = [];
+            $subs[] = [
+                'app_id' => $this->sdk->getAppId(),
+                'account_id' => $accountId,
+                'admin_id' => 0,
+                'extends' => [],
+            ];
+            $taskOceanSyncService->create($task, $subs);
         }
 
         return $ret;
