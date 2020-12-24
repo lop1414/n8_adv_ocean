@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Admin\Ocean;
 
-use App\Common\Controllers\Admin\AdminController;
 use App\Models\Ocean\OceanRegionModel;
 use Illuminate\Http\Request;
 
-class RegionController extends AdminController
+class RegionController extends OceanController
 {
     /**
      * constructor.

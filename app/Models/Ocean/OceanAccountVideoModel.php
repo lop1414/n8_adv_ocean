@@ -2,9 +2,7 @@
 
 namespace App\Models\Ocean;
 
-use App\Common\Models\BaseModel;
-
-class OceanAccountVideoModel extends BaseModel
+class OceanAccountVideoModel extends OceanModel
 {
     /**
      * 关联到模型的数据表

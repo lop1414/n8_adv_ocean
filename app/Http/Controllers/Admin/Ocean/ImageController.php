@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Ocean;
 
-use App\Common\Controllers\Admin\AdminController;
-use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
@@ -11,7 +9,6 @@ use App\Models\Ocean\OceanAccountModel;
 use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\Ocean\OceanImageService;
 use App\Services\Task\TaskOceanImageUploadService;
-use App\Services\Task\TaskService;
 use Illuminate\Http\Request;
 
 class ImageController extends OceanController

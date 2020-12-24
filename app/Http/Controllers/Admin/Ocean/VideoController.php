@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Ocean;
 
-use App\Common\Controllers\Admin\AdminController;
 use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
