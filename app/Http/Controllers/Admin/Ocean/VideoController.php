@@ -8,10 +8,11 @@ use App\Common\Services\SystemApi\MaterialApiService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
 use App\Sdks\OceanEngine\OceanEngine;
+use App\Services\Ocean\OceanVideoService;
 use App\Services\Task\TaskOceanVideoUploadService;
 use Illuminate\Http\Request;
 
-class VideoController extends AdminController
+class VideoController extends OceanController
 {
     /**
      * constructor.
@@ -19,6 +20,47 @@ class VideoController extends AdminController
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws CustomException
+     * 上传
+     */
+    public function upload(Request $request){
+        $this->validRule($request->post(), [
+            'account_id' => 'required',
+        ]);
+
+        $accountId = $request->post('account_id');
+        $file = $request->file('file');
+
+        if(is_null($file)){
+            throw new CustomException([
+                'code' => 'NOT_FOUND_UPLOAD_FILE',
+                'message' => '未找到上传文件',
+            ]);
+        }
+
+        if(!$file->isValid()){
+            throw new CustomException([
+                'code' => 'UPLOAD_FILE_FAIL',
+                'message' => '上传文件失败',
+            ]);
+        }
+
+        // 签名
+        $signature = md5(file_get_contents($file->getRealPath()));
+
+        $curlFile = new \CURLFile($file->getRealPath());
+
+        $oceanAccount = $this->getAccessAccount($accountId);
+        $oceanVideoService = new OceanVideoService($oceanAccount->app_id);
+        $oceanVideoService->setAccountId($oceanAccount->account_id);
+        $data = $oceanVideoService->uploadVideo($oceanAccount->account_id, $signature, $curlFile);
+
+        return $this->success($data);
     }
 
     /**
