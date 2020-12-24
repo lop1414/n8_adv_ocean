@@ -38,6 +38,7 @@ if(!empty($ret['fail_list'])){
         'target_account_ids' => $targetAccountIds,
         'video_ids' => $videoIds,
         'image_ids' => $imageIds,
+        'ret' => $ret,
     ], ExceptionTypeEnum::CUSTOM);
 }
         // 错误列表
