@@ -40,6 +40,8 @@ $router->group([
 
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
+        $router->post('sync', 'Admin\Ocean\OceanController@sync');
+
         // 账户
         $router->group(['prefix' => 'account'], function () use ($router) {
             $router->post('select', 'Admin\Ocean\AccountController@select');
@@ -52,11 +54,13 @@ $router->group([
 
         // 视频
         $router->group(['prefix' => 'video'], function () use ($router) {
+            $router->post('upload', 'Admin\Ocean\VideoController@upload');
             $router->post('batch_upload', 'Admin\Ocean\VideoController@batchUpload');
         });
 
         // 图片
         $router->group(['prefix' => 'image'], function () use ($router) {
+            $router->post('upload', 'Admin\Ocean\ImageController@upload');
             $router->post('batch_upload', 'Admin\Ocean\ImageController@batchUpload');
         });
 
@@ -71,7 +75,6 @@ $router->group([
             $router->post('get', 'Admin\Ocean\CampaignController@get');
             $router->post('read', 'Admin\Ocean\CampaignController@read');
             $router->post('create', 'Admin\Ocean\CampaignController@create');
-            $router->post('sync', 'Admin\Ocean\CampaignController@sync');
         });
 
         // 城市

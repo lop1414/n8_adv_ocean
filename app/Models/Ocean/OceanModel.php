@@ -7,6 +7,10 @@ use App\Common\Models\BaseModel;
 
 class OceanModel extends BaseModel
 {
+    /**
+     * @param $query
+     * 数据授权
+     */
     public function scopeWithPermission($query){
         $adminUserInfo = Functions::getGlobalData('admin_user_info');
         //if(!$adminUserInfo['is_admin']){
