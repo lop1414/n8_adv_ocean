@@ -2,6 +2,8 @@
 
 namespace App\Services\Ocean;
 
+use App\Common\Enums\ExceptionTypeEnum;
+use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountVideoModel;
 
@@ -28,7 +30,16 @@ class OceanMaterialService extends OceanService
         $this->setAccessToken();
 
         $ret = $this->sdk->pushMaterial($accountId, $targetAccountIds, $videoIds, $imageIds);
-
+#DEBUG
+if(!empty($ret['fail_list'])){
+    $errorLogService = new ErrorLogService();
+    $errorLogService->create('DEBUG', 'PUSH_MATERIAL_DEBUG', [
+        'account_id' => $accountId,
+        'target_account_ids' => $targetAccountIds,
+        'video_ids' => $videoIds,
+        'image_ids' => $imageIds,
+    ], ExceptionTypeEnum::CUSTOM);
+}
         // 错误列表
         $failList = $ret['fail_list'] ?? [];
         foreach($failList as $v){
