@@ -5,6 +5,7 @@ namespace App\Enums\Ocean;
 class OceanSyncTypeEnum
 {
     const CAMPAIGN = 'CAMPAIGN';
+    const AD = 'AD';
     const VIDEO = 'VIDEO';
 
     /**
@@ -19,6 +20,7 @@ class OceanSyncTypeEnum
      */
     static public $list = [
         ['id' => self::CAMPAIGN, 'name' => '广告组'],
+        ['id' => self::AD, 'name' => '广告计划'],
         ['id' => self::VIDEO, 'name' => '视频'],
     ];
 }

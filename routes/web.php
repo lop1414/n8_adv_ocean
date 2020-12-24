@@ -77,6 +77,12 @@ $router->group([
             $router->post('create', 'Admin\Ocean\CampaignController@create');
         });
 
+        // 广告计划
+        $router->group(['prefix' => 'ad'], function () use ($router) {
+            $router->post('select', 'Admin\Ocean\AdController@select');
+            $router->post('read', 'Admin\Ocean\AdController@read');
+        });
+
         // 城市
         $router->group(['prefix' => 'city'], function () use ($router) {
             $router->post('get', 'Admin\Ocean\CityController@get');

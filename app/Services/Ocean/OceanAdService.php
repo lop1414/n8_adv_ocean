@@ -4,10 +4,10 @@ namespace App\Services\Ocean;
 
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
-use App\Enums\Ocean\OceanCampaignStatusEnum;
-use App\Models\Ocean\OceanCampaignModel;
+use App\Enums\Ocean\OceanAdStatusEnum;
+use App\Models\Ocean\OceanAdModel;
 
-class OceanCampaignService extends OceanService
+class OceanAdService extends OceanService
 {
     /**
      * OceanCampaignService constructor.
@@ -25,8 +25,8 @@ class OceanCampaignService extends OceanService
      * @throws CustomException
      * 并发获取
      */
-    public function multiGetCampaignList($accounts, $filtering, $pageSize){
-        return $this->multiGetPageList('campaign', $accounts, $filtering, $pageSize);
+    public function multiGetAdList($accounts, $filtering, $pageSize){
+        return $this->multiGetPageList('ad', $accounts, $filtering, $pageSize);
     }
 
     /**
@@ -35,7 +35,7 @@ class OceanCampaignService extends OceanService
      * @throws CustomException
      * 同步
      */
-    public function syncCampaign($option = []){
+    public function syncAd($option = []){
         ini_set('memory_limit', '2048M');
 
         $t = microtime(1);
@@ -50,16 +50,26 @@ class OceanCampaignService extends OceanService
 
         // 创建日期
         if(!empty($option['create_date'])){
-            $filtering['campaign_create_time'] = Functions::getDate($option['create_date']);
+            $filtering['ad_create_time'] = Functions::getDate($option['create_date']);
+        }
+
+        // 更新日期
+        if(!empty($option['update_date'])){
+            $filtering['ad_modify_time'] = Functions::getDate($option['update_date']);
+        }
+
+        // 广告组id
+        if(!empty($option['campaign_id'])){
+            $filtering['campaign_id'] = Functions::getDate($option['campaign_id']);
         }
 
         // 状态
         if(!empty($option['status'])){
             $status = strtoupper($option['status']);
-            Functions::hasEnum(OceanCampaignStatusEnum::class, $status);
+            Functions::hasEnum(OceanAdStatusEnum::class, $status);
             $filtering['status'] = $status;
         }else{
-            $filtering['status'] = OceanCampaignStatusEnum::CAMPAIGN_STATUS_ALL;
+            $filtering['status'] = OceanAdStatusEnum::AD_STATUS_ALL;
         }
 
         // id
@@ -71,14 +81,14 @@ class OceanCampaignService extends OceanService
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
         $pageSize = 100;
-        $campaigns = [];
+        $ads = [];
         foreach($accountGroup as $pid => $g){
-            $tmp = $this->multiGetCampaignList($g, $filtering, $pageSize);
-            $campaigns = array_merge($campaigns, $tmp);
+            $tmp = $this->multiGetAdList($g, $filtering, $pageSize);
+            $ads = array_merge($ads, $tmp);
 
             // 保存
-            foreach($campaigns as $campaign) {
-                $this->saveCampaign($campaign);
+            foreach($ads as $ad) {
+                $this->saveAd($ad);
             }
         }
 
@@ -89,14 +99,18 @@ class OceanCampaignService extends OceanService
     }
 
     /**
-     * @param $campaign
+     * @param $ad
      * @return mixed
      * @throws CustomException
      * 保存
      */
-    public function saveCampaign($campaign){
-        $where = ['id', '=', $campaign['id']];
-        $ret = Functions::saveChange(OceanCampaignModel::class, $where, $campaign);
+    public function saveAd($ad){
+        $tmp = $ad;
+        unset($tmp['id']);
+        $ad['extends'] = $tmp;
+
+        $where = ['id', '=', $ad['id']];
+        $ret = Functions::saveChange(OceanAdModel::class, $where, $ad);
         return $ret;
     }
 }

@@ -83,7 +83,7 @@ trait Request
 
         $result = json_decode($ret, true);
 
-        if(empty($result) || $result['code'] != 0){
+        if(empty($result) || !isset($result['code']) || $result['code'] != 0){
             // 错误提示
             $errorMessage = $result['message'] ?? '公共请求错误';
 

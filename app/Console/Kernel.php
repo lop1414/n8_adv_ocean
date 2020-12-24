@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
         OceanSyncRegionCommand::class,
         OceanSyncCityCommand::class,
         OceanSyncIndustryCommand::class,
-        //OceanSyncAdCommand::class,
+        OceanSyncAdCommand::class,
     ];
 
     /**

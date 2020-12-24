@@ -4,6 +4,7 @@ namespace App\Services\Ocean;
 
 use App\Common\Enums\AdvAccountBelongTypeEnum;
 use App\Common\Enums\StatusEnum;
+use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
@@ -157,6 +158,7 @@ class OceanService extends BaseService
         $funcMap = [
             'campaign' => 'multiGetCampaignList',
             'video' => 'multiGetVideoList',
+            'ad' => 'multiGetAdList',
         ];
         if(!isset($funcMap[$type])){
             throw new CustomException([

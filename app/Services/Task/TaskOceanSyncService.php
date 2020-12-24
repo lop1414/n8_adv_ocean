@@ -8,6 +8,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Models\Task\TaskOceanSyncModel;
+use App\Services\Ocean\OceanAdService;
 use App\Services\Ocean\OceanCampaignService;
 use App\Services\Ocean\OceanVideoService;
 
@@ -106,6 +107,8 @@ class TaskOceanSyncService extends TaskService
                 $this->syncCampaign($subTask);
             }elseif($this->syncType == OceanSyncTypeEnum::VIDEO){
                 $this->syncVideo($subTask);
+            }elseif($this->syncType == OceanSyncTypeEnum::AD){
+                $this->syncAd($subTask);
             }else{
                 throw new CustomException([
                     'code' => 'NOT_HANDLE_FOR_SYNC_TYPE',
@@ -132,6 +135,21 @@ class TaskOceanSyncService extends TaskService
             'account_ids' => $subTask->account_id,
         ];
         $oceanCampaignService->syncCampaign($option);
+        return true;
+    }
+
+    /**
+     * @param $subTask
+     * @return bool
+     * @throws CustomException
+     * 同步广告计划
+     */
+    public function syncAd($subTask){
+        $oceanAdService = new OceanAdService($subTask->app_id);
+        $option = [
+            'account_ids' => $subTask->account_id,
+        ];
+        $oceanAdService->syncAd($option);
         return true;
     }
 
