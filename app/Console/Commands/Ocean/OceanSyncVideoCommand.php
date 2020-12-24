@@ -11,7 +11,7 @@ class OceanSyncVideoCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_video  {--date=} {--account_ids=}';
+    protected $signature = 'ocean:sync_video  {--date=} {--account_ids=} {--video_ids=}';
 
     /**
      * 命令描述

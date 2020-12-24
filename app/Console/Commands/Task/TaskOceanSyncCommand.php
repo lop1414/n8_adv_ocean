@@ -3,23 +3,24 @@
 namespace App\Console\Commands\Task;
 
 use App\Common\Console\BaseCommand;
+use App\Common\Helpers\Functions;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Services\Task\TaskOceanSyncService;
 
-class TaskOceanVideoSyncCommand extends BaseCommand
+class TaskOceanSyncCommand extends BaseCommand
 {
     /**
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'task:ocean_video_sync';
+    protected $signature = 'task:ocean_sync {--type=}';
 
     /**
      * 命令描述
      *
      * @var string
      */
-    protected $description = '巨量视频同步任务';
+    protected $description = '巨量同步任务';
 
     /**
      * Create a new command instance.
@@ -31,14 +32,18 @@ class TaskOceanVideoSyncCommand extends BaseCommand
     }
 
     /**
+     * @throws \App\Common\Tools\CustomException
      * 处理
      */
     public function handle(){
-        $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
+        $type = strtoupper($this->option('type'));
+        Functions::hasEnum(OceanSyncTypeEnum::class, $type);
+
+        $taskOceanSyncService = new TaskOceanSyncService($type);
         $option = ['log' => true];
         $this->lockRun(
             [$taskOceanSyncService, 'run'],
-            'task_ocean_video_sync',
+            "task_ocean_sync_{$type}",
             3600,
             $option
         );
