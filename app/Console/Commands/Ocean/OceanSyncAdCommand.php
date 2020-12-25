@@ -13,7 +13,7 @@ class OceanSyncAdCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_ad  {--create_date=} {--update_date=} {--account_ids=} {--status=}';
+    protected $signature = 'ocean:sync_ad  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--ids=}';
 
     /**
      * 命令描述
@@ -37,6 +37,9 @@ class OceanSyncAdCommand extends BaseCommand
      */
     public function handle(){
         $param = $this->option();
+
+        $param['ids'] = explode(",", $param['ids']);
+
         $oceanAdService = new OceanAdService();
         $option = ['log' => true];
         $this->lockRun(
