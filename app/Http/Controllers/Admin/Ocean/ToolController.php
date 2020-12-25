@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin\Ocean;
 use App\Common\Controllers\Admin\AdminController;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanAdStatusEnum;
 use App\Enums\Ocean\OceanCampaignStatusEnum;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Models\Ocean\OceanAccountModel;
+use App\Services\Ocean\OceanAdService;
 use App\Services\Ocean\OceanCampaignService;
 use App\Services\Ocean\OceanService;
 use Illuminate\Http\Request;
@@ -82,7 +84,14 @@ class ToolController extends OceanController
         $uri = $data['uri'] ?? '';
         $result = $data['result'] ?? [];
 
+        // 获取 uri 对应同步类型
         $syncType = $this->getUriSyncType($uri);
+
+        // 调整超时时间
+        if(!empty($syncType)){
+            ini_set('max_execution_time', 60);
+        }
+
         if($syncType == OceanSyncTypeEnum::CAMPAIGN){
             // 广告组
             $oceanCampaignService = new OceanCampaignService($data['app_id']);
@@ -98,7 +107,29 @@ class ToolController extends OceanController
                 $option['ids'] = $result['campaign_ids'];
             }
 
+            // 休眠防延迟
+            sleep(1);
+
             $oceanCampaignService->syncCampaign($option);
+        }elseif($syncType == OceanSyncTypeEnum::AD){
+            // 广告计划
+            $oceanAdService = new OceanAdService($data['app_id']);
+
+            $option = [
+                'account_ids' => $data['account_id'],
+                'status' => OceanAdStatusEnum::AD_STATUS_ALL,
+            ];
+
+            if(!empty($result['ad_id'])){
+                $option['ids'] = [$result['ad_id']];
+            }elseif(!empty($result['ad_ids'])){
+                $option['ids'] = $result['ad_ids'];
+            }
+
+            // 休眠防延迟
+            sleep(3);
+
+            $oceanAdService->syncAd($option);
         }
     }
 
@@ -114,6 +145,13 @@ class ToolController extends OceanController
                 '2/campaign/create/',
                 '2/campaign/update/',
                 '2/campaign/update/status/',
+            ],
+            OceanSyncTypeEnum::AD => [
+                '2/ad/create/',
+                '2/ad/update/',
+                '2/ad/update/status/',
+                '2/ad/update/budget/',
+                '2/ad/update/bid/',
             ],
         ];
 
