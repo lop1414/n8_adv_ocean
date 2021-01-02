@@ -28,7 +28,8 @@ class AdController extends OceanController
 
         $this->curdService->selectQueryAfter(function(){
             foreach($this->curdService->responseData['list'] as $v){
-                $this->curdService->getModel()->expandExtendsField($v);
+                //$this->curdService->getModel()->expandExtendsField($v);
+                unset($v->extends);
             }
         });
     }
