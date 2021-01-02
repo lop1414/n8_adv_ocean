@@ -78,7 +78,7 @@ Functions::consoleDump($ret);
         $accountIds = [];
         // 账户id过滤
         if(!empty($option['account_ids'])){
-            $accountIds = explode(",", $option['account_ids']);
+            $accountIds = $option['account_ids'];
         }
 
         $filtering = [];
@@ -87,8 +87,8 @@ Functions::consoleDump($ret);
             $filtering['end_time'] = Functions::getDate($option['date']);
         }
 
-        if(!empty($option['video_ids'])){
-            $filtering['video_ids'] = explode(",", $option['video_ids']);
+        if(!empty($option['ids'])){
+            $filtering['video_ids'] = $option['ids'];
         }
 
         $accountGroup = $this->getSubAccountGroup($accountIds);

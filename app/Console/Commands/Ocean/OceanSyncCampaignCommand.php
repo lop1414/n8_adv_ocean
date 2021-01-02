@@ -36,6 +36,17 @@ class OceanSyncCampaignCommand extends BaseCommand
      */
     public function handle(){
         $param = $this->option();
+
+        // 账户
+        if(!empty($param['account_ids'])){
+            $param['account_ids'] = explode(",", $param['account_ids']);
+        }
+
+        // id
+        if(!empty($param['ids'])){
+            $param['ids'] = explode(",", $param['ids']);
+        }
+
         $oceanCampaignService = new OceanCampaignService();
         $option = ['log' => true];
         $this->lockRun(

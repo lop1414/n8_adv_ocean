@@ -97,7 +97,7 @@ class ToolController extends OceanController
             $oceanCampaignService = new OceanCampaignService($data['app_id']);
 
             $option = [
-                'account_ids' => $data['account_id'],
+                'account_ids' => [$data['account_id']],
                 'status' => OceanCampaignStatusEnum::CAMPAIGN_STATUS_ALL,
             ];
 
@@ -116,7 +116,7 @@ class ToolController extends OceanController
             $oceanAdService = new OceanAdService($data['app_id']);
 
             $option = [
-                'account_ids' => $data['account_id'],
+                'account_ids' => [$data['account_id']],
                 'status' => OceanAdStatusEnum::AD_STATUS_ALL,
             ];
 

@@ -43,7 +43,7 @@ class OceanCampaignService extends OceanService
         $accountIds = [];
         // 账户id过滤
         if(!empty($option['account_ids'])){
-            $accountIds = explode(",", $option['account_ids']);
+            $accountIds = $option['account_ids'];
         }
 
         $filtering = [];

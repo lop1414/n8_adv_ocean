@@ -132,7 +132,7 @@ class TaskOceanSyncService extends TaskService
     private function syncCampaign($subTask){
         $oceanCampaignService = new OceanCampaignService($subTask->app_id);
         $option = [
-            'account_ids' => $subTask->account_id,
+            'account_ids' => [$subTask->account_id],
         ];
         $oceanCampaignService->syncCampaign($option);
         return true;
@@ -163,12 +163,12 @@ class TaskOceanSyncService extends TaskService
         $oceanVideoService = new OceanVideoService($subTask->app_id);
 
         $option = [
-            'account_ids' => $subTask->account_id,
+            'account_ids' => [$subTask->account_id],
         ];
 
         // 筛选视频id
         if(!empty($subTask->extends->video_id)){
-            $option['video_ids'] = $subTask->extends->video_id;
+            $option['ids'] = [$subTask->extends->video_id];
         }
 
         $oceanVideoService->syncVideo($option);

@@ -38,7 +38,15 @@ class OceanSyncAdCommand extends BaseCommand
     public function handle(){
         $param = $this->option();
 
-        $param['ids'] = explode(",", $param['ids']);
+        // 账户
+        if(!empty($param['account_ids'])){
+            $param['account_ids'] = explode(",", $param['account_ids']);
+        }
+
+        // id
+        if(!empty($param['ids'])){
+            $param['ids'] = explode(",", $param['ids']);
+        }
 
         $oceanAdService = new OceanAdService();
         $option = ['log' => true];
