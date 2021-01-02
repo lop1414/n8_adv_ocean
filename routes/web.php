@@ -40,8 +40,6 @@ $router->group([
 
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
-        $router->post('sync', 'Admin\Ocean\OceanController@sync');
-
         // 账户
         $router->group(['prefix' => 'account'], function () use ($router) {
             $router->post('select', 'Admin\Ocean\AccountController@select');
@@ -67,6 +65,7 @@ $router->group([
         // 工具
         $router->group(['prefix' => 'tool'], function () use ($router) {
             $router->post('forward', 'Admin\Ocean\ToolController@forward');
+            $router->post('sync', 'Admin\Ocean\OceanController@sync');
         });
 
         // 广告组
