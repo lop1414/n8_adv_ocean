@@ -60,5 +60,6 @@ class Kernel extends ConsoleKernel
         // 巨量同步任务
         $schedule->command('task:ocean_sync --type=video')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=campaign')->cron('* * * * *');
+        $schedule->command('task:ocean_sync --type=ad')->cron('* * * * *');
     }
 }
