@@ -96,6 +96,7 @@ $router->group([
         // 行业
         $router->group(['prefix' => 'industry'], function () use ($router) {
             $router->post('get', 'Admin\Ocean\IndustryController@get');
+            $router->post('tree', 'Admin\Ocean\IndustryController@tree');
         });
     });
 });
