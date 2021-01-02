@@ -29,4 +29,9 @@ class IndustryController extends OceanController
             });
         });
     }
+
+    /**
+     * 树预处理
+     */
+    public function treePrepare(){}
 }
