@@ -32,19 +32,19 @@ class OceanMaterialService extends OceanService
 
         // 同步
         if(!empty($ret)){
-            $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
-            $task = [
-                'name' => '同步巨量视频',
-                'admin_id' => 0,
-            ];
-            $subs = [];
-            $subs[] = [
-                'app_id' => $this->sdk->getAppId(),
-                'account_id' => $accountId,
-                'admin_id' => 0,
-                'extends' => [],
-            ];
-            $taskOceanSyncService->create($task, $subs);
+//            $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
+//            $task = [
+//                'name' => '同步巨量视频',
+//                'admin_id' => 0,
+//            ];
+//            $subs = [];
+//            $subs[] = [
+//                'app_id' => $this->sdk->getAppId(),
+//                'account_id' => $accountId,
+//                'admin_id' => 0,
+//                'extends' => [],
+//            ];
+//            $taskOceanSyncService->create($task, $subs);
         }
 
         return $ret;
