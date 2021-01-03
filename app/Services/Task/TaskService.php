@@ -118,6 +118,7 @@ class TaskService extends BaseService
         $waitingTasks = $taskModel->where('task_type', $this->taskType)
             ->where('task_status', TaskStatusEnum::WAITING)
             ->orderBy('id', 'asc')
+            ->take(30)
             ->get();
 
         return $waitingTasks;
@@ -209,5 +210,26 @@ class TaskService extends BaseService
         }
 
         return $ret;
+    }
+
+    /**
+     * @param $adminId
+     * @return bool
+     * @throws CustomException
+     * 对应管理员是否有未执行任务
+     */
+    public function hasAdminUserWaitingTask($adminId){
+        // 任务类型
+        Functions::hasEnum(TaskTypeEnum::class, $this->taskType);
+
+        // 待执行任务
+        $taskModel = new TaskModel();
+        $waitingTasks = $taskModel->where('task_type', $this->taskType)
+            ->where('task_status', TaskStatusEnum::WAITING)
+            ->where('admin_id', $adminId)
+            ->orderBy('id', 'asc')
+            ->first();
+
+        return !empty($waitingTasks);
     }
 }

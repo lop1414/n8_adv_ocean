@@ -77,6 +77,26 @@ class VideoController extends OceanController
         $accountIds = $request->post('account_ids');
         $videoIds = $request->post('video_ids');
 
+        $maxAccount = 30;
+        if(count($accountIds) > $maxAccount){
+            throw new CustomException([
+                'code' => 'MORE_THAN_MAX_ACCOUNT',
+                'message' => "每次最多同步{$maxAccount}个账户",
+            ]);
+        }
+
+        // 获取后台用户信息
+        $adminUserInfo = Functions::getGlobalData('admin_user_info');
+
+        $taskOceanVideoUploadService = new TaskOceanVideoUploadService();
+        $has = $taskOceanVideoUploadService->hasAdminUserWaitingTask($adminUserInfo['admin_user']['id']);
+        if($has){
+            throw new CustomException([
+                'code' => 'HAS_WAITING_TASK',
+                'message' => '有待执行任务尚未完成,无法继续提交任务',
+            ]);
+        }
+
         // 获取视频
         $materialApiService = new MaterialApiService();
         $videos = $materialApiService->apiGetVideos($videoIds);
@@ -109,9 +129,6 @@ class VideoController extends OceanController
             ]);
         }
 
-        // 获取后台用户信息
-        $adminUserInfo = Functions::getGlobalData('admin_user_info');
-
         // 获取账户
         $oceanAccountModel = new OceanAccountModel();
         $builder = $oceanAccountModel->whereIn('account_id', $accountIds);
@@ -130,7 +147,6 @@ class VideoController extends OceanController
         }
 
         // 创建任务
-        $taskOceanVideoUploadService = new TaskOceanVideoUploadService();
         $task = [
             'name' => '批量上传巨量视频',
             'admin_id' => $adminUserInfo['admin_user']['id'],
