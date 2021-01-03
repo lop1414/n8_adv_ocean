@@ -39,6 +39,10 @@ trait Material
             $param['image_ids'] = $imageIds;
         }
 
-        return $this->authRequest($url, $param, 'POST');
+        $option = [
+            'timeout' => 30,
+        ];
+
+        return $this->authRequest($url, $param, 'POST', [], $option);
     }
 }
