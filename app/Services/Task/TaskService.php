@@ -154,6 +154,13 @@ class TaskService extends BaseService
                     $taskStatus = TaskStatusEnum::WAITING;
                 }
 
+                if(
+                    isset($errorInfo['data']['result']['code']) &&
+                    $errorInfo['data']['result']['code'] == 51007
+                ){
+                    $taskStatus = TaskStatusEnum::WAITING;
+                }
+
                 // 更改任务状态
                 $this->updateTaskStatus($task, $taskStatus);
 
