@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
+use App\Console\Commands\Ocean\OceanSyncAdConvertCommand;
 use App\Console\Commands\Ocean\OceanSyncCityCommand;
 use App\Console\Commands\Ocean\OceanSyncIndustryCommand;
 use App\Console\Commands\Ocean\OceanSyncRegionCommand;
@@ -40,6 +41,7 @@ class Kernel extends ConsoleKernel
         OceanSyncCityCommand::class,
         OceanSyncIndustryCommand::class,
         OceanSyncAdCommand::class,
+        OceanSyncAdConvertCommand::class,
     ];
 
     /**
@@ -61,5 +63,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:ocean_sync --type=video')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=campaign')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=ad')->cron('* * * * *');
+        $schedule->command('task:ocean_sync --type=ad_convert')->cron('* * * * *');
     }
 }

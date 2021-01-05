@@ -82,6 +82,12 @@ $router->group([
             $router->post('read', 'Admin\Ocean\AdController@read');
         });
 
+        // 转化目标
+        $router->group(['prefix' => 'ad_convert'], function () use ($router) {
+            $router->post('select', 'Admin\Ocean\AdConvertController@select');
+            $router->post('read', 'Admin\Ocean\AdConvertController@read');
+        });
+
         // 城市
         $router->group(['prefix' => 'city'], function () use ($router) {
             $router->post('get', 'Admin\Ocean\CityController@get');

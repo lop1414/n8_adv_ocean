@@ -5,6 +5,7 @@ namespace App\Sdks\OceanEngine;
 use App\Sdks\OceanEngine\Traits\AccessToken;
 use App\Sdks\OceanEngine\Traits\Account;
 use App\Sdks\OceanEngine\Traits\Ad;
+use App\Sdks\OceanEngine\Traits\AdConvert;
 use App\Sdks\OceanEngine\Traits\App;
 use App\Sdks\OceanEngine\Traits\Campaign;
 use App\Sdks\OceanEngine\Traits\City;
@@ -31,6 +32,7 @@ class OceanEngine
     use City;
     use Industry;
     use Ad;
+    use AdConvert;
 
     /**
      * 公共接口地址

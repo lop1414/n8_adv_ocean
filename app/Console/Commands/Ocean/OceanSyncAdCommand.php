@@ -4,8 +4,6 @@ namespace App\Console\Commands\Ocean;
 
 use App\Common\Console\BaseCommand;
 use App\Services\Ocean\OceanAdService;
-use App\Services\Ocean\OceanCampaignService;
-use mysql_xdevapi\Exception;
 
 class OceanSyncAdCommand extends BaseCommand
 {

@@ -4,7 +4,6 @@ namespace App\Services\Ocean;
 
 use App\Common\Enums\AdvAccountBelongTypeEnum;
 use App\Common\Enums\StatusEnum;
-use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
@@ -30,6 +29,15 @@ class OceanService extends BaseService
     }
 
     /**
+     * @param $appId
+     * @return bool
+     * 设置应用id
+     */
+    public function setAppId($appId){
+        return $this->sdk->setAppId($appId);
+    }
+
+    /**
      * @param $accountId
      * @return bool
      * 设置账户id
@@ -37,6 +45,17 @@ class OceanService extends BaseService
     public function setAccountId($accountId){
         // 设置账户id
         return $this->sdk->setAccountId($accountId);
+    }
+
+    /**
+     * @param $accountId
+     * @return mixed
+     * 获取账户
+     */
+    public function getAccount($accountId){
+        $oceanAccountModel = new OceanAccountModel();
+        $account = $oceanAccountModel->where('account_id', $accountId)->first();
+        return $account;
     }
 
     /**
@@ -159,6 +178,7 @@ class OceanService extends BaseService
             'campaign' => 'multiGetCampaignList',
             'video' => 'multiGetVideoList',
             'ad' => 'multiGetAdList',
+            'ad_convert' => 'multiGetAdConvertList',
         ];
         if(!isset($funcMap[$type])){
             throw new CustomException([
@@ -207,6 +227,9 @@ class OceanService extends BaseService
             $res = array_merge($res, $tmp);
         }
 
+        // 后置处理
+        $res = $this->multiGetPageListAfter($res);
+
         // 数据过滤
         $list = [];
         foreach($res as $v){
@@ -223,6 +246,15 @@ class OceanService extends BaseService
         }
 
         return $list;
+    }
+
+    /**
+     * @param $res
+     * @return mixed
+     * 并发获取分页列表后置处理
+     */
+    public function multiGetPageListAfter($res){
+        return $res;
     }
 
     /**

@@ -3,22 +3,22 @@
 namespace App\Console\Commands\Ocean;
 
 use App\Common\Console\BaseCommand;
-use App\Services\Ocean\OceanCampaignService;
+use App\Services\Ocean\OceanAdConvertService;
 
-class OceanSyncCampaignCommand extends BaseCommand
+class OceanSyncAdConvertCommand extends BaseCommand
 {
     /**
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_campaign  {--create_date=} {--account_ids=} {--status=}';
+    protected $signature = 'ocean:sync_ad_convert {--account_ids=}';
 
     /**
      * 命令描述
      *
      * @var string
      */
-    protected $description = '同步头条广告组';
+    protected $description = '同步头条转化目标';
 
     /**
      * Create a new command instance.
@@ -41,16 +41,11 @@ class OceanSyncCampaignCommand extends BaseCommand
             $param['account_ids'] = explode(",", $param['account_ids']);
         }
 
-        // id
-        if(!empty($param['ids'])){
-            $param['ids'] = explode(",", $param['ids']);
-        }
-
-        $oceanCampaignService = new OceanCampaignService();
+        $oceanAdConvertService = new OceanAdConvertService();
         $option = ['log' => true];
         $this->lockRun(
-            [$oceanCampaignService, 'syncCampaign'],
-            'ocean_sync_campaign',
+            [$oceanAdConvertService, 'syncAdConvert'],
+            'ocean_sync_ad_convert',
             3600,
             $option,
             $param
