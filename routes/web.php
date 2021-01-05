@@ -85,6 +85,7 @@ $router->group([
         // 转化目标
         $router->group(['prefix' => 'ad_convert'], function () use ($router) {
             $router->post('select', 'Admin\Ocean\AdConvertController@select');
+            $router->post('get', 'Admin\Ocean\AdConvertController@get');
             $router->post('read', 'Admin\Ocean\AdConvertController@read');
         });
 
