@@ -8,6 +8,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Services\SystemApi\NoticeApiService;
 use App\Common\Tools\CustomException;
+use App\Models\Ocean\OceanAccountVideoModel;
 use App\Models\Task\TaskModel;
 use Illuminate\Support\Facades\DB;
 
@@ -154,11 +155,25 @@ class TaskService extends BaseService
                     $taskStatus = TaskStatusEnum::WAITING;
                 }
 
-                if(
-                    isset($errorInfo['data']['result']['code']) &&
-                    $errorInfo['data']['result']['code'] == 51007
-                ){
-                    $taskStatus = TaskStatusEnum::WAITING;
+                // 错误码处理
+                if(isset($errorInfo['data']['result']['code'])){
+                    if($errorInfo['data']['result']['code'] == 51007){
+                        // 网络错误
+                        $taskStatus = TaskStatusEnum::WAITING;
+                    }elseif($errorInfo['data']['result']['code'] == 40501){
+                        // 视频不存在
+                        $param = json_decode($errorInfo['data']['param'], true);
+
+                        // 删除视频记录
+                        if(!empty($param['advertiser_id']) && !empty($param['video_ids'])){
+                            $oceanAccountVideoModel = new OceanAccountVideoModel();
+                            $oceanAccountVideoModel->where('account_id', $param['advertiser_id'])
+                                ->whereIn('video_id', $param['video_ids'])
+                                ->delete();
+                        }
+
+                        $taskStatus = TaskStatusEnum::WAITING;
+                    }
                 }
 
                 // 更改任务状态
