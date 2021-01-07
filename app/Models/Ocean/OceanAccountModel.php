@@ -37,7 +37,7 @@ class OceanAccountModel extends OceanModel
 
 
     /**
-     * 关联角色模型   多对一
+     * 关联应用模型   多对一
      */
     public function ocean_account(){
         return $this->belongsTo('App\Models\AppModel', 'adv_app_id', 'id');
