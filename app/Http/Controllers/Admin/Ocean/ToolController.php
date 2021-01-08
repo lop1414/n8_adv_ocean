@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers\Admin\Ocean;
 
-use App\Common\Controllers\Admin\AdminController;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
-use App\Enums\Ocean\OceanAdStatusEnum;
-use App\Enums\Ocean\OceanCampaignStatusEnum;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Models\Ocean\OceanAccountModel;
-use App\Services\Ocean\OceanAdService;
-use App\Services\Ocean\OceanCampaignService;
 use App\Services\Ocean\OceanService;
 use App\Services\Ocean\OceanToolService;
 use Illuminate\Http\Request;
@@ -98,45 +93,14 @@ class ToolController extends OceanController
             ini_set('max_execution_time', 60);
         }
 
-        if($syncType == OceanSyncTypeEnum::CAMPAIGN){
-            // 广告组
-            $oceanCampaignService = new OceanCampaignService($data['app_id']);
+        $syncParam = array_merge([
+            'app_id' => $data['app_id'],
+            'account_id' => $data['account_id'],
+        ], $result);
 
-            $option = [
-                'account_ids' => [$data['account_id']],
-                'status' => OceanCampaignStatusEnum::CAMPAIGN_STATUS_ALL,
-            ];
-
-            if(!empty($result['campaign_id'])){
-                $option['ids'] = [$result['campaign_id']];
-            }elseif(!empty($result['campaign_ids'])){
-                $option['ids'] = $result['campaign_ids'];
-            }
-
-            // 休眠防延迟
-            sleep(1);
-
-            $oceanCampaignService->syncCampaign($option);
-        }elseif($syncType == OceanSyncTypeEnum::AD){
-            // 广告计划
-            $oceanAdService = new OceanAdService($data['app_id']);
-
-            $option = [
-                'account_ids' => [$data['account_id']],
-                'status' => OceanAdStatusEnum::AD_STATUS_ALL,
-            ];
-
-            if(!empty($result['ad_id'])){
-                $option['ids'] = [$result['ad_id']];
-            }elseif(!empty($result['ad_ids'])){
-                $option['ids'] = $result['ad_ids'];
-            }
-
-            // 休眠防延迟
-            sleep(3);
-
-            $oceanAdService->syncAd($option);
-        }
+        // 同步
+        $oceanToolService = new OceanToolService();
+        $oceanToolService->sync($syncType, $syncParam);
     }
 
     /**

@@ -3,6 +3,9 @@
 namespace App\Services\Ocean;
 
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanAdStatusEnum;
+use App\Enums\Ocean\OceanCampaignStatusEnum;
+use App\Enums\Ocean\OceanSyncTypeEnum;
 
 class OceanToolService extends OceanService
 {
@@ -61,6 +64,12 @@ class OceanToolService extends OceanService
             // 创建创意
             $creative = array_merge($creative, ['ad_id' => $adId]);
             $this->createCreative($creative);
+
+            $this->sync(OceanSyncTypeEnum::AD, [
+                'app_id' => $account->app_id,
+                'account_id' => $account->account_id,
+                'ad_id' => $adId,
+            ]);
         }
 
         return true;
@@ -86,5 +95,53 @@ class OceanToolService extends OceanService
     public function createCreative($param){
         $ret = $this->forward('2/creative/create_v2/', $param, 'POST');
         return $ret;
+    }
+
+    /**
+     * @param $syncType
+     * @param $param
+     * @return bool
+     * @throws CustomException
+     * 同步
+     */
+    public function sync($syncType, $param){
+        // 休眠防延迟
+        sleep(5);
+
+        if($syncType == OceanSyncTypeEnum::CAMPAIGN){
+            // 广告组
+            $oceanCampaignService = new OceanCampaignService($param['app_id']);
+
+            $option = [
+                'account_ids' => [$param['account_id']],
+                'status' => OceanCampaignStatusEnum::CAMPAIGN_STATUS_ALL,
+            ];
+
+            if(!empty($param['campaign_id'])){
+                $option['ids'] = [$param['campaign_id']];
+            }elseif(!empty($param['campaign_ids'])){
+                $option['ids'] = $param['campaign_ids'];
+            }
+
+            $oceanCampaignService->syncCampaign($option);
+        }elseif($syncType == OceanSyncTypeEnum::AD){
+            // 广告计划
+            $oceanAdService = new OceanAdService($param['app_id']);
+
+            $option = [
+                'account_ids' => [$param['account_id']],
+                'status' => OceanAdStatusEnum::AD_STATUS_ALL,
+            ];
+
+            if(!empty($param['ad_id'])){
+                $option['ids'] = [$param['ad_id']];
+            }elseif(!empty($param['ad_ids'])){
+                $option['ids'] = $param['ad_ids'];
+            }
+
+            $oceanAdService->syncAd($option);
+        }
+
+        return true;
     }
 }
