@@ -12,6 +12,7 @@ use App\Models\Ocean\OceanAccountModel;
 use App\Services\Ocean\OceanAdService;
 use App\Services\Ocean\OceanCampaignService;
 use App\Services\Ocean\OceanService;
+use App\Services\Ocean\OceanToolService;
 use Illuminate\Http\Request;
 
 class ToolController extends OceanController
@@ -42,6 +43,11 @@ class ToolController extends OceanController
         $param = $request->post('param');
         $header = $request->post('header', []);
         $method = $request->post('method', 'GET');
+        $debug = $request->post('debug');
+
+        if(!empty($debug)){
+            $header = array_merge($header, ['X-Debug-Mode: 1']);
+        }
 
         $adminUserInfo = Functions::getGlobalData('admin_user_info');
 
@@ -164,5 +170,23 @@ class ToolController extends OceanController
         }
 
         return false;
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws CustomException
+     * 批量创建计划创意
+     */
+    public function batchCreateAdCreative(Request $request){
+        // 超时时间
+        ini_set('max_execution_time', 120);
+
+        $items = $request->post('items');
+
+        $oceanToolService = new OceanToolService();
+        $ret = $oceanToolService->batchCreateAdCreative($items);
+
+        return $this->ret($ret);
     }
 }

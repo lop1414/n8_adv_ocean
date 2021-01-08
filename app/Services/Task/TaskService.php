@@ -207,11 +207,12 @@ class TaskService extends BaseService
     /**
      * @param $task
      * @param $taskStatus
+     * @param string $tip
      * @return mixed
-     * @throws \App\Common\Tools\CustomException
+     * @throws CustomException
      * 更新任务状态
      */
-    public function updateTaskStatus($task, $taskStatus){
+    public function updateTaskStatus($task, $taskStatus, $tip = ''){
         Functions::hasEnum(TaskStatusEnum::class, $taskStatus);
         $task->task_status = $taskStatus;
         $ret = $task->save();
@@ -222,11 +223,18 @@ class TaskService extends BaseService
 
             // 发送通知
             $title = "你有一个任务{$taskStatusName}";
-            $content = implode("<br>", [
+
+            $lines = [
                 "任务id: {$task->id}",
                 "任务名称: {$task->name}",
                 "任务类型: {$taskTypeName}",
-            ]);
+            ];
+
+            if(!empty($tip)){
+                $lines[] = "任务提示: {$tip}";
+            }
+
+            $content = implode("<br>", $lines);
             $noticeApiService = new NoticeApiService();
             $noticeApiService->apiSendFeishuMessage($title, $content, $task->admin_id);
         }

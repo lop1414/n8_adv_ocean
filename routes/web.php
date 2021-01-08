@@ -66,6 +66,7 @@ $router->group([
         $router->group(['prefix' => 'tool'], function () use ($router) {
             $router->post('forward', 'Admin\Ocean\ToolController@forward');
             $router->post('sync', 'Admin\Ocean\OceanController@sync');
+            $router->post('batch_create_ad_creative', 'Admin\Ocean\ToolController@batchCreateAdCreative');
         });
 
         // 广告组
