@@ -88,19 +88,22 @@ class ToolController extends OceanController
         // 获取 uri 对应同步类型
         $syncType = $this->getUriSyncType($uri);
 
-        // 调整超时时间
+        // 同步
         if(!empty($syncType)){
             ini_set('max_execution_time', 60);
+
+            // 休眠防延迟
+            sleep(5);
+
+            $syncParam = array_merge([
+                'app_id' => $data['app_id'],
+                'account_id' => $data['account_id'],
+            ], $result);
+
+            // 同步
+            $oceanToolService = new OceanToolService();
+            $oceanToolService->sync($syncType, $syncParam);
         }
-
-        $syncParam = array_merge([
-            'app_id' => $data['app_id'],
-            'account_id' => $data['account_id'],
-        ], $result);
-
-        // 同步
-        $oceanToolService = new OceanToolService();
-        $oceanToolService->sync($syncType, $syncParam);
     }
 
     /**

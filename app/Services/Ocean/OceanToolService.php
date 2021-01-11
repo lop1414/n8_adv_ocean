@@ -24,6 +24,7 @@ class OceanToolService extends OceanService
      * 批量创建计划创意
      */
     public function batchCreateAdCreative($items){
+        $syncs = [];
         foreach($items as $item){
             $accountId = $item['account_id'] ?? '';
             $ad = $item['ad'] ?? [];
@@ -65,11 +66,18 @@ class OceanToolService extends OceanService
             $creative = array_merge($creative, ['ad_id' => $adId]);
             $this->createCreative($creative);
 
-            $this->sync(OceanSyncTypeEnum::AD, [
+            $syncs[] = [
                 'app_id' => $account->app_id,
                 'account_id' => $account->account_id,
                 'ad_id' => $adId,
-            ]);
+            ];
+        }
+
+        // 休眠防延迟
+        sleep(5);
+
+        foreach($syncs as $sync){
+            $this->sync(OceanSyncTypeEnum::AD, $sync);
         }
 
         return true;
@@ -105,9 +113,6 @@ class OceanToolService extends OceanService
      * 同步
      */
     public function sync($syncType, $param){
-        // 休眠防延迟
-        sleep(5);
-
         if($syncType == OceanSyncTypeEnum::CAMPAIGN){
             // 广告组
             $oceanCampaignService = new OceanCampaignService($param['app_id']);
