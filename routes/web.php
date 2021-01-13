@@ -62,13 +62,6 @@ $router->group([
             $router->post('batch_upload', 'Admin\Ocean\ImageController@batchUpload');
         });
 
-        // 工具
-        $router->group(['prefix' => 'tool'], function () use ($router) {
-            $router->post('forward', 'Admin\Ocean\ToolController@forward');
-            $router->post('sync', 'Admin\Ocean\OceanController@sync');
-            $router->post('batch_create_ad_creative', 'Admin\Ocean\ToolController@batchCreateAdCreative');
-        });
-
         // 广告组
         $router->group(['prefix' => 'campaign'], function () use ($router) {
             $router->post('select', 'Admin\Ocean\CampaignController@select');
@@ -104,6 +97,22 @@ $router->group([
         $router->group(['prefix' => 'industry'], function () use ($router) {
             $router->post('get', 'Admin\Ocean\IndustryController@get');
             $router->post('tree', 'Admin\Ocean\IndustryController@tree');
+        });
+
+        // 工具
+        $router->group(['prefix' => 'tool'], function () use ($router) {
+            $router->post('forward', 'Admin\Ocean\ToolController@forward');
+            $router->post('sync', 'Admin\Ocean\OceanController@sync');
+            $router->post('batch_create_ad_creative', 'Admin\Ocean\ToolController@batchCreateAdCreative');
+        });
+
+        // 定向模板
+        $router->group(['prefix' => 'audience_templete'], function () use ($router) {
+            $router->post('create', 'Admin\Ocean\AudienceTempleteController@create');
+            $router->post('update', 'Admin\Ocean\AudienceTempleteController@update');
+            $router->post('select', 'Admin\Ocean\AudienceTempleteController@select');
+            $router->post('read', 'Admin\Ocean\AudienceTempleteController@read');
+            $router->post('delete', 'Admin\Ocean\AudienceTempleteController@delete');
         });
     });
 });
