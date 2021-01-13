@@ -12,7 +12,7 @@ class OceanDeliveryRangeEnum
      * @var string
      * 名称
      */
-    static public $name = '巨量推广类型';
+    static public $name = '巨量投放范围';
 
     /**
      * @var array
