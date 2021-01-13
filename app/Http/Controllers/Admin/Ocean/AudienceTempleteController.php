@@ -27,6 +27,22 @@ class AudienceTempleteController extends OceanController
      */
     public function createPrepare(){
         $this->saveHandle();
+
+        $this->curdService->saveBefore(function(){
+            $adminUserInfo = Functions::getGlobalData('admin_user_info');
+
+            $oceanAudienceTempleteModel = new OceanAudienceTempleteModel();
+            $oceanAudienceTemplete = $oceanAudienceTempleteModel->where('admin_id', $adminUserInfo['admin_user']['id'])
+                ->where('name', $this->curdService->handleData['name'])
+                ->first();
+
+            if(!empty($oceanAudienceTemplete)){
+                throw new CustomException([
+                    'code' => 'MAME_EXIST',
+                    'message' => '名称已存在',
+                ]);
+            }
+        });
     }
 
     /**
@@ -34,6 +50,23 @@ class AudienceTempleteController extends OceanController
      */
     public function updatePrepare(){
         $this->saveHandle();
+
+        $this->curdService->saveBefore(function(){
+            $adminUserInfo = Functions::getGlobalData('admin_user_info');
+
+            $oceanAudienceTempleteModel = new OceanAudienceTempleteModel();
+            $oceanAudienceTemplete = $oceanAudienceTempleteModel->where('admin_id', $adminUserInfo['admin_user']['id'])
+                ->where('name', $this->curdService->handleData['name'])
+                ->where('id', '<>', $this->curdService->handleData['id'])
+                ->first();
+
+            if(!empty($oceanAudienceTemplete)){
+                throw new CustomException([
+                    'code' => 'MAME_EXIST',
+                    'message' => '名称已存在',
+                ]);
+            }
+        });
     }
 
     /**
