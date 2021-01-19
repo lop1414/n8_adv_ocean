@@ -11,7 +11,7 @@ use App\Services\Ocean\OceanMaterialService;
 use App\Services\Ocean\OceanVideoService;
 use Illuminate\Support\Facades\DB;
 
-class TaskOceanVideoUploadService extends TaskService
+class TaskOceanVideoUploadService extends TaskOceanService
 {
     /**
      * OceanVideoUploadTaskService constructor.
@@ -19,6 +19,8 @@ class TaskOceanVideoUploadService extends TaskService
     public function __construct()
     {
         parent::__construct(TaskTypeEnum::OCEAN_VIDEO_UPLOAD);
+
+        $this->subModelClass = TaskOceanVideoUploadModel::class;
     }
 
     /**
@@ -55,70 +57,46 @@ class TaskOceanVideoUploadService extends TaskService
     }
 
     /**
-     * @param $taskId
-     * @return mixed
-     * 获取待执行子任务
-     */
-    public function getWaitingSubTasks($taskId){
-        $taskOceanVideoUploadModel = new TaskOceanVideoUploadModel();
-
-        $subTasks = $taskOceanVideoUploadModel->where('task_id', $taskId)
-            ->where('exec_status', ExecStatusEnum::WAITING)
-            ->orderBy('id', 'asc')
-            ->get();
-
-        return $subTasks;
-    }
-
-    /**
-     * @param $task
-     * @param $option
+     * @param $subTask
      * @return bool|void
      * @throws CustomException
-     * 执行子任务
+     * 执行单个子任务
      */
-    public function runSub($task, $option){
-        // 获取子任务
-        $subTasks = $this->getWaitingSubTasks($task->id);
+    public function runSub($subTask){
+        // 获取账户信息
+        $oceanAccountModel = new OceanAccountModel();
+        $oceanAccount = $oceanAccountModel->where('app_id', $subTask->app_id)
+            ->where('account_id', $subTask->account_id)
+            ->first();
 
-        foreach($subTasks as $subTask){
-            // 获取账户信息
-            $oceanAccountModel = new OceanAccountModel();
-            $oceanAccount = $oceanAccountModel->where('app_id', $subTask->app_id)
-                ->where('account_id', $subTask->account_id)
-                ->first();
+        // 获取可推送视频
+        $video = $this->getCanPushVideo($subTask->n8_material_video_signature, $oceanAccount->company);
 
-            // 获取可推送视频
-            $video = $this->getCanPushVideo($subTask->n8_material_video_signature, $oceanAccount->company);
+        if(!empty($video)){
+            // 推送
+            $uploadType = 'push';
 
-            if(!empty($video)){
-                // 推送
-                $uploadType = 'push';
+            $oceanMaterialService = new OceanMaterialService($subTask->app_id);
+            $oceanMaterialService->setAccountId($video->account_id);
+            $oceanMaterialService->pushMaterial($video->account_id, [$subTask->account_id], [$video->id]);
+        }else{
+            // 上传
+            $uploadType = 'upload';
 
-                $oceanMaterialService = new OceanMaterialService($subTask->app_id);
-                $oceanMaterialService->setAccountId($video->account_id);
-                $oceanMaterialService->pushMaterial($video->account_id, [$subTask->account_id], [$video->id]);
-            }else{
-                // 上传
-                $uploadType = 'upload';
+            // 下载
+            $file = $this->download($subTask->n8_material_video_path);
 
-                // 下载
-                $file = $this->download($subTask->n8_material_video_path);
+            // 上传
+            $oceanVideoService = new OceanVideoService($subTask->app_id);
+            $oceanVideoService->setAccountId($subTask->account_id);
+            $oceanVideoService->uploadVideo($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_video_name);
 
-                // 上传
-                $oceanVideoService = new OceanVideoService($subTask->app_id);
-                $oceanVideoService->setAccountId($subTask->account_id);
-                $oceanVideoService->uploadVideo($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_video_name);
-
-                // 删除临时文件
-                unlink($file['path']);
-            }
-
-            $subTask->exec_status = ExecStatusEnum::SUCCESS;
-            // 上传类型
-            $subTask->extends = array_merge($subTask->extends, ['upload_type' => $uploadType]);
-            $subTask->save();
+            // 删除临时文件
+            unlink($file['path']);
         }
+
+        // 上传类型
+        $subTask->extends = array_merge($subTask->extends, ['upload_type' => $uploadType]);
 
         return true;
     }

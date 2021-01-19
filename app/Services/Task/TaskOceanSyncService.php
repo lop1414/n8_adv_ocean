@@ -13,7 +13,7 @@ use App\Services\Ocean\OceanAdService;
 use App\Services\Ocean\OceanCampaignService;
 use App\Services\Ocean\OceanVideoService;
 
-class TaskOceanSyncService extends TaskService
+class TaskOceanSyncService extends TaskOceanService
 {
     /**
      * @var
@@ -33,6 +33,8 @@ class TaskOceanSyncService extends TaskService
         // 同步类型
         Functions::hasEnum(OceanSyncTypeEnum::class, $syncType);
         $this->syncType = $syncType;
+
+        $this->subModelClass = TaskOceanSyncModel::class;
     }
 
     /**
@@ -89,38 +91,25 @@ class TaskOceanSyncService extends TaskService
     }
 
     /**
-     * @param $task
-     * @param $option
+     * @param $subTask
      * @return bool|void
      * @throws CustomException
-     * 执行子任务
+     * 执行单个子任务
      */
-    public function runSub($task, $option){
-        // 获取子任务
-        $subTasks = $this->getWaitingSubTasks($task->id);
-
-        if($subTasks->isEmpty()){
-            return false;
-        }
-
-        foreach($subTasks as $subTask){
-            if($this->syncType == OceanSyncTypeEnum::CAMPAIGN){
-                $this->syncCampaign($subTask);
-            }elseif($this->syncType == OceanSyncTypeEnum::VIDEO){
-                $this->syncVideo($subTask);
-            }elseif($this->syncType == OceanSyncTypeEnum::AD){
-                $this->syncAd($subTask);
-            }elseif($this->syncType == OceanSyncTypeEnum::AD_CONVERT){
-                $this->syncAdConvert($subTask);
-            }else{
-                throw new CustomException([
-                    'code' => 'NOT_HANDLE_FOR_SYNC_TYPE',
-                    'message' => '该同步类型无对应处理',
-                ]);
-            }
-
-            $subTask->exec_status = ExecStatusEnum::SUCCESS;
-            $subTask->save();
+    public function runSub($subTask){
+        if($this->syncType == OceanSyncTypeEnum::CAMPAIGN){
+            $this->syncCampaign($subTask);
+        }elseif($this->syncType == OceanSyncTypeEnum::VIDEO){
+            $this->syncVideo($subTask);
+        }elseif($this->syncType == OceanSyncTypeEnum::AD){
+            $this->syncAd($subTask);
+        }elseif($this->syncType == OceanSyncTypeEnum::AD_CONVERT){
+            $this->syncAdConvert($subTask);
+        }else{
+            throw new CustomException([
+                'code' => 'NOT_HANDLE_FOR_SYNC_TYPE',
+                'message' => '该同步类型无对应处理',
+            ]);
         }
 
         return true;

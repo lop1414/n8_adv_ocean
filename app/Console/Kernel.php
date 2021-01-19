@@ -13,6 +13,7 @@ use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
 use App\Console\Commands\Task\TaskOceanSyncCommand;
 use App\Console\Commands\Task\TaskOceanVideoUploadCommand;
+use App\Console\Commands\Task\TaskReWaitingCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -26,6 +27,9 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         // 二版
         SyncJrttAccountCommand::class,
+
+        // 任务重执行
+        TaskReWaitingCommand::class,
 
         // 巨量上传任务
         TaskOceanVideoUploadCommand::class,

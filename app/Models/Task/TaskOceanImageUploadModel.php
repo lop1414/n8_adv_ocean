@@ -19,4 +19,42 @@ class TaskOceanImageUploadModel extends BaseModel
      * @var string
      */
     protected $primaryKey = 'id';
+
+    /**
+     * @param $value
+     * @return array
+     * 属性访问器
+     */
+    public function getExtendsAttribute($value)
+    {
+        return json_decode($value);
+    }
+
+    /**
+     * @param $value
+     * 属性修饰器
+     */
+    public function setExtendsAttribute($value)
+    {
+        $this->attributes['extends'] = json_encode($value);
+    }
+
+    /**
+     * @param $value
+     * @return array
+     * 属性访问器
+     */
+    public function getFailDataAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    /**
+     * @param $value
+     * 属性修饰器
+     */
+    public function setFailDataAttribute($value)
+    {
+        $this->attributes['fail_data'] = json_encode($value);
+    }
 }

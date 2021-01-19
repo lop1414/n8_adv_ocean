@@ -8,14 +8,17 @@ use App\Common\Tools\CustomException;
 use App\Models\Task\TaskOceanImageUploadModel;
 use App\Services\Ocean\OceanImageService;
 
-class TaskOceanImageUploadService extends TaskService
+class TaskOceanImageUploadService extends TaskOceanService
 {
     /**
      * TaskOceanImageUploadService constructor.
+     * @throws CustomException
      */
     public function __construct()
     {
         parent::__construct(TaskTypeEnum::OCEAN_IMAGE_UPLOAD);
+
+        $this->subModelClass = TaskOceanImageUploadModel::class;
     }
 
     /**
@@ -42,6 +45,7 @@ class TaskOceanImageUploadService extends TaskService
         $model->n8_material_image_name = $data['n8_material_image_name'];
         $model->exec_status = ExecStatusEnum::WAITING;
         $model->admin_id = $data['admin_id'] ?? 0;
+        $model->extends = $data['extends'] ?? [];
 
         return $model->save();
     }
@@ -63,31 +67,25 @@ class TaskOceanImageUploadService extends TaskService
     }
 
     /**
-     * @param $task
-     * @param $option
+     * @param $subTask
      * @return bool|void
      * @throws CustomException
      * 执行子任务
      */
-    public function runSub($task, $option){
-        // 获取子任务
-        $subTasks = $this->getWaitingSubTasks($task->id);
+    public function runSub($subTask){
+        // 下载
+        $file = $this->download($subTask->n8_material_image_path);
 
-        foreach($subTasks as $subTask){
-            // 下载
-            $file = $this->download($subTask->n8_material_image_path);
+        // 上传
+        $oceanImageService = new OceanImageService($subTask->app_id);
+        $oceanImageService->setAccountId($subTask->account_id);
+        $oceanImageService->uploadImage($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_image_name);
 
-            // 上传
-            $oceanImageService = new OceanImageService($subTask->app_id);
-            $oceanImageService->setAccountId($subTask->account_id);
-            $oceanImageService->uploadImage($subTask->account_id, $file['signature'], $file['curl_file'], $subTask->n8_material_image_name);
+        // 删除临时文件
+        unlink($file['path']);
 
-            // 删除临时文件
-            unlink($file['path']);
-
-            $subTask->exec_status = ExecStatusEnum::SUCCESS;
-            $subTask->save();
-        }
+        $subTask->exec_status = ExecStatusEnum::SUCCESS;
+        $subTask->save();
 
         return true;
     }
