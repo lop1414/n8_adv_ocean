@@ -59,6 +59,9 @@ class Kernel extends ConsoleKernel
         // 二版
         $schedule->command('second_version:sync_jrtt_account')->cron('5 * * * *');
 
+        // 任务重执行
+        $schedule->command('task:re_waiting')->cron('* * * * *');
+
         // 巨量上传任务
         $schedule->command('task:ocean_image_upload')->cron('* * * * *');
         $schedule->command('task:ocean_video_upload')->cron('* * * * *');
