@@ -178,13 +178,13 @@ class OceanAdCreativeCreateService extends OceanService
      * 构建分批任务
      */
     private function buildTaskChunk($items, $ruleOption, $adminId){
-        $timeCycleMinute = isset($ruleOption['time_cycle_minute']) ? intval($ruleOption['time_cycle_minute']) : 0;
+        $chunkMinute = isset($ruleOption['chunk_minute']) ? intval($ruleOption['chunk_minute']) : 0;
         $chunkSize = isset($ruleOption['chunk_size']) ? intval($ruleOption['chunk_size']) : 0;
 
-        if($timeCycleMinute < 1){
+        if($chunkMinute < 1){
             throw new CustomException([
-                'code' => 'TIME_CYCLE_MINUTE_HAVE_TO_MORE_THAN_1',
-                'message' => '时间周期至少为1分钟',
+                'code' => 'CHUNK_MINUTE_HAVE_TO_MORE_THAN_1',
+                'message' => '分批周期至少为1分钟',
             ]);
         }
 
@@ -203,7 +203,7 @@ class OceanAdCreativeCreateService extends OceanService
         $i = 1;
         foreach($chunks as $chunk){
             foreach($chunk as $item){
-                $startTime = $time + ($timeCycleMinute * 60 * $i);
+                $startTime = $time + ($chunkMinute * 60 * $i);
                 $subs[] = [
                     'app_id' => $item['app_id'],
                     'account_id' => $item['account_id'],
@@ -230,38 +230,38 @@ class OceanAdCreativeCreateService extends OceanService
      * 构建周期任务
      */
     private function buildTaskCycle($items, $ruleOption, $adminId){
-        $timeCycleMinute = isset($ruleOption['time_cycle_minute']) ? intval($ruleOption['time_cycle_minute']) : 0;
-        $createTimes = isset($ruleOption['create_times']) ? intval($ruleOption['create_times']) : 0;
+        $cycleMinute = isset($ruleOption['cycle_minute']) ? intval($ruleOption['cycle_minute']) : 0;
+        $cycleTimes = isset($ruleOption['cycle_times']) ? intval($ruleOption['cycle_times']) : 0;
 
-        if($timeCycleMinute < 1){
+        if($cycleMinute < 1){
             throw new CustomException([
-                'code' => 'TIME_CYCLE_MINUTE_HAVE_TO_MORE_THAN_1',
-                'message' => '时间周期至少为1分钟',
+                'code' => 'CYCLE_MINUTE_HAVE_TO_MORE_THAN_1',
+                'message' => '重复周期至少为1分钟',
             ]);
         }
 
-        if($createTimes < 1){
+        if($cycleTimes < 1){
             throw new CustomException([
-                'code' => 'CREATE_TIMES_HAVE_TO_MORE_THAN_1',
-                'message' => '创建次数至少为1次',
+                'code' => 'CYCLE_TIMES_HAVE_TO_MORE_THAN_1',
+                'message' => '重复次数至少为1次',
             ]);
         }
 
         $maxCreateTimes = 10;
-        if($createTimes > $maxCreateTimes){
+        if($cycleTimes > $maxCreateTimes){
             throw new CustomException([
-                'code' => "CREATE_TIMES_HAVE_TO_LESS_THAN_{$maxCreateTimes}",
-                'message' => "创建次数不能超过{$maxCreateTimes}次",
+                'code' => "CYCLE_TIMES_HAVE_TO_LESS_THAN_{$maxCreateTimes}",
+                'message' => "重复不能超过{$maxCreateTimes}次",
             ]);
         }
 
         $time = time();
 
         $subs = [];
-        for($i = 1; $i <= $createTimes; $i++){
+        for($i = 1; $i <= $cycleTimes; $i++){
             foreach($items as $item){
                 // 开始时间
-                $startTime = $time + ($timeCycleMinute * 60 * $i);
+                $startTime = $time + ($cycleMinute * 60 * $i);
                 $startAt = date('Y-m-d H:i:s', $startTime);
 
                 // 计划名称拼接时间
