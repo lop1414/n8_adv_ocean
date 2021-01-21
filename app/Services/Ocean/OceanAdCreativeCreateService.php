@@ -131,7 +131,7 @@ class OceanAdCreativeCreateService extends OceanService
         $taskOceanAdCreativeCreateService = new TaskOceanAdCreativeCreateService();
         $taskOceanAdCreativeCreateService->create($task, $subs);
 
-        return true;
+        return $taskOceanAdCreativeCreateService->taskId;
     }
 
     /**
@@ -297,9 +297,9 @@ class OceanAdCreativeCreateService extends OceanService
         $items = $this->itemsFormat($items);
 
         // 构建任务
-        $this->buildTask($items, $rule, $ruleOption);
+        $taskId = $this->buildTask($items, $rule, $ruleOption);
 
-        return true;
+        return $taskId;
     }
 
     /**

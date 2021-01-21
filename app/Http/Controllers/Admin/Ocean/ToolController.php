@@ -155,8 +155,8 @@ class ToolController extends OceanController
         $ruleOption = $request->post('rule_option', []);
 
         $oceanAdCreativeCreateService = new OceanAdCreativeCreateService();
-        $ret = $oceanAdCreativeCreateService->batchCreateAdCreative($items, $rule, $ruleOption);
+        $taskId = $oceanAdCreativeCreateService->batchCreateAdCreative($items, $rule, $ruleOption);
 
-        return $this->ret($ret);
+        return $this->success(['task_id' => $taskId], [], '批量上传任务已提交【任务id:'. $taskId .'】，执行结果后续同步到飞书，请注意查收！');
     }
 }
