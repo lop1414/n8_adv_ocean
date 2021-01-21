@@ -6,6 +6,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Models\Ocean\OceanAccountModel;
+use App\Services\Ocean\OceanAdCreativeCreateService;
 use App\Services\Ocean\OceanService;
 use App\Services\Ocean\OceanToolService;
 use Illuminate\Http\Request;
@@ -150,9 +151,11 @@ class ToolController extends OceanController
         ini_set('max_execution_time', 120);
 
         $items = $request->post('items');
+        $rule = $request->post('rule');
+        $ruleOption = $request->post('rule_option', []);
 
-        $oceanToolService = new OceanToolService();
-        $ret = $oceanToolService->batchCreateAdCreative($items);
+        $oceanAdCreativeCreateService = new OceanAdCreativeCreateService();
+        $ret = $oceanAdCreativeCreateService->batchCreateAdCreative($items, $rule, $ruleOption);
 
         return $this->ret($ret);
     }

@@ -84,9 +84,6 @@ class TaskOceanImageUploadService extends TaskOceanService
         // 删除临时文件
         unlink($file['path']);
 
-        $subTask->exec_status = ExecStatusEnum::SUCCESS;
-        $subTask->save();
-
         return true;
     }
 

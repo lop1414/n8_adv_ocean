@@ -10,6 +10,7 @@ use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
+use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
 use App\Console\Commands\Task\TaskOceanSyncCommand;
 use App\Console\Commands\Task\TaskOceanVideoUploadCommand;
@@ -37,6 +38,9 @@ class Kernel extends ConsoleKernel
 
         // 巨量同步任务
         TaskOceanSyncCommand::class,
+
+        // 巨量计划创意创建任务
+        TaskOceanAdCreativeCreateCommand::class,
 
         // 巨量
         OceanSyncCampaignCommand::class,
@@ -71,5 +75,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:ocean_sync --type=campaign')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=ad')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=ad_convert')->cron('* * * * *');
+
+        // 巨量计划创意创建任务
+        $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
     }
 }
