@@ -33,8 +33,6 @@ class TaskOceanSyncService extends TaskOceanService
         // 同步类型
         Functions::hasEnum(OceanSyncTypeEnum::class, $syncType);
         $this->syncType = $syncType;
-
-        $this->subModelClass = TaskOceanSyncModel::class;
     }
 
     /**

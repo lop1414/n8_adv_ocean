@@ -38,6 +38,38 @@ $router->group([
         //$router->post('disable', 'Admin\AppController@disable');
     });
 
+    // 任务
+    $router->group(['prefix' => 'task'], function () use ($router) {
+        $router->post('select', '\\App\Common\Controllers\Admin\TaskController@select');
+    });
+
+    // 子任务
+    $router->group(['prefix' => 'sub_task'], function () use ($router) {
+        // 巨量视频上传
+        $router->group(['prefix' => 'ocean_video_upload'], function () use ($router) {
+            $router->post('select', 'Admin\SubTask\TaskOceanVideoUploadController@select');
+            $router->post('read', 'Admin\SubTask\TaskOceanVideoUploadController@read');
+        });
+
+        // 巨量图片上传
+        $router->group(['prefix' => 'ocean_image_upload'], function () use ($router) {
+            $router->post('select', 'Admin\SubTask\TaskOceanImageUploadController@select');
+            $router->post('read', 'Admin\SubTask\TaskOceanImageUploadController@read');
+        });
+
+        // 巨量同步
+        $router->group(['prefix' => 'ocean_sync'], function () use ($router) {
+            $router->post('select', 'Admin\SubTask\TaskOceanSyncController@select');
+            $router->post('read', 'Admin\SubTask\TaskOceanSyncController@read');
+        });
+
+        // 巨量计划创意创建
+        $router->group(['prefix' => 'ocean_ad_creative_create'], function () use ($router) {
+            $router->post('select', 'Admin\SubTask\TaskOceanAdCreativeCreateController@select');
+            $router->post('read', 'Admin\SubTask\TaskOceanAdCreativeCreateController@read');
+        });
+    });
+
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 账户

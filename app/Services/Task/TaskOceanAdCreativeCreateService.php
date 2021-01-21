@@ -20,8 +20,6 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
     public function __construct()
     {
         parent::__construct(TaskTypeEnum::OCEAN_AD_CREATIVE_CREATE);
-
-        $this->subModelClass = TaskOceanAdCreativeCreateModel::class;
     }
 
     /**
@@ -122,7 +120,8 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
         }
 
         // 休眠防延迟
-        sleep(10);
+        $sleep = max(1, (10 - ($subTasks->count() * 1)));
+        sleep($sleep);
 
         $oceanToolService = new OceanToolService();
         foreach($syncs as $sync){

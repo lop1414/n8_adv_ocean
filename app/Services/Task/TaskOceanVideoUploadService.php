@@ -19,8 +19,6 @@ class TaskOceanVideoUploadService extends TaskOceanService
     public function __construct()
     {
         parent::__construct(TaskTypeEnum::OCEAN_VIDEO_UPLOAD);
-
-        $this->subModelClass = TaskOceanVideoUploadModel::class;
     }
 
     /**
