@@ -4,7 +4,7 @@ Navicat MySQL Data Transfer
 Source Server         : localhost
 Source Server Version : 50724
 Source Host           : localhost:3306
-Source Database       : n8_adv
+Source Database       : n8_adv_ocean
 
 Target Server Type    : MYSQL
 Target Server Version : 50724
