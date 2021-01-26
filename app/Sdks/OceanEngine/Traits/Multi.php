@@ -11,18 +11,19 @@ trait Multi
      * @param array $filtering
      * @param int $page
      * @param int $pageSize
+     * @param array $param
      * @return mixed
      * 并发获取管家账户下分页列表
      */
-    public function multiGetPageList($url, array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10){
+    public function multiGetPageList($url, array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10, $param = []){
         $curlOptions = [];
         foreach($accountIds as $accountId){
-            $param = [
+            $param = array_merge([
                 'advertiser_id' => $accountId,
                 'filtering' => $filtering,
                 'page' => $page,
                 'page_size' =>$pageSize,
-            ];
+            ], $param);
 
             $curlOptions[] = [
                 'url' => $url,

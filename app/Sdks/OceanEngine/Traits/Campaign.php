@@ -33,12 +33,13 @@ trait Campaign
      * @param array $filtering
      * @param int $page
      * @param int $pageSize
+     * @param array $param
      * @return mixed
      * 并发获取广告组列表
      */
-    public function multiGetCampaignList(array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10){
+    public function multiGetCampaignList(array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10, $param = []){
         $url = $this->getUrl('2/campaign/get/');
 
-        return $this->multiGetPageList($url, $accountIds, $accessToken, $filtering, $page, $pageSize);
+        return $this->multiGetPageList($url, $accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 }

@@ -96,10 +96,9 @@ Functions::consoleDump($ret);
         $t = microtime(1);
 
         $pageSize = 100;
-        $videos = [];
         foreach($accountGroup as $pid => $g){
-            $tmp = $this->multiGetVideoList($g, $filtering, $pageSize);
-            $videos = array_merge($videos, $tmp);
+            $videos = $this->multiGetVideoList($g, $filtering, $pageSize);
+            Functions::consoleDump('count:'. count($videos));
 
             // 保存
             foreach($videos as $video) {

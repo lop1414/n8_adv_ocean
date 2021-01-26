@@ -81,10 +81,9 @@ class OceanAdService extends OceanService
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
         $pageSize = 100;
-        $ads = [];
         foreach($accountGroup as $pid => $g){
-            $tmp = $this->multiGetAdList($g, $filtering, $pageSize);
-            $ads = array_merge($ads, $tmp);
+            $ads = $this->multiGetAdList($g, $filtering, $pageSize);
+            Functions::consoleDump('count:'. count($ads));
 
             // 保存
             foreach($ads as $ad) {

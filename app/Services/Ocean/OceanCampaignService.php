@@ -71,10 +71,9 @@ class OceanCampaignService extends OceanService
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
         $pageSize = 100;
-        $campaigns = [];
         foreach($accountGroup as $pid => $g){
-            $tmp = $this->multiGetCampaignList($g, $filtering, $pageSize);
-            $campaigns = array_merge($campaigns, $tmp);
+            $campaigns = $this->multiGetCampaignList($g, $filtering, $pageSize);
+            Functions::consoleDump('count:'. count($campaigns));
 
             // 保存
             foreach($campaigns as $campaign) {

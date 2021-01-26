@@ -75,10 +75,9 @@ class OceanAdConvertService extends OceanService
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
         $pageSize = 100;
-        $adConverts = [];
         foreach($accountGroup as $pid => $g){
-            $tmp = $this->multiGetAdConvertList($g, [], $pageSize);
-            $adConverts = array_merge($adConverts, $tmp);
+            $adConverts = $this->multiGetAdConvertList($g, [], $pageSize);
+            Functions::consoleDump('count:'. count($adConverts));
 
             // 保存
             foreach($adConverts as $adConvert){

@@ -168,11 +168,12 @@ class OceanService extends BaseService
      * @param $accounts
      * @param $filtering
      * @param $pageSize
+     * @param array $param
      * @return array
      * @throws CustomException
      * 并发获取分页列表
      */
-    public function multiGetPageList($type, $accounts, $filtering, $pageSize){
+    public function multiGetPageList($type, $accounts, $filtering, $pageSize, $param = []){
         // 获取分页列表方法
         $funcMap = [
             'campaign' => 'multiGetCampaignList',
@@ -201,7 +202,7 @@ class OceanService extends BaseService
         foreach($accounts as $account){
             $accountIds[] = $account->account_id;
         }
-        $res = $this->sdk->$func($accountIds, $accessToken, $filtering, 1, $pageSize);
+        $res = $this->sdk->$func($accountIds, $accessToken, $filtering, 1, $pageSize, $param);
 
         // 查询其他页数
         $more = [];
@@ -209,10 +210,10 @@ class OceanService extends BaseService
             if(empty($v['req']['param'])){
                 continue;
             }
-            $param = json_decode($v['req']['param'], true);
+            $reqParam = json_decode($v['req']['param'], true);
 
             $totalPage = $v['data']['page_info']['total_page'] ?? 1;
-            $advertiserId = $param['advertiser_id'] ?? 0;
+            $advertiserId = $reqParam['advertiser_id'] ?? 0;
 
             if($advertiserId > 0 && $totalPage > 1){
                 for($i = 2; $i <= $totalPage; $i++){
@@ -236,11 +237,11 @@ class OceanService extends BaseService
             if(empty($v['data']['list']) || empty($v['req']['param'])){
                 continue;
             }
-            $param = json_decode($v['req']['param'], true);
+            $reqParam = json_decode($v['req']['param'], true);
 
             foreach($v['data']['list'] as $item){
-                $item['advertiser_id'] = $param['advertiser_id'];
-                $item['account_id'] = $param['advertiser_id'];
+                $item['advertiser_id'] = $reqParam['advertiser_id'];
+                $item['account_id'] = $reqParam['advertiser_id'];
                 $list[] = $item;
             }
         }
