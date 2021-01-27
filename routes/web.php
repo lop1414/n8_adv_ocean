@@ -157,3 +157,6 @@ $router->group([
 ], function () use ($router) {
 
 });
+
+// 巨量
+$router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
