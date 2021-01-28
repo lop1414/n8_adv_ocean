@@ -124,7 +124,7 @@ class TaskOceanSyncService extends TaskOceanService
         $option = [
             'account_ids' => [$subTask->account_id],
         ];
-        $oceanCampaignService->syncCampaign($option);
+        $oceanCampaignService->sync($option);
         return true;
     }
 
@@ -140,7 +140,7 @@ class TaskOceanSyncService extends TaskOceanService
             'account_ids' => [$subTask->account_id],
         ];
 
-        $oceanAdService->syncAd($option);
+        $oceanAdService->sync($option);
         return true;
     }
 
@@ -162,7 +162,7 @@ class TaskOceanSyncService extends TaskOceanService
             $option['ids'] = [$subTask->extends->video_id];
         }
 
-        $oceanVideoService->syncVideo($option);
+        $oceanVideoService->sync($option);
 
         return true;
     }
@@ -180,7 +180,7 @@ class TaskOceanSyncService extends TaskOceanService
             'account_ids' => [$subTask->account_id],
         ];
 
-        $oceanAdConvertService->syncAdConvert($option);
+        $oceanAdConvertService->sync($option);
 
         return true;
     }

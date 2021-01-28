@@ -32,15 +32,17 @@ class OceanAdConvertService extends OceanService
     }
 
     /**
-     * @param $accounts
+     * @param $accountIds
+     * @param $accessToken
      * @param $filtering
+     * @param $page
      * @param $pageSize
-     * @return array
-     * @throws CustomException
-     * 并发获取
+     * @param array $param
+     * @return mixed|void
+     * sdk并发获取列表
      */
-    public function multiGetAdConvertList($accounts, $filtering, $pageSize){
-        return $this->multiGetPageList('ad_convert', $accounts, $filtering, $pageSize);
+    public function sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param = []){
+        return $this->sdk->multiGetAdConvertList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 
     /**
@@ -62,7 +64,7 @@ class OceanAdConvertService extends OceanService
      * @throws CustomException
      * 同步
      */
-    public function syncAdConvert($option = []){
+    public function sync($option = []){
         $t = microtime(1);
 
         $accountIds = [];
@@ -76,18 +78,18 @@ class OceanAdConvertService extends OceanService
 
         $pageSize = 100;
         foreach($accountGroup as $pid => $g){
-            $adConverts = $this->multiGetAdConvertList($g, [], $pageSize);
-            Functions::consoleDump('count:'. count($adConverts));
+            $items = $this->multiGetPageList($g, [], $pageSize);
+            Functions::consoleDump('count:'. count($items));
 
             // 保存
-            foreach($adConverts as $adConvert){
-                $account = $this->getAccount($adConvert['advertiser_id']);
+            foreach($items as $item){
+                $account = $this->getAccount($item['advertiser_id']);
 
                 $this->setAppId($account->app_id);
                 $this->setAccountId($account->account_id);
-                $adConvert = array_merge($adConvert, $this->readAdConvert($account->account_id, $adConvert['id']));
+                $item = array_merge($item, $this->readAdConvert($account->account_id, $item['id']));
 
-                $this->saveAdConvert($adConvert);
+                $this->save($item);
             }
         }
 
@@ -98,14 +100,14 @@ class OceanAdConvertService extends OceanService
     }
 
     /**
-     * @param $adConvert
+     * @param $item
      * @return mixed
      * @throws CustomException
      * 保存
      */
-    public function saveAdConvert($adConvert){
-        $where = ['id', '=', $adConvert['id']];
-        $ret = Functions::saveChange(OceanAdConvertModel::class, $where, $adConvert);
+    public function save($item){
+        $where = ['id', '=', $item['id']];
+        $ret = Functions::saveChange(OceanAdConvertModel::class, $where, $item);
         return $ret;
     }
 }

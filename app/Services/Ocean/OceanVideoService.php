@@ -32,7 +32,8 @@ class OceanVideoService extends OceanService
         $this->setAccessToken();
 
         $ret = $this->sdk->uploadVideo($accountId, $signature, $file, $filename);
-Functions::consoleDump($ret);
+        Functions::consoleDump($ret);
+
         // 同步
         if(!empty($ret['video_id'])){
             $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
@@ -56,23 +57,26 @@ Functions::consoleDump($ret);
     }
 
     /**
-     * @param $accounts
+     * @param $accountIds
+     * @param $accessToken
      * @param $filtering
+     * @param $page
      * @param $pageSize
-     * @return array
-     * @throws CustomException
-     * 并发获取
+     * @param array $param
+     * @return mixed|void
+     * sdk并发获取列表
      */
-    public function multiGetVideoList($accounts, $filtering, $pageSize){
-        return $this->multiGetPageList('video', $accounts, $filtering, $pageSize);
+    public function sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param = []){
+        return $this->sdk->multiGetVideoList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 
     /**
      * @param array $option
+     * @return bool
      * @throws CustomException
      * 同步
      */
-    public function syncVideo($option = []){
+    public function sync($option = []){
         ini_set('memory_limit', '2048M');
 
         $accountIds = [];
@@ -97,17 +101,19 @@ Functions::consoleDump($ret);
 
         $pageSize = 100;
         foreach($accountGroup as $pid => $g){
-            $videos = $this->multiGetVideoList($g, $filtering, $pageSize);
+            $videos = $this->multiGetPageList($g, $filtering, $pageSize);
             Functions::consoleDump('count:'. count($videos));
 
             // 保存
             foreach($videos as $video) {
-                $this->saveVideo($video);
+                $this->save($video);
             }
         }
 
         $t = microtime(1) - $t;
         var_dump($t);
+
+        return true;
     }
 
     /**
@@ -115,7 +121,7 @@ Functions::consoleDump($ret);
      * @return bool
      * 保存
      */
-    public function saveVideo($video){
+    public function save($video){
         $oceanVideoModel = new OceanVideoModel();
         $oceanVideo = $oceanVideoModel->where('id', $video['id'])->first();
 

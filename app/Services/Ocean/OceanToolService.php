@@ -40,7 +40,7 @@ class OceanToolService extends OceanService
                 $option['ids'] = $param['campaign_ids'];
             }
 
-            $oceanCampaignService->syncCampaign($option);
+            $oceanCampaignService->sync($option);
         }elseif($syncType == OceanSyncTypeEnum::AD){
             // 广告计划
             $oceanAdService = new OceanAdService($param['app_id']);
@@ -56,7 +56,7 @@ class OceanToolService extends OceanService
                 $option['ids'] = $param['ad_ids'];
             }
 
-            $oceanAdService->syncAd($option);
+            $oceanAdService->sync($option);
         }
 
         return true;

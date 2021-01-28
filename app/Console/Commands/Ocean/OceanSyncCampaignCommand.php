@@ -49,7 +49,7 @@ class OceanSyncCampaignCommand extends BaseCommand
         $oceanCampaignService = new OceanCampaignService();
         $option = ['log' => true];
         $this->lockRun(
-            [$oceanCampaignService, 'syncCampaign'],
+            [$oceanCampaignService, 'sync'],
             'ocean_sync_campaign',
             3600,
             $option,

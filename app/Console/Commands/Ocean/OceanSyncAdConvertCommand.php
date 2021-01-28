@@ -44,7 +44,7 @@ class OceanSyncAdConvertCommand extends BaseCommand
         $oceanAdConvertService = new OceanAdConvertService();
         $option = ['log' => true];
         $this->lockRun(
-            [$oceanAdConvertService, 'syncAdConvert'],
+            [$oceanAdConvertService, 'sync'],
             'ocean_sync_ad_convert',
             3600,
             $option,

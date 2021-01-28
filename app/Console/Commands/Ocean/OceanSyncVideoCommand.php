@@ -49,7 +49,7 @@ class OceanSyncVideoCommand extends BaseCommand
         $oceanVideoService = new OceanVideoService();
         $option = ['log' => true];
         $this->lockRun(
-            [$oceanVideoService, 'syncVideo'],
+            [$oceanVideoService, 'sync'],
             'ocean_sync_video',
             3600,
             $option,

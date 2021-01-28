@@ -164,6 +164,23 @@ class OceanService extends BaseService
     }
 
     /**
+     * @param $accountIds
+     * @param $accessToken
+     * @param $filtering
+     * @param $page
+     * @param $pageSize
+     * @param array $param
+     * @throws CustomException
+     * sdk批量获取列表
+     */
+    public function sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param = []){
+        throw new CustomException([
+            'code' => 'PLEASE_WRITE_SDK_MULTI_GET_LIST_CODE',
+            'message' => '请书写sdk批量获取列表代码',
+        ]);
+    }
+
+    /**
      * @param $type
      * @param $accounts
      * @param $filtering
@@ -173,22 +190,7 @@ class OceanService extends BaseService
      * @throws CustomException
      * 并发获取分页列表
      */
-    public function multiGetPageList($type, $accounts, $filtering, $pageSize, $param = []){
-        // 获取分页列表方法
-        $funcMap = [
-            'campaign' => 'multiGetCampaignList',
-            'video' => 'multiGetVideoList',
-            'ad' => 'multiGetAdList',
-            'ad_convert' => 'multiGetAdConvertList',
-        ];
-        if(!isset($funcMap[$type])){
-            throw new CustomException([
-                'code' => 'MULTI_GET_PAGE_LIST_TYPE_ERROR',
-                'message' => '并发获取分页列表类型错误',
-            ]);
-        }
-        $func = $funcMap[$type];
-
+    public function multiGetPageList($accounts, $filtering, $pageSize, $param = []){
         // 重载 access_token
         $accessToken = '';
         foreach($accounts as $account){
@@ -202,7 +204,7 @@ class OceanService extends BaseService
         foreach($accounts as $account){
             $accountIds[] = $account->account_id;
         }
-        $res = $this->sdk->$func($accountIds, $accessToken, $filtering, 1, $pageSize, $param);
+        $res = $this->sdkMultiGetList($accountIds, $accessToken, $filtering, 1, $pageSize, $param);
 
         // 查询其他页数
         $more = [];
@@ -224,7 +226,7 @@ class OceanService extends BaseService
 
         // 多页数据
         foreach($more as $page => $accountIds){
-            $tmp = $this->sdk->$func($accountIds, $accessToken, $filtering, $page, $pageSize);
+            $tmp = $this->sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
             $res = array_merge($res, $tmp);
         }
 

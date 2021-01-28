@@ -18,15 +18,17 @@ class OceanCampaignService extends OceanService
     }
 
     /**
-     * @param $accounts
+     * @param $accountIds
+     * @param $accessToken
      * @param $filtering
+     * @param $page
      * @param $pageSize
-     * @return array
-     * @throws CustomException
-     * 并发获取
+     * @param array $param
+     * @return mixed|void
+     * sdk并发获取列表
      */
-    public function multiGetCampaignList($accounts, $filtering, $pageSize){
-        return $this->multiGetPageList('campaign', $accounts, $filtering, $pageSize);
+    public function sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param = []){
+        return $this->sdk->multiGetCampaignList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 
     /**
@@ -35,7 +37,7 @@ class OceanCampaignService extends OceanService
      * @throws CustomException
      * 同步
      */
-    public function syncCampaign($option = []){
+    public function sync($option = []){
         ini_set('memory_limit', '2048M');
 
         $t = microtime(1);
@@ -72,12 +74,12 @@ class OceanCampaignService extends OceanService
 
         $pageSize = 100;
         foreach($accountGroup as $pid => $g){
-            $campaigns = $this->multiGetCampaignList($g, $filtering, $pageSize);
-            Functions::consoleDump('count:'. count($campaigns));
+            $items = $this->multiGetPageList($g, $filtering, $pageSize);
+            Functions::consoleDump('count:'. count($items));
 
             // 保存
-            foreach($campaigns as $campaign) {
-                $this->saveCampaign($campaign);
+            foreach($items as $item) {
+                $this->save($item);
             }
         }
 
@@ -88,14 +90,14 @@ class OceanCampaignService extends OceanService
     }
 
     /**
-     * @param $campaign
+     * @param $item
      * @return mixed
      * @throws CustomException
      * 保存
      */
-    public function saveCampaign($campaign){
-        $where = ['id', '=', $campaign['id']];
-        $ret = Functions::saveChange(OceanCampaignModel::class, $where, $campaign);
+    public function save($item){
+        $where = ['id', '=', $item['id']];
+        $ret = Functions::saveChange(OceanCampaignModel::class, $where, $item);
         return $ret;
     }
 }

@@ -18,15 +18,17 @@ class OceanAdService extends OceanService
     }
 
     /**
-     * @param $accounts
+     * @param $accountIds
+     * @param $accessToken
      * @param $filtering
+     * @param $page
      * @param $pageSize
-     * @return array
-     * @throws CustomException
-     * 并发获取
+     * @param array $param
+     * @return mixed|void
+     * sdk并发获取列表
      */
-    public function multiGetAdList($accounts, $filtering, $pageSize){
-        return $this->multiGetPageList('ad', $accounts, $filtering, $pageSize);
+    public function sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param = []){
+        return $this->sdk->multiGetAdList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 
     /**
@@ -35,7 +37,7 @@ class OceanAdService extends OceanService
      * @throws CustomException
      * 同步
      */
-    public function syncAd($option = []){
+    public function sync($option = []){
         ini_set('memory_limit', '2048M');
 
         $t = microtime(1);
@@ -82,12 +84,12 @@ class OceanAdService extends OceanService
 
         $pageSize = 100;
         foreach($accountGroup as $pid => $g){
-            $ads = $this->multiGetAdList($g, $filtering, $pageSize);
-            Functions::consoleDump('count:'. count($ads));
+            $items = $this->multiGetPageList($g, $filtering, $pageSize);
+            Functions::consoleDump('count:'. count($items));
 
             // 保存
-            foreach($ads as $ad) {
-                $this->saveAd($ad);
+            foreach($items as $item) {
+                $this->save($item);
             }
         }
 
@@ -98,18 +100,19 @@ class OceanAdService extends OceanService
     }
 
     /**
-     * @param $ad
+     * @param $item
      * @return mixed
      * @throws CustomException
      * 保存
      */
-    public function saveAd($ad){
-        $tmp = $ad;
+    public function save($item){
+        $tmp = $item;
         unset($tmp['id']);
-        $ad['extends'] = $tmp;
+        $item['extends'] = $tmp;
 
-        $where = ['id', '=', $ad['id']];
-        $ret = Functions::saveChange(OceanAdModel::class, $where, $ad);
+        $where = ['id', '=', $item['id']];
+        $ret = Functions::saveChange(OceanAdModel::class, $where, $item);
+
         return $ret;
     }
 }
