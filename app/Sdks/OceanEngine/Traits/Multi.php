@@ -18,16 +18,16 @@ trait Multi
     public function multiGetPageList($url, array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10, $param = []){
         $curlOptions = [];
         foreach($accountIds as $accountId){
-            $param = array_merge([
+            $p = array_merge([
                 'advertiser_id' => $accountId,
                 'filtering' => $filtering,
                 'page' => $page,
-                'page_size' =>$pageSize,
+                'page_size' => $pageSize,
             ], $param);
 
             $curlOptions[] = [
                 'url' => $url,
-                'param' => $param,
+                'param' => $p,
                 'method' => 'GET',
                 'header' => [
                     'Access-Token:'. $accessToken,

@@ -100,7 +100,7 @@ class OceanVideoService extends OceanService
         $t = microtime(1);
 
         $pageSize = 100;
-        foreach($accountGroup as $pid => $g){
+        foreach($accountGroup as $g){
             $videos = $this->multiGetPageList($g, $filtering, $pageSize);
             Functions::consoleDump('count:'. count($videos));
 

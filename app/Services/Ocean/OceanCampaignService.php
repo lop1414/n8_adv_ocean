@@ -73,7 +73,7 @@ class OceanCampaignService extends OceanService
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
         $pageSize = 100;
-        foreach($accountGroup as $pid => $g){
+        foreach($accountGroup as $g){
             $items = $this->multiGetPageList($g, $filtering, $pageSize);
             Functions::consoleDump('count:'. count($items));
 

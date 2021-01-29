@@ -4,6 +4,7 @@ namespace App\Services\Ocean;
 
 use App\Common\Enums\AdvAccountBelongTypeEnum;
 use App\Common\Enums\StatusEnum;
+use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
@@ -101,14 +102,23 @@ class OceanService extends BaseService
 
     /**
      * @param $oceanAccount
+     * @return bool
+     * access_token是否已失效
+     */
+    private function isFailAccessToken($oceanAccount){
+        $datetime = date('Y-m-d H:i:s', time());
+        return $datetime > $oceanAccount->fail_at;
+    }
+
+    /**
+     * @param $oceanAccount
      * @return mixed
      * @throws CustomException
      * 重载失效 access_token
      */
     private function reloadFailAccessToken($oceanAccount){
-        // token过期
-        $datetime = date('Y-m-d H:i:s', time());
-        if($datetime > $oceanAccount->fail_at){
+        if($this->isFailAccessToken($oceanAccount)){
+            Functions::consoleDump('reload fail access token');
             if($oceanAccount->belong_platform == AdvAccountBelongTypeEnum::SECOND_VERSION){
                 $secondVersionService = new SecondVersionService();
                 $secondVersionAccount = $secondVersionService->getJrttAdvAccount($oceanAccount->app_id, $oceanAccount->account_id);
@@ -117,6 +127,13 @@ class OceanService extends BaseService
                     $oceanAccount->access_token = $secondVersionAccount['token'];
                     $oceanAccount->fail_at = $secondVersionAccount['fail_at'];
                     $oceanAccount->save();
+
+                    // 父账户
+//                    $oceanAccountModel = new OceanAccountModel();
+//                    $oceanAccountModel->whereRaw("parent_id = '{$oceanAccount->parent_id}' OR id = '{$oceanAccount->parent_id}'")->update([
+//                        'access_token' => $secondVersionAccount['token'],
+//                        'fail_at' => $secondVersionAccount['fail_at'],
+//                    ]);
                 }
             }
         }
@@ -155,9 +172,25 @@ class OceanService extends BaseService
     public function getSubAccountGroup(array $accountIds = []){
         $subAccount = $this->getSubAccount($accountIds);
 
-        $group = [];
+        $s = [];
         foreach($subAccount as $account){
-            $group[$account->parent_id][] = $account;
+            $s[$account->parent_id][] = $account;
+        }
+
+        $groupSize = 10;
+
+        $group = [];
+        foreach($s as $ss){
+            $chunks = array_chunk($ss, $groupSize);
+            foreach($chunks as $chunk){
+                $group[] = $chunk;
+            }
+        }
+
+        foreach($group as $k => $chunk){
+            foreach($chunk as $v){
+                $tmp[$v->account_id] = 1;
+            }
         }
 
         return $group;
@@ -181,7 +214,6 @@ class OceanService extends BaseService
     }
 
     /**
-     * @param $type
      * @param $accounts
      * @param $filtering
      * @param $pageSize
@@ -191,12 +223,44 @@ class OceanService extends BaseService
      * 并发获取分页列表
      */
     public function multiGetPageList($accounts, $filtering, $pageSize, $param = []){
+// 是否打印
+$dump = false;
         // 重载 access_token
         $accessToken = '';
         foreach($accounts as $account){
-            $account = $this->reloadFailAccessToken($account);
+$dump && Functions::consoleDump('=============== start =================');
+            if($this->isFailAccessToken($account)){
+$dump && Functions::consoleDump('access token is fail, account id:'. $account->account_id .', fail at:'. $account->fail_at);
+                // 查找父级账户
+                $oceanParentAccounts = Functions::getGlobalData('ocean_parent_accounts') ?? [];
+$dump && Functions::consoleDump('parent global data account count:'. count($oceanParentAccounts));
+                if(isset($oceanParentAccounts[$account->parent_id])){
+$dump && Functions::consoleDump('has parent global data, parent id:'. $account->parent_id);
+                    $parentAccount = $oceanParentAccounts[$account->parent_id];
+                }else{
+$dump && Functions::consoleDump('find parent data from db, parent id:'. $account->parent_id);
+                    $oceanAccountModel = new OceanAccountModel();
+                    $parentAccount = $oceanAccountModel->where('app_id', $account->app_id)
+                        ->where('account_id', $account->parent_id)
+                        ->first();
+                }
 
-            $accessToken = $account->access_token;
+                // 重载父账户 access_token
+                if($this->isFailAccessToken($parentAccount)){
+$dump && Functions::consoleDump('parent access token is fail, parent id:'. $account->parent_id .', fail at:'. $parentAccount->fail_at);
+                    $parentAccount = $this->reloadFailAccessToken($parentAccount);
+$dump && Functions::consoleDump('reload parent access token, parent id:'. $account->parent_id .', fail at:'. $parentAccount->fail_at);
+                    $oceanParentAccounts[$parentAccount->account_id] = $parentAccount;
+                    Functions::setGlobalData('ocean_parent_accounts', $oceanParentAccounts);
+$dump && Functions::consoleDump('parent global data account count:'. count($oceanParentAccounts));
+                }else{
+                    $accessToken = $parentAccount->access_token;
+                }
+            }else{
+                $accessToken = $account->access_token;
+            }
+
+$dump && Functions::consoleDump('=============== end =================');
         }
 
         // 账户第一页数据
@@ -247,7 +311,6 @@ class OceanService extends BaseService
                 $list[] = $item;
             }
         }
-
         return $list;
     }
 
