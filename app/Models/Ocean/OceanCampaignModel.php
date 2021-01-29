@@ -46,4 +46,12 @@ class OceanCampaignModel extends OceanModel
     public function setBudgetAttribute($value){
         $this->attributes['budget'] = $value * 100;
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * 关联巨量账户模型 一对一
+     */
+    public function ocean_account(){
+        return $this->belongsTo('App\Models\Ocean\OceanAccountModel', 'account_id', 'account_id');
+    }
 }

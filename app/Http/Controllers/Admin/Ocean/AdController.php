@@ -28,7 +28,9 @@ class AdController extends OceanController
 
         $this->curdService->selectQueryAfter(function(){
             foreach($this->curdService->responseData['list'] as $v){
-                //$this->curdService->getModel()->expandExtendsField($v);
+                // 关联巨量账户
+                $v->ocean_account;
+
                 unset($v->extends);
             }
         });
@@ -41,6 +43,9 @@ class AdController extends OceanController
         parent::readPrepare();
 
         $this->curdService->findAfter(function(){
+            // 关联巨量账户
+            $this->curdService->findData->ocean_account;
+
             $this->curdService->getModel()->expandExtendsField($this->curdService->findData);
         });
     }

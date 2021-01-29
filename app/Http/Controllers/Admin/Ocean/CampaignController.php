@@ -18,4 +18,30 @@ class CampaignController extends OceanController
 
         parent::__construct();
     }
+
+    /**
+     * 列表预处理
+     */
+    public function selectPrepare(){
+        parent::selectPrepare();
+
+        $this->curdService->selectQueryAfter(function(){
+            foreach($this->curdService->responseData['list'] as $v){
+                // 关联巨量账户
+                $v->ocean_account;
+            }
+        });
+    }
+
+    /**
+     * 详情预处理
+     */
+    public function readPrepare(){
+        parent::readPrepare();
+
+        $this->curdService->findAfter(function(){
+            // 关联巨量账户
+            $this->curdService->findData->ocean_account;
+        });
+    }
 }
