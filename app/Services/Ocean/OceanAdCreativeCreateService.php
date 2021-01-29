@@ -265,7 +265,9 @@ class OceanAdCreativeCreateService extends OceanService
                 $startAt = date('Y-m-d H:i:s', $startTime);
 
                 // 计划名称拼接时间
-                $item['data']['ad']['name'] .= "_{$startAt}";
+                $tmp = explode("|", $item['data']['ad']['name']);
+                $tmp[0] .= "_{$startAt}";
+                $item['data']['ad']['name'] = implode("|", $tmp);
 
                 $subs[] = [
                     'app_id' => $item['app_id'],
