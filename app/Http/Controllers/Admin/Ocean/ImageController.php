@@ -78,6 +78,14 @@ class ImageController extends OceanController
         $accountIds = $request->post('account_ids');
         $imageIds = $request->post('image_ids');
 
+        $maxAccount = 40;
+        if(count($accountIds) > $maxAccount){
+            throw new CustomException([
+                'code' => 'MORE_THAN_MAX_ACCOUNT',
+                'message' => "每次最多同步{$maxAccount}个账户",
+            ]);
+        }
+
         // 获取图片
         $materialApiService = new MaterialApiService();
         $images = $materialApiService->apiGetImages($imageIds);
@@ -113,6 +121,15 @@ class ImageController extends OceanController
         // 获取后台用户信息
         $adminUserInfo = Functions::getGlobalData('admin_user_info');
 
+        $taskOceanImageUploadService = new TaskOceanImageUploadService();
+        $has = $taskOceanImageUploadService->hasAdminUserWaitingTask($adminUserInfo['admin_user']['id']);
+        if($has){
+            throw new CustomException([
+                'code' => 'HAS_WAITING_TASK',
+                'message' => '有待执行任务尚未完成,无法继续提交任务',
+            ]);
+        }
+
         // 获取账户
         $oceanAccountModel = new OceanAccountModel();
         $builder = $oceanAccountModel->whereIn('account_id', $accountIds);
@@ -131,7 +148,6 @@ class ImageController extends OceanController
         }
 
         // 创建任务
-        $taskOceanImageUploadService = new TaskOceanImageUploadService();
         $task = [
             'name' => '批量上传巨量图片',
             'admin_id' => $adminUserInfo['admin_user']['id'],
