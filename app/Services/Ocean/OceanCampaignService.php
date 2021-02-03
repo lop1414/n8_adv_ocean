@@ -48,8 +48,13 @@ class OceanCampaignService extends OceanService
             $accountIds = $option['account_ids'];
         }
 
-        $filtering = [];
+        // 并发分片大小
+        if(!empty($option['multi_chunk_size'])){
+            $multiChunkSize = min(intval($option['multi_chunk_size']), 8);
+            $this->sdk->setMultiChunkSize($multiChunkSize);
+        }
 
+        $filtering = [];
         // 创建日期
         if(!empty($option['create_date'])){
             $filtering['campaign_create_time'] = Functions::getDate($option['create_date']);
@@ -60,8 +65,6 @@ class OceanCampaignService extends OceanService
             $status = strtoupper($option['status']);
             Functions::hasEnum(OceanCampaignStatusEnum::class, $status);
             $filtering['status'] = $status;
-        }else{
-            $filtering['status'] = OceanCampaignStatusEnum::CAMPAIGN_STATUS_ALL;
         }
 
         // id

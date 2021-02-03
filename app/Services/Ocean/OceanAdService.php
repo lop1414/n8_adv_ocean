@@ -48,6 +48,12 @@ class OceanAdService extends OceanService
             $accountIds = $option['account_ids'];
         }
 
+        // 并发分片大小
+        if(!empty($option['multi_chunk_size'])){
+            $multiChunkSize = min(intval($option['multi_chunk_size']), 8);
+            $this->sdk->setMultiChunkSize($multiChunkSize);
+        }
+
         $filtering = [];
 
         // 创建日期
@@ -70,8 +76,6 @@ class OceanAdService extends OceanService
             $status = strtoupper($option['status']);
             Functions::hasEnum(OceanAdStatusEnum::class, $status);
             $filtering['status'] = $status;
-        }else{
-            $filtering['status'] = OceanAdStatusEnum::AD_STATUS_ALL;
         }
 
         // id
@@ -88,9 +92,21 @@ class OceanAdService extends OceanService
             Functions::consoleDump('count:'. count($items));
 
             // 保存
+            $data = [];
             foreach($items as $item) {
-                $this->save($item);
+                $tmp = $item;
+                unset($tmp['id']);
+                $item['extends'] = json_encode($tmp);
+
+                $datetime = date('Y-m-d H:i:s');
+
+                $item['created_at'] = $datetime;
+                $item['updated_at'] = $datetime;
+                $data[] = $item;
             }
+
+            // 批量保存
+            $this->batchSave($data);
         }
 
         $t = microtime(1) - $t;
@@ -100,19 +116,13 @@ class OceanAdService extends OceanService
     }
 
     /**
-     * @param $item
-     * @return mixed
-     * @throws CustomException
-     * 保存
+     * @param $data
+     * @return bool
+     * 批量保存
      */
-    public function save($item){
-        $tmp = $item;
-        unset($tmp['id']);
-        $item['extends'] = $tmp;
-
-        $where = ['id', '=', $item['id']];
-        $ret = Functions::saveChange(OceanAdModel::class, $where, $item);
-
-        return $ret;
+    public function batchSave($data){
+        $oceanAdModel = new OceanAdModel();
+        $oceanAdModel->chunkInsertOrUpdate($data, 50, $oceanAdModel->getTable(), $oceanAdModel->getTableColumnsWithPrimaryKey());
+        return true;
     }
 }

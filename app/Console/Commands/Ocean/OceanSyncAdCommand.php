@@ -11,7 +11,7 @@ class OceanSyncAdCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_ad  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--ids=}';
+    protected $signature = 'ocean:sync_ad  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--ids=} {--multi_chunk_size=}';
 
     /**
      * 命令描述

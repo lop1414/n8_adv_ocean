@@ -31,6 +31,12 @@ class OceanAdModel extends OceanModel
     public $incrementing = false;
 
     /**
+     * @var array
+     * 批量更新忽略字段
+     */
+    protected $updateIgnoreFields = ['created_at'];
+
+    /**
      * 属性访问器
      * @param $value
      * @return mixed
