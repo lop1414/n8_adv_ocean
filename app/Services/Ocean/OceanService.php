@@ -7,7 +7,9 @@ use App\Common\Enums\StatusEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanAdStatusEnum;
 use App\Models\Ocean\OceanAccountModel;
+use App\Models\Ocean\OceanAdModel;
 use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\SecondVersionService;
 
@@ -177,7 +179,7 @@ class OceanService extends BaseService
             $s[$account->parent_id][] = $account;
         }
 
-        $groupSize = 10;
+        $groupSize = 20;
 
         $group = [];
         foreach($s as $ss){
@@ -359,6 +361,30 @@ $dump && Functions::consoleDump('=============== end =================');
         $oceanAccount = $this->reloadFailAccessToken($oceanAccount);
 
         return $oceanAccount;
+    }
+
+    /**
+     * @return mixed
+     * 获取在跑账户id
+     */
+    public function getRunningAccountIds(){
+        // 在跑状态
+        $runningStatus = [
+            OceanAdStatusEnum::AD_STATUS_DELETE,
+            OceanAdStatusEnum::AD_STATUS_DISABLE,
+        ];
+        $runningStatusStr = implode("','", $runningStatus);
+
+        $oceanAccountModel = new OceanAccountModel();
+        $oceanAccountIds = $oceanAccountModel->whereRaw("
+            account_id IN (
+                SELECT account_id FROM ocean_ads
+                    WHERE `status` NOT IN ('{$runningStatusStr}')
+                    GROUP BY account_id
+            )
+        ")->pluck('account_id');
+
+        return $oceanAccountIds->toArray();
     }
 
     /**

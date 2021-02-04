@@ -15,6 +15,7 @@ use App\Sdks\OceanEngine\Traits\Industry;
 use App\Sdks\OceanEngine\Traits\Material;
 use App\Sdks\OceanEngine\Traits\Multi;
 use App\Sdks\OceanEngine\Traits\Region;
+use App\Sdks\OceanEngine\Traits\Report;
 use App\Sdks\OceanEngine\Traits\Request;
 use App\Sdks\OceanEngine\Traits\Video;
 
@@ -35,6 +36,7 @@ class OceanEngine
     use Ad;
     use AdConvert;
     use Error;
+    use Report;
 
     /**
      * 公共接口地址

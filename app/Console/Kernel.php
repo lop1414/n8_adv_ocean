@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
 use App\Console\Commands\Ocean\OceanSyncAdConvertCommand;
 use App\Console\Commands\Ocean\OceanSyncCityCommand;
@@ -50,6 +51,7 @@ class Kernel extends ConsoleKernel
         OceanSyncIndustryCommand::class,
         OceanSyncAdCommand::class,
         OceanSyncAdConvertCommand::class,
+        OceanSyncAccountReportCommand::class,
     ];
 
     /**
