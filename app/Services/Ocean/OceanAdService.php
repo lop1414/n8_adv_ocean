@@ -100,6 +100,11 @@ class OceanAdService extends OceanService
 
                 $datetime = date('Y-m-d H:i:s');
 
+                $item['budget'] = !empty($item['budget']) ? $item['budget'] * 100 : 0;
+                $item['bid'] = !empty($item['bid']) ? $item['bid'] * 100 : 0;
+                $item['cpa_bid'] = !empty($item['cpa_bid']) ? $item['cpa_bid'] * 100 : 0;
+                $item['deep_cpabid'] = !empty($item['deep_cpabid']) ? $item['deep_cpabid'] * 100 : 0;
+
                 $item['created_at'] = $datetime;
                 $item['updated_at'] = $datetime;
                 $data[] = $item;
