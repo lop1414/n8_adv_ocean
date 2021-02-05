@@ -9,6 +9,7 @@ use App\Console\Commands\Ocean\OceanSyncCityCommand;
 use App\Console\Commands\Ocean\OceanSyncIndustryCommand;
 use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
+use App\Console\Commands\Ocean\Report\OceanSyncCreativeReportCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
@@ -52,6 +53,7 @@ class Kernel extends ConsoleKernel
         OceanSyncAdCommand::class,
         OceanSyncAdConvertCommand::class,
         OceanSyncAccountReportCommand::class,
+        OceanSyncCreativeReportCommand::class,
     ];
 
     /**
@@ -80,5 +82,11 @@ class Kernel extends ConsoleKernel
 
         // 巨量计划创意创建任务
         $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
+
+        // 巨量计划同步
+        $schedule->command('ocean:sync_ad --update_date=today')->cron('*/60 * * * *');
+
+        // 巨量报表同步
+        $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('* * * * *');
     }
 }
