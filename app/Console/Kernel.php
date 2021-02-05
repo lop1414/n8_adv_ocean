@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Common\Helpers\Functions;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
 use App\Console\Commands\Ocean\OceanSyncAdConvertCommand;
@@ -83,14 +84,18 @@ class Kernel extends ConsoleKernel
         // 巨量计划创意创建任务
         $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
 
-        // 巨量计划同步
-        $schedule->command('ocean:sync_ad --update_date=today')->cron('30 0-2,6-23 * * *');
-        $schedule->command('ocean:sync_ad')->cron('30 4 * * *');
+        // 测试
+        if(Functions::isDebug()){
+            // 巨量计划同步
+            $schedule->command('ocean:sync_ad --update_date=today')->cron('30 0-2,6-23 * * *');
+            $schedule->command('ocean:sync_ad')->cron('30 4 * * *');
 
-        // 巨量账户报表同步
-        $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('*/15 * * * *');
+            // 巨量账户报表同步
+            $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('*/15 * * * *');
 
-        // 巨量创意报表同步
-        $schedule->command('ocean:sync_creative_report --date=today --running=1')->cron('*/20 * * * *');
+            // 巨量创意报表同步
+            $schedule->command('ocean:sync_creative_report --date=today --running=1')->cron('*/20 * * * *');
+        }
+
     }
 }
