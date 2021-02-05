@@ -41,12 +41,18 @@ class OceanSyncAccountReportCommand extends BaseCommand
             $param['account_ids'] = explode(",", $param['account_ids']);
         }
 
+        // 锁 key
+        $lockKey = 'ocean_sync_account_report';
+        if(!empty($param['running'])){
+            $lockKey .= '_running';
+        }
+
         $oceanAccountReportService = new OceanAccountReportService();
         $option = ['log' => true];
         $this->lockRun(
             [$oceanAccountReportService, 'sync'],
-            'ocean_sync_account_report',
-            3600,
+            $lockKey,
+            5400,
             $option,
             $param
         );

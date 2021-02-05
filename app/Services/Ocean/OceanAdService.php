@@ -76,6 +76,8 @@ class OceanAdService extends OceanService
             $status = strtoupper($option['status']);
             Functions::hasEnum(OceanAdStatusEnum::class, $status);
             $filtering['status'] = $status;
+        }else{
+            $filtering['status'] = OceanAdStatusEnum::AD_STATUS_ALL;
         }
 
         // id

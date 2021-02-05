@@ -73,6 +73,8 @@ class OceanReportService extends OceanService
         // 获取子账户组
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
+        $filtering = $this->getFiltering();
+
         foreach($dateList as $date){
             $param = [
                 'start_date' => $date,
@@ -80,9 +82,13 @@ class OceanReportService extends OceanService
                 'time_granularity' => 'STAT_TIME_GRANULARITY_HOURLY',
             ];
 
-            $pageSize = 100;
+            if(!empty($this->getGroupBy())){
+                $param['group_by'] = $this->getGroupBy();
+            }
+
+            $pageSize = 200;
             foreach($accountGroup as $g){
-                $items = $this->multiGetPageList($g, [], $pageSize, $param);
+                $items = $this->multiGetPageList($g, $filtering, $pageSize, $param);
                 Functions::consoleDump('count:'. count($items));
 
                 $cost = 0;
@@ -92,17 +98,13 @@ class OceanReportService extends OceanService
                 foreach($items as $item) {
                     $cost += $item['cost'];
 
-                    if(
-                        empty($item['cost']) &&
-                        empty($item['show']) &&
-                        empty($item['click']) &&
-                        empty($item['convert'])
-                    ){
+                    if(!$this->itemValid($item)){
                         continue;
                     }
 
                     $item['cost'] *= 100;
                     $item['extends'] = json_encode($item);
+
                     $data[] = $item;
                 }
 
@@ -117,6 +119,42 @@ class OceanReportService extends OceanService
         Functions::consoleDump($t);
 
         return true;
+    }
+
+    /**
+     * @param $item
+     * @return bool
+     * 校验
+     */
+    protected function itemValid($item){
+        $valid = true;
+
+        if(
+            empty($item['cost']) &&
+            empty($item['show']) &&
+            empty($item['click']) &&
+            empty($item['convert'])
+        ){
+            $valid = false;
+        }
+
+        return $valid;
+    }
+
+    /**
+     * @return array
+     * 获取分组
+     */
+    protected function getGroupBy(){
+        return ['STAT_GROUP_BY_FIELD_ID', 'STAT_GROUP_BY_FIELD_STAT_TIME'];
+    }
+
+    /**
+     * @return array
+     * 获取过滤条件
+     */
+    protected function getFiltering(){
+        return [];
     }
 
     /**
