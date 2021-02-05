@@ -84,9 +84,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
 
         // 巨量计划同步
-        $schedule->command('ocean:sync_ad --update_date=today')->cron('*/60 * * * *');
+        $schedule->command('ocean:sync_ad --update_date=today')->cron('30 0-2,6-23 * * *');
+        $schedule->command('ocean:sync_ad')->cron('30 4 * * *');
 
-        // 巨量报表同步
-        $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('* * * * *');
+        // 巨量账户报表同步
+        $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('*/15 * * * *');
+
+        // 巨量创意报表同步
+        $schedule->command('ocean:sync_creative_report --date=today --running=1')->cron('*/20 * * * *');
     }
 }
