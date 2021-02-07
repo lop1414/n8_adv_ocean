@@ -88,7 +88,7 @@ class Kernel extends ConsoleKernel
         if(Functions::isStaging()){
             // 巨量计划同步
             $schedule->command('ocean:sync_ad --update_date=today')->cron('* * * * *');
-            $schedule->command('ocean:sync_ad')->cron('25-30 0 * * *');
+            $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 0 * * *');
 
             // 巨量账户报表同步
             $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('* * * * *');
