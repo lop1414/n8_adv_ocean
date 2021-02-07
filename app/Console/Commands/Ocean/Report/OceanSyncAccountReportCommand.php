@@ -11,7 +11,7 @@ class OceanSyncAccountReportCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_account_report  {--date=} {--account_ids=} {--delete=} {--running=}';
+    protected $signature = 'ocean:sync_account_report  {--date=} {--account_ids=} {--delete=} {--running=} {--key_suffix=}';
 
     /**
      * 命令描述
@@ -45,6 +45,11 @@ class OceanSyncAccountReportCommand extends BaseCommand
         $lockKey = 'ocean_sync_account_report';
         if(!empty($param['running'])){
             $lockKey .= '_running';
+        }
+
+        // key 后缀
+        if(!empty($param['key_suffix'])){
+            $lockKey .= '_'. trim($param['key_suffix']);
         }
 
         $oceanAccountReportService = new OceanAccountReportService();
