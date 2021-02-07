@@ -370,8 +370,7 @@ $dump && Functions::consoleDump('=============== end =================');
     public function getRunningAccountIds(){
         // 在跑状态
         $runningStatus = [
-            OceanAdStatusEnum::AD_STATUS_DELETE,
-            OceanAdStatusEnum::AD_STATUS_DISABLE,
+            OceanAdStatusEnum::AD_STATUS_DELIVERY_OK,
         ];
         $runningStatusStr = implode("','", $runningStatus);
 
@@ -379,7 +378,7 @@ $dump && Functions::consoleDump('=============== end =================');
         $oceanAccountIds = $oceanAccountModel->whereRaw("
             account_id IN (
                 SELECT account_id FROM ocean_ads
-                    WHERE `status` NOT IN ('{$runningStatusStr}')
+                    WHERE `status` IN ('{$runningStatusStr}')
                     GROUP BY account_id
             )
         ")->pluck('account_id');
