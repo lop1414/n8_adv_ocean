@@ -11,7 +11,7 @@ class OceanSyncAdCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_ad  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--ids=} {--multi_chunk_size=}';
+    protected $signature = 'ocean:sync_ad  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--ids=} {--multi_chunk_size=} {--key_suffix=}';
 
     /**
      * 命令描述
@@ -46,11 +46,19 @@ class OceanSyncAdCommand extends BaseCommand
             $param['ids'] = explode(",", $param['ids']);
         }
 
+        // 锁 key
+        $lockKey = 'ocean_sync_ad';
+
+        // key 后缀
+        if(!empty($param['key_suffix'])){
+            $lockKey .= '_'. trim($param['key_suffix']);
+        }
+
         $oceanAdService = new OceanAdService();
         $option = ['log' => true];
         $this->lockRun(
             [$oceanAdService, 'sync'],
-            'ocean_sync_ad',
+            $lockKey,
             43200,
             $option,
             $param
