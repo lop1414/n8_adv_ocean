@@ -85,7 +85,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
 
         // 测试
-        if(Functions::isDebug()){
+        if(Functions::isStaging()){
             // 巨量计划同步
             $schedule->command('ocean:sync_ad --update_date=today')->cron('*/15 1-23 * * *');
             $schedule->command('ocean:sync_ad')->cron('30 0 * * *');
