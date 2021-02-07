@@ -46,7 +46,7 @@ class OceanSyncAdConvertCommand extends BaseCommand
         $this->lockRun(
             [$oceanAdConvertService, 'sync'],
             'ocean_sync_ad_convert',
-            3600,
+            43200,
             $option,
             $param
         );

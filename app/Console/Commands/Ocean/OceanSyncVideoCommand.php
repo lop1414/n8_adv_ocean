@@ -51,7 +51,7 @@ class OceanSyncVideoCommand extends BaseCommand
         $this->lockRun(
             [$oceanVideoService, 'sync'],
             'ocean_sync_video',
-            3600,
+            43200,
             $option,
             $param
         );

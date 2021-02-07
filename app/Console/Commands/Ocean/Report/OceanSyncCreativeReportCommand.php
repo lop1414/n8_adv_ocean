@@ -52,7 +52,7 @@ class OceanSyncCreativeReportCommand extends BaseCommand
         $this->lockRun(
             [$oceanCreativeReportService, 'sync'],
             $lockKey,
-            5400,
+            43200,
             $option,
             $param
         );
