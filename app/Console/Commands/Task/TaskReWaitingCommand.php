@@ -43,7 +43,7 @@ class TaskReWaitingCommand extends BaseCommand
         $this->lockRun(
             [$this, 'reWaiting'],
             'task_re_waiting',
-            3600,
+            43200,
             $option
         );
     }

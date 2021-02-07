@@ -44,7 +44,7 @@ class TaskOceanSyncCommand extends BaseCommand
         $this->lockRun(
             [$taskOceanSyncService, 'run'],
             "task_ocean_sync_{$type}",
-            3600,
+            43200,
             $option
         );
     }

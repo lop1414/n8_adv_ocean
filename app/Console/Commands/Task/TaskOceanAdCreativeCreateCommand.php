@@ -38,7 +38,7 @@ class TaskOceanAdCreativeCreateCommand extends BaseCommand
         $this->lockRun(
             [$taskOceanAdCreativeCreateService, 'run'],
             'task_ocean_ad_creative_create',
-            3600,
+            43200,
             $option
         );
     }

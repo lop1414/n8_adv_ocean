@@ -40,7 +40,7 @@ class TaskOceanVideoUploadCommand extends BaseCommand
         $this->lockRun(
             [$oceanVideoUploadTaskService, 'run'],
             'task_ocean_video_upload',
-            3600,
+            43200,
             $option
         );
     }
