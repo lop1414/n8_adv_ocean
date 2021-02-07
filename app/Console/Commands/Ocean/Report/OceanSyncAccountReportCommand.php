@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Ocean\Report;
 
 use App\Common\Console\BaseCommand;
+use App\Common\Helpers\Functions;
 use App\Services\Ocean\Report\OceanAccountReportService;
 
 class OceanSyncAccountReportCommand extends BaseCommand
@@ -46,6 +47,11 @@ class OceanSyncAccountReportCommand extends BaseCommand
         if(!empty($param['running'])){
             $lockKey .= '_running';
         }
+
+        // key 日期
+//        if(!empty($param['date'])){
+//            $lockKey .= '_'. Functions::getDate($param['date']);
+//        }
 
         // key 后缀
         if(!empty($param['key_suffix'])){
