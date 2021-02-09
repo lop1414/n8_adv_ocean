@@ -96,7 +96,7 @@ class Kernel extends ConsoleKernel
 
             // 巨量创意报表同步
             $schedule->command('ocean:sync_creative_report --date=today --running=1')->cron('* * * * *');
-            $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
+            $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10 * * *');
         }
 
     }
