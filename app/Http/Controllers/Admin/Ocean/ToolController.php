@@ -93,8 +93,10 @@ class ToolController extends OceanController
         if(!empty($syncType)){
             ini_set('max_execution_time', 60);
 
-            // 休眠防延迟
-            sleep(5);
+            if(strpos($uri, 'create') !== false){
+                // 休眠防延迟
+                sleep(3 );
+            }
 
             $syncParam = array_merge([
                 'app_id' => $data['app_id'],
