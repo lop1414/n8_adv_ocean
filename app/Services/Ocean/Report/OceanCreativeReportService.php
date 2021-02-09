@@ -37,4 +37,27 @@ class OceanCreativeReportService extends OceanReportService
     protected function getFiltering(){
         return ['status' => 'CREATIVE_STATUS_ALL'];
     }
+
+    /**
+     * @param $accountIds
+     * @return array|mixed
+     * @throws \App\Common\Tools\CustomException
+     * 按账户消耗执行
+     */
+    protected function runByAccountCost($accountIds){
+        $oceanAccountReportService = new OceanAccountReportService();
+        $accountReportMap = $oceanAccountReportService->getAccountReportByDate()->pluck('cost', 'account_id');
+
+        $creativeReportMap = $this->getAccountReportByDate()->pluck('cost', 'account_id');
+
+        $creativeAccountIds = ['xx'];
+        foreach($accountReportMap as $accountId => $cost){
+            if(isset($creativeReportMap[$accountId]) && bcsub($creativeReportMap[$accountId], $cost) >= 0){
+                continue;
+            }
+            $creativeAccountIds[] = $accountId;
+        }
+
+        return $creativeAccountIds;
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Services\Ocean\Report;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Services\Ocean\OceanService;
+use Illuminate\Support\Facades\DB;
 
 class OceanReportService extends OceanService
 {
@@ -68,6 +69,11 @@ class OceanReportService extends OceanService
             }
 
             $builder->delete();
+        }
+
+        if(!empty($option['run_by_account_cost'])){
+            // 处理广告账户id
+            $accountIds = $this->runByAccountCost($accountIds);
         }
 
         // 获取子账户组
@@ -158,6 +164,15 @@ class OceanReportService extends OceanService
     }
 
     /**
+     * @param $accountIds
+     * @return mixed
+     * 按账户消耗执行
+     */
+    protected function runByAccountCost($accountIds){
+        return $accountIds;
+    }
+
+    /**
      * @param $data
      * @return bool
      * 批量保存
@@ -166,5 +181,25 @@ class OceanReportService extends OceanService
         $model = new $this->modelClass();
         $model->chunkInsertOrUpdate($data);
         return true;
+    }
+
+    /**
+     * @param string $date
+     * @return mixed
+     * @throws CustomException
+     * 按日期获取账户报表
+     */
+    public function getAccountReportByDate($date = 'today'){
+        $date = Functions::getDate($date);
+        Functions::dateCheck($date);
+
+        $model = new $this->modelClass();
+        $report = $model->whereBetween('stat_datetime', ["{$date} 00:00:00", "{$date} 23:59:59"])
+            ->groupBy('account_id')
+            ->orderBy('cost', 'DESC')
+            ->select(DB::raw("account_id, SUM(cost) cost"))
+            ->get();
+
+        return $report;
     }
 }
