@@ -247,6 +247,7 @@ class SecondVersionService extends BaseService
                 // 更新
                 $oceanAccount->access_token = $account['token'];
                 $oceanAccount->fail_at = $account['fail_at'];
+                $oceanAccount->parent_id = $account['parent_adv_id'];
                 $oceanAccount->admin_id = $adminUserMap[$account['admin_name']] ?? 0;
             }
 
