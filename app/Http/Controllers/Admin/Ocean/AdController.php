@@ -31,6 +31,9 @@ class AdController extends OceanController
                 // 关联巨量账户
                 $v->ocean_account;
 
+                // 关联报表
+                $v->report = $v->ocean_creative_reports()->compute()->first();
+
                 unset($v->extends);
             }
         });

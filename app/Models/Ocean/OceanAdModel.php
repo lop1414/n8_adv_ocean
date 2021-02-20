@@ -2,6 +2,9 @@
 
 namespace App\Models\Ocean;
 
+use App\Models\Ocean\Report\OceanCreativeReportModel;
+use Illuminate\Support\Facades\DB;
+
 class OceanAdModel extends OceanModel
 {
     /**
@@ -131,5 +134,18 @@ class OceanAdModel extends OceanModel
      */
     public function ocean_account(){
         return $this->belongsTo('App\Models\Ocean\OceanAccountModel', 'account_id', 'account_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * 关联创意报表模型 一对多
+     */
+    public function ocean_creative_reports(){
+        $today = date('Y-m-d', TIMESTAMP);
+$today = '2021-02-03';
+        $creativeTable = (new OceanCreativeReportModel())->getTable();
+        return $this->hasMany('App\Models\Ocean\Report\OceanCreativeReportModel', 'ad_id', 'id')
+            ->whereBetween("{$creativeTable}.stat_datetime", ["{$today} 00:00:00", "{$today} 23:59:59"])
+            ->groupBy('ad_id');
     }
 }
