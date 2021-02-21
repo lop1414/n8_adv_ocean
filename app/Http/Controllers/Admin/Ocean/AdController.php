@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Admin\Ocean;
 
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAdModel;
-use App\Models\Ocean\OceanCampaignModel;
 use App\Services\Ocean\OceanService;
 use Illuminate\Http\Request;
 
 class AdController extends OceanController
 {
+    /**
+     * @var string
+     * 默认排序字段
+     */
+    protected $defaultOrderBy = 'ad_modify_time';
+
     /**
      * constructor.
      */
