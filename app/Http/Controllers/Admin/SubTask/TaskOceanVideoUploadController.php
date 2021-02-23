@@ -34,4 +34,16 @@ class TaskOceanVideoUploadController extends SubTaskOceanController
             }
         });
     }
+
+    /**
+     * 详情预处理
+     */
+    public function readPrepare(){
+        parent::readPrepare();
+
+        $this->curdService->findAfter(function(){
+            $materialApiService = new MaterialApiService();
+            $this->curdService->findData->video = $materialApiService->apiGetVideos([$this->curdService->findData->n8_material_video_id]);
+        });
+    }
 }
