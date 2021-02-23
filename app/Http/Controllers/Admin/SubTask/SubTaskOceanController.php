@@ -24,6 +24,9 @@ class SubTaskOceanController extends SubTaskController
         $this->curdService->selectQueryAfter(function(){
             foreach($this->curdService->responseData['list'] as $item){
                 $item->fail_reason = $this->getFailReason($item->fail_data);
+
+                // 关联巨量账户
+                $item->ocean_account;
             }
         });
     }

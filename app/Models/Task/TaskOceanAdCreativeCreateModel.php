@@ -4,7 +4,7 @@ namespace App\Models\Task;
 
 use App\Common\Models\SubTaskModel;
 
-class TaskOceanAdCreativeCreateModel extends SubTaskModel
+class TaskOceanAdCreativeCreateModel extends TaskOceanModel
 {
     /**
      * 关联到模型的数据表

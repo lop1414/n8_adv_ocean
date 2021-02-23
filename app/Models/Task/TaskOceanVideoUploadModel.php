@@ -4,7 +4,7 @@ namespace App\Models\Task;
 
 use App\Common\Models\SubTaskModel;
 
-class TaskOceanVideoUploadModel extends SubTaskModel
+class TaskOceanVideoUploadModel extends TaskOceanModel
 {
     /**
      * 关联到模型的数据表
