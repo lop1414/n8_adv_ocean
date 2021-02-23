@@ -26,9 +26,7 @@ class TaskOceanVideoUploadController extends SubTaskOceanController
 
         $this->curdService->selectQueryAfter(function(){
             $videoIds = $this->curdService->responseData['list']->pluck('n8_material_video_id');
-            $materialApiService = new MaterialApiService();
-            $videos = $materialApiService->apiGetVideos($videoIds);
-            $videoMap = array_column($videos, null, 'id');
+            $videoMap = $this->getVideoMap($videoIds);
             foreach($videoIds = $this->curdService->responseData['list'] as $item){
                 $item->video = $videoMap[$item->n8_material_video_id] ?? null;
             }
@@ -42,8 +40,21 @@ class TaskOceanVideoUploadController extends SubTaskOceanController
         parent::readPrepare();
 
         $this->curdService->findAfter(function(){
-            $materialApiService = new MaterialApiService();
-            $this->curdService->findData->video = $materialApiService->apiGetVideos([$this->curdService->findData->n8_material_video_id]);
+            $videoMap = $this->getVideoMap([$this->curdService->findData->n8_material_video_id]);
+            $this->curdService->findData->video = $videoMap[$this->curdService->findData->n8_material_video_id] ?? null;
         });
+    }
+
+    /**
+     * @param $videoIds
+     * @return array
+     * @throws \App\Common\Tools\CustomException
+     * 获取视频映射
+     */
+    private function getVideoMap($videoIds){
+        $materialApiService = new MaterialApiService();
+        $videos = $materialApiService->apiGetVideos($videoIds);
+        $videoMap = array_column($videos, null, 'id');
+        return $videoMap;
     }
 }
