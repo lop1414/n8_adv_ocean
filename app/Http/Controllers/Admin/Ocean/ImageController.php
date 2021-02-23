@@ -158,8 +158,10 @@ class ImageController extends OceanController
                 $subs[] = [
                     'app_id' => $account->app_id,
                     'account_id' => $account->account_id,
+                    'n8_material_image_id' => $image['id'],
                     'n8_material_image_path' => $image['path'],
                     'n8_material_image_name' => $image['name'],
+                    'n8_material_image_signature' => $image['signature'],
                     'admin_id' => $adminUserInfo['admin_user']['id'],
                 ];
             }

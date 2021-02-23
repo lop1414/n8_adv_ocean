@@ -31,16 +31,20 @@ class TaskOceanImageUploadService extends TaskOceanService
         $this->validRule($data, [
             'app_id' => 'required',
             'account_id' => 'required',
+            'n8_material_image_id' => 'required',
             'n8_material_image_path' => 'required',
             'n8_material_image_name' => 'required',
+            'n8_material_image_signature' => 'required',
         ]);
 
         $model = new TaskOceanImageUploadModel();
         $model->task_id = $taskId;
         $model->app_id = $data['app_id'];
         $model->account_id = $data['account_id'];
+        $model->n8_material_image_id = $data['n8_material_image_id'];
         $model->n8_material_image_path = $data['n8_material_image_path'];
         $model->n8_material_image_name = $data['n8_material_image_name'];
+        $model->n8_material_image_signature = $data['n8_material_image_signature'];
         $model->exec_status = ExecStatusEnum::WAITING;
         $model->admin_id = $data['admin_id'] ?? 0;
         $model->extends = $data['extends'] ?? [];
