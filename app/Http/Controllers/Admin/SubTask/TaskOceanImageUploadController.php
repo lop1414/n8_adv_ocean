@@ -25,7 +25,7 @@ class TaskOceanImageUploadController extends SubTaskOceanController
         parent::selectPrepare();
 
         $this->curdService->selectQueryAfter(function(){
-            $imageIds = $this->curdService->responseData['list']->pluck('n8_material_image_id');
+            $imageIds = $this->curdService->responseData['list']->pluck('n8_material_image_id')->toArray();
             $imageMap = !empty($imageIds) ? $this->getImageMap($imageIds) : [];
             foreach($imageIds = $this->curdService->responseData['list'] as $item){
                 $item->image = $imageMap[$item->n8_material_image_id] ?? null;

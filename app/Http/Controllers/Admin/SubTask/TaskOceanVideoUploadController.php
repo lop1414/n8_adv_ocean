@@ -25,7 +25,7 @@ class TaskOceanVideoUploadController extends SubTaskOceanController
         parent::selectPrepare();
 
         $this->curdService->selectQueryAfter(function(){
-            $videoIds = $this->curdService->responseData['list']->pluck('n8_material_video_id');
+            $videoIds = $this->curdService->responseData['list']->pluck('n8_material_video_id')->toArray();
             $videoMap = !empty($videoIds) ? $this->getVideoMap($videoIds) : [];
             foreach($videoIds = $this->curdService->responseData['list'] as $item){
                 $item->video = $videoMap[$item->n8_material_video_id] ?? null;
