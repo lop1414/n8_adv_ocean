@@ -19,7 +19,7 @@ trait Creative
      */
     public function multiGetCreativeList(array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10, $param = []){
         $url = $this->getUrl('2/creative/get/');
-Functions::consoleDump($accountIds);
+
         return $this->multiGetPageList($url, $accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 }
