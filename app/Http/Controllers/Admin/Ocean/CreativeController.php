@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Ocean;
 
+use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanCreativeModel;
 use App\Services\Ocean\OceanService;
@@ -10,12 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class CreativeController extends OceanController
 {
-    /**
-     * @var string
-     * 默认排序字段
-     */
-    protected $defaultOrderBy = 'cost';
-
     /**
      * constructor.
      */
@@ -32,12 +27,21 @@ class CreativeController extends OceanController
     public function selectPrepare(){
         parent::selectPrepare();
 
+        // 默认排序
+        if(empty($this->curdService->requestData['order_by'])){
+            $this->curdService->setOrderBy('cost', 'desc');
+        }
+
         $this->curdService->selectQueryBefore(function(){
             $this->curdService->customBuilder(function($builder){
-                $date = date('Y-m-d');
+                // 时间范围
+                $startDate = $this->curdService->requestData['start_date'] ?? date('Y-m-d');
+                $endDate = $this->curdService->requestData['end_date'] ?? date('Y-m-d');
+                Functions::dateCheck($startDate);
+                Functions::dateCheck($endDate);
 
                 $report = DB::table('ocean_creative_reports')
-                    ->whereBetween('stat_datetime', ["{$date} 00:00:00", "{$date} 23:59:59"])
+                    ->whereBetween('stat_datetime', ["{$startDate} 00:00:00", "{$endDate} 23:59:59"])
                     ->select(DB::raw("
                         creative_id,
                         ROUND(SUM(`cost` / 100), 2) `cost`,
