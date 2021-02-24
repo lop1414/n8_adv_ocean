@@ -108,6 +108,12 @@ $router->group([
             $router->post('read', 'Admin\Ocean\AdController@read');
         });
 
+        // 广告创意
+        $router->group(['prefix' => 'creative'], function () use ($router) {
+            $router->post('select', 'Admin\Ocean\CreativeController@select');
+            $router->post('read', 'Admin\Ocean\CreativeController@read');
+        });
+
         // 转化目标
         $router->group(['prefix' => 'ad_convert'], function () use ($router) {
             $router->post('select', 'Admin\Ocean\AdConvertController@select');

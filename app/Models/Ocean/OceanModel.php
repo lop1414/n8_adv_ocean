@@ -13,9 +13,10 @@ class OceanModel extends BaseModel
      */
     public function scopeWithPermission($query){
         $adminUserInfo = Functions::getGlobalData('admin_user_info');
+        $table = $this->getTable();
         //if(!$adminUserInfo['is_admin']){
             $query->whereRaw("
-                account_id IN (
+                {$table}.account_id IN (
                     SELECT account_id FROM ocean_accounts
                         WHERE admin_id = {$adminUserInfo['admin_user']['id']}
                 )

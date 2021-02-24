@@ -85,6 +85,7 @@ class ToolController extends OceanController
     private function forwardAfter($data){
         $uri = $data['uri'] ?? '';
         $result = $data['result'] ?? [];
+        //$param = $data['param'] ?? [];
 
         // 获取 uri 对应同步类型
         $syncType = $this->getUriSyncType($uri);
@@ -95,7 +96,7 @@ class ToolController extends OceanController
 
             if(strpos($uri, 'create') !== false){
                 // 休眠防延迟
-                sleep(10 );
+                //sleep(2);
             }
 
             $syncParam = array_merge([
@@ -128,6 +129,11 @@ class ToolController extends OceanController
                 '2/ad/update/status/',
                 '2/ad/update/budget/',
                 '2/ad/update/bid/',
+            ],
+            OceanSyncTypeEnum::CREATIVE => [
+                '2/creative/create_v2/',
+                '2/creative/update_v2/',
+                '2/creative/update/status/',
             ],
         ];
 

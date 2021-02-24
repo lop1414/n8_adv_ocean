@@ -4,13 +4,14 @@ namespace App\Services\Ocean;
 
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
-use App\Enums\Ocean\OceanAdStatusEnum;
+use App\Enums\Ocean\OceanCreativeStatusEnum;
 use App\Models\Ocean\OceanAdModel;
+use App\Models\Ocean\OceanCreativeModel;
 
-class OceanAdService extends OceanService
+class OceanCreativeService extends OceanService
 {
     /**
-     * OceanAdService constructor.
+     * OceanCreativeService constructor.
      * @param string $appId
      */
     public function __construct($appId = ''){
@@ -28,7 +29,7 @@ class OceanAdService extends OceanService
      * sdk并发获取列表
      */
     public function sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param = []){
-        return $this->sdk->multiGetAdList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
+        return $this->sdk->multiGetCreativeList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 
     /**
@@ -58,12 +59,12 @@ class OceanAdService extends OceanService
 
         // 创建日期
         if(!empty($option['create_date'])){
-            $filtering['ad_create_time'] = Functions::getDate($option['create_date']);
+            $filtering['creative_create_time'] = Functions::getDate($option['create_date']);
         }
 
         // 更新日期
         if(!empty($option['update_date'])){
-            $filtering['ad_modify_time'] = Functions::getDate($option['update_date']);
+            $filtering['creative_modify_time'] = Functions::getDate($option['update_date']);
         }
 
         // 广告组id
@@ -71,24 +72,24 @@ class OceanAdService extends OceanService
             $filtering['campaign_id'] = trim($option['campaign_id']);
         }
 
+        // 广告计划id
+        if(!empty($option['ad_id'])){
+            $filtering['ad_id'] = trim($option['ad_id']);
+        }
+
         // 状态
         if(!empty($option['status'])){
             $status = strtoupper($option['status']);
-            Functions::hasEnum(OceanAdStatusEnum::class, $status);
+            Functions::hasEnum(OceanCreativeStatusEnum::class, $status);
             $filtering['status'] = $status;
         }else{
-            $filtering['status'] = OceanAdStatusEnum::AD_STATUS_ALL;
-        }
-
-        // id
-        if(!empty($option['ids'])){
-            $filtering['ids'] = $option['ids'];
+            $filtering['status'] = OceanCreativeStatusEnum::CREATIVE_STATUS_ALL;
         }
 
         // 获取子账户组
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
-        $pageSize = 100;
+        $pageSize = 500;
         foreach($accountGroup as $g){
             $items = $this->multiGetPageList($g, $filtering, $pageSize);
             Functions::consoleDump('count:'. count($items));
@@ -96,16 +97,10 @@ class OceanAdService extends OceanService
             // 保存
             $data = [];
             foreach($items as $item) {
-                $tmp = $item;
-                unset($tmp['id']);
-                $item['extends'] = json_encode($tmp);
+                $item['extends'] = json_encode($item);
+                $item['id'] = $item['creative_id'];
 
                 $datetime = date('Y-m-d H:i:s');
-
-                $item['budget'] = !empty($item['budget']) ? $item['budget'] * 100 : 0;
-                $item['bid'] = !empty($item['bid']) ? $item['bid'] * 100 : 0;
-                $item['cpa_bid'] = !empty($item['cpa_bid']) ? $item['cpa_bid'] * 100 : 0;
-                $item['deep_cpabid'] = !empty($item['deep_cpabid']) ? $item['deep_cpabid'] * 100 : 0;
 
                 $item['created_at'] = $datetime;
                 $item['updated_at'] = $datetime;
@@ -128,8 +123,8 @@ class OceanAdService extends OceanService
      * 批量保存
      */
     public function batchSave($data){
-        $oceanAdModel = new OceanAdModel();
-        $oceanAdModel->chunkInsertOrUpdate($data, 50, $oceanAdModel->getTable(), $oceanAdModel->getTableColumnsWithPrimaryKey());
+        $oceanCreativeModel = new OceanCreativeModel();
+        $oceanCreativeModel->chunkInsertOrUpdate($data, 50, $oceanCreativeModel->getTable(), $oceanCreativeModel->getTableColumnsWithPrimaryKey());
         return true;
     }
 }

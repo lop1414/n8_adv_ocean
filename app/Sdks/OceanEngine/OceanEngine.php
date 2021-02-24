@@ -9,6 +9,7 @@ use App\Sdks\OceanEngine\Traits\AdConvert;
 use App\Sdks\OceanEngine\Traits\App;
 use App\Sdks\OceanEngine\Traits\Campaign;
 use App\Sdks\OceanEngine\Traits\City;
+use App\Sdks\OceanEngine\Traits\Creative;
 use App\Sdks\OceanEngine\Traits\Error;
 use App\Sdks\OceanEngine\Traits\Image;
 use App\Sdks\OceanEngine\Traits\Industry;
@@ -37,6 +38,7 @@ class OceanEngine
     use AdConvert;
     use Error;
     use Report;
+    use Creative;
 
     /**
      * 公共接口地址

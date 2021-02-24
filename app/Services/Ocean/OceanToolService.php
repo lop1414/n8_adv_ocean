@@ -5,7 +5,10 @@ namespace App\Services\Ocean;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanAdStatusEnum;
 use App\Enums\Ocean\OceanCampaignStatusEnum;
+use App\Enums\Ocean\OceanCreativeStatusEnum;
 use App\Enums\Ocean\OceanSyncTypeEnum;
+use App\Models\Ocean\OceanAdModel;
+use App\Models\Ocean\OceanCampaignModel;
 
 class OceanToolService extends OceanService
 {
@@ -57,6 +60,17 @@ class OceanToolService extends OceanService
             }
 
             $oceanAdService->sync($option);
+        }elseif($syncType == OceanSyncTypeEnum::CREATIVE){
+            // 广告创意
+            $oceanCreativeService = new OceanCreativeService($param['app_id']);
+
+            $option = [
+                'account_ids' => [$param['account_id']],
+                'status' => OceanCreativeStatusEnum::CREATIVE_STATUS_ALL,
+                'ad_id' => $param['ad_id'],
+            ];
+
+            $oceanCreativeService->sync($option);
         }
 
         return true;

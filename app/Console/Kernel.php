@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Common\Helpers\Functions;
+use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
 use App\Console\Commands\Ocean\OceanSyncAdConvertCommand;
@@ -52,6 +53,7 @@ class Kernel extends ConsoleKernel
         OceanSyncCityCommand::class,
         OceanSyncIndustryCommand::class,
         OceanSyncAdCommand::class,
+        OceanSyncCreativeCommand::class,
         OceanSyncAdConvertCommand::class,
         OceanSyncAccountReportCommand::class,
         OceanSyncCreativeReportCommand::class,
@@ -79,6 +81,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:ocean_sync --type=video')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=campaign')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=ad')->cron('* * * * *');
+        $schedule->command('task:ocean_sync --type=creative')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=ad_convert')->cron('* * * * *');
 
         // 巨量计划创意创建任务

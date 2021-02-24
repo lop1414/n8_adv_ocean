@@ -179,7 +179,7 @@ class OceanService extends BaseService
             $s[$account->parent_id][] = $account;
         }
 
-        $groupSize = 20;
+        $groupSize = 10;
 
         $group = [];
         foreach($s as $ss){

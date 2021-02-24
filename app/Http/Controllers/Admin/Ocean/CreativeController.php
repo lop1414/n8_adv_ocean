@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Ocean;
 
-use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
-use App\Models\Ocean\OceanAdModel;
+use App\Models\Ocean\OceanCreativeModel;
 use App\Services\Ocean\OceanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AdController extends OceanController
+class CreativeController extends OceanController
 {
     /**
      * @var string
@@ -22,7 +21,7 @@ class AdController extends OceanController
      */
     public function __construct()
     {
-        $this->model = new OceanAdModel();
+        $this->model = new OceanCreativeModel();
 
         parent::__construct();
     }
@@ -40,7 +39,7 @@ class AdController extends OceanController
                 $report = DB::table('ocean_creative_reports')
                     ->whereBetween('stat_datetime', ["{$date} 00:00:00", "{$date} 23:59:59"])
                     ->select(DB::raw("
-                        ad_id,
+                        creative_id,
                         ROUND(SUM(`cost` / 100), 2) `cost`,
                         SUM(`click`) `click`,
                         SUM(`show`) `show`,
@@ -51,15 +50,17 @@ class AdController extends OceanController
                         ROUND(SUM(`cost` / 100) / SUM(`convert`), 2) `convert_cost`,
                         ROUND(SUM(`convert`) / SUM(`click`), 4) `convert_rate`
                     "))
-                    ->groupBy('ad_id');
+                    ->groupBy('creative_id');
 
                 $builder->LeftjoinSub($report, 'report', function($join){
-                    $join->on('ocean_ads.id', '=', 'report.ad_id');
+                    $join->on('ocean_creatives.id', '=', 'report.creative_id');
                 });
             });
         });
 
         $this->curdService->selectQueryAfter(function(){
+
+            //var_dump(DB::getQueryLog());
             foreach($this->curdService->responseData['list'] as $v){
                 // 关联巨量账户
                 $v->ocean_account;
@@ -70,6 +71,7 @@ class AdController extends OceanController
                 unset($v->extends);
             }
         });
+
     }
 
     /**

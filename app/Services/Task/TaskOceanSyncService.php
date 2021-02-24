@@ -11,6 +11,7 @@ use App\Models\Task\TaskOceanSyncModel;
 use App\Services\Ocean\OceanAdConvertService;
 use App\Services\Ocean\OceanAdService;
 use App\Services\Ocean\OceanCampaignService;
+use App\Services\Ocean\OceanCreativeService;
 use App\Services\Ocean\OceanVideoService;
 
 class TaskOceanSyncService extends TaskOceanService
@@ -101,6 +102,8 @@ class TaskOceanSyncService extends TaskOceanService
             $this->syncVideo($subTask);
         }elseif($this->syncType == OceanSyncTypeEnum::AD){
             $this->syncAd($subTask);
+        }elseif($this->syncType == OceanSyncTypeEnum::CREATIVE){
+            $this->syncCreative($subTask);
         }elseif($this->syncType == OceanSyncTypeEnum::AD_CONVERT){
             $this->syncAdConvert($subTask);
         }else{
@@ -141,6 +144,22 @@ class TaskOceanSyncService extends TaskOceanService
         ];
 
         $oceanAdService->sync($option);
+        return true;
+    }
+
+    /**
+     * @param $subTask
+     * @return bool
+     * @throws CustomException
+     * 同步广告创意
+     */
+    private function syncCreative($subTask){
+        $oceanCreativeService = new OceanCreativeService($subTask->app_id);
+        $option = [
+            'account_ids' => [$subTask->account_id],
+        ];
+
+        $oceanCreativeService->sync($option);
         return true;
     }
 
