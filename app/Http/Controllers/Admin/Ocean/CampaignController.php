@@ -32,8 +32,6 @@ class CampaignController extends OceanController
             $this->curdService->customBuilder(function($builder){
                 $date = date('Y-m-d');
 
-                $date = '2021-02-03';
-
                 $report = DB::table('ocean_creative_reports')
                     ->whereBetween('stat_datetime', ["{$date} 00:00:00", "{$date} 23:59:59"])
                     ->select(DB::raw("
