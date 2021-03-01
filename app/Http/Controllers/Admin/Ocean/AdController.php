@@ -29,7 +29,7 @@ class AdController extends OceanController
 
         // 默认排序
         if(empty($this->curdService->requestData['order_by'])){
-            $this->curdService->setOrderBy('cost', 'desc');
+            $this->curdService->setOrderBy('ad_modify_time', 'desc');
         }
 
         $this->curdService->selectQueryBefore(function(){
