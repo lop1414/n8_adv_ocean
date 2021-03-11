@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class CampaignController extends OceanController
 {
+    protected $defaultOrderBy = 'campaign_modify_time';
+
     /**
      * constructor.
      */
