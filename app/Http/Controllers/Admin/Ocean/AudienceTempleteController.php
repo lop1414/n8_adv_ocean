@@ -128,7 +128,7 @@ class AudienceTempleteController extends OceanController
                     foreach($item->audience->city as $cityId){
                         $cityNames[] = $cityMap[$cityId];
                     }
-                    $item->city_names = $cityNames;
+                    $item->audience->city_names = $cityNames;
                 }
             }
         });
