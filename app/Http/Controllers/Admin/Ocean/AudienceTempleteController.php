@@ -8,6 +8,7 @@ use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanDeliveryRangeEnum;
 use App\Enums\Ocean\OceanLandingTypeEnum;
 use App\Models\Ocean\OceanAudienceTempleteModel;
+use App\Models\Ocean\OceanCityModel;
 use Illuminate\Http\Request;
 
 class AudienceTempleteController extends OceanController
@@ -110,6 +111,26 @@ class AudienceTempleteController extends OceanController
                 $adminUserInfo = Functions::getGlobalData('admin_user_info');
                 $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
             });
+        });
+
+        $this->curdService->selectQueryAfter(function(){
+            $cityIds = [];
+            foreach($this->curdService->responseData['list'] as $item){
+                if(!empty($item->audience->city)){
+                    $cityIds = array_merge($item->audience->city, $cityIds);
+                }
+            }
+            $oceanCityModel = new OceanCityModel();
+            $cityMap = $oceanCityModel->whereIn('id', $cityIds)->pluck('name', 'id');
+            foreach($this->curdService->responseData['list'] as $item){
+                if(!empty($item->audience->city)){
+                    $cityNames = [];
+                    foreach($item->audience->city as $cityId){
+                        $cityNames[] = $cityMap[$cityId];
+                    }
+                    $item->city_names = $cityNames;
+                }
+            }
         });
     }
 
