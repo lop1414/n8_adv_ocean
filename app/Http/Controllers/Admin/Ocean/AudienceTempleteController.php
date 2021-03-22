@@ -120,15 +120,15 @@ class AudienceTempleteController extends OceanController
                     $cityIds = array_merge($item->audience->city, $cityIds);
                 }
             }
-            $oceanCityModel = new OceanCityModel();
-            $cityMap = $oceanCityModel->whereIn('id', $cityIds)->pluck('name', 'id');
+
+            $cityMap = $this->getAudienceCityMap($cityIds);
             foreach($this->curdService->responseData['list'] as $item){
                 if(!empty($item->audience->city)){
                     $cityNames = [];
                     foreach($item->audience->city as $cityId){
                         $cityNames[] = $cityMap[$cityId];
                     }
-                    $item->audience->city_names = $cityNames;
+                    $item->audience_city_names = $cityNames;
                 }
             }
         });
@@ -145,7 +145,27 @@ class AudienceTempleteController extends OceanController
                     'message' => '无权限操作',
                 ]);
             }
+
+            if(!empty($this->curdService->findData->audience->city)){
+                $cityMap = $this->getAudienceCityMap($this->curdService->findData->audience->city);
+                $cityNames = [];
+                foreach($this->curdService->findData->audience->city as $cityId){
+                    $cityNames[] = $cityMap[$cityId];
+                }
+                $this->curdService->findData->audience_city_names = $cityNames;
+            }
         });
+    }
+
+    /**
+     * @param $cityIds
+     * @return mixed
+     * 获取城市映射
+     */
+    private function getAudienceCityMap($cityIds){
+        $oceanCityModel = new OceanCityModel();
+        $cityMap = $oceanCityModel->whereIn('id', $cityIds)->pluck('name', 'id');
+        return $cityMap;
     }
 
     /**
