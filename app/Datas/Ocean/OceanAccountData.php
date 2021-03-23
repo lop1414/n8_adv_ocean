@@ -26,7 +26,6 @@ class OceanAccountData extends BaseData
      */
     protected $uniqueKeys = [
         ['app_id', 'account_id'],
-        ['belong_platform'],
     ];
 
     /**
@@ -34,6 +33,12 @@ class OceanAccountData extends BaseData
      * 缓存有效期
      */
     protected $ttl = 60;
+
+    /**
+     * @var bool
+     * 缓存开关
+     */
+    protected $cacheSwitch = false;
 
     /**
      * constructor.
