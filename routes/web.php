@@ -78,8 +78,11 @@ $router->group([
             $router->post('get', 'Admin\Ocean\AccountController@get');
             $router->post('read', 'Admin\Ocean\AccountController@read');
             $router->post('update', 'Admin\Ocean\AccountController@update');
-            //$router->post('enable', 'Admin\Ocean\AccountController@enable');
-            //$router->post('disable', 'Admin\Ocean\AccountController@disable');
+            $router->post('enable', 'Admin\Ocean\AccountController@enable');
+            $router->post('disable', 'Admin\Ocean\AccountController@disable');
+            $router->post('delete', 'Admin\Ocean\AccountController@delete');
+            $router->post('batch_enable', 'Admin\Ocean\AccountController@batchEnable');
+            $router->post('batch_disable', 'Admin\Ocean\AccountController@batchDisable');
         });
 
         // 视频
@@ -124,6 +127,7 @@ $router->group([
         // 城市
         $router->group(['prefix' => 'city'], function () use ($router) {
             $router->post('get', 'Admin\Ocean\CityController@get');
+            $router->post('tree', 'Admin\Ocean\CityController@tree');
         });
 
         // 商圈
@@ -152,6 +156,22 @@ $router->group([
             $router->post('read', 'Admin\Ocean\AudienceTempleteController@read');
             $router->post('delete', 'Admin\Ocean\AudienceTempleteController@delete');
         });
+
+        // 计划扩展
+        $router->group(['prefix' => 'ad_extend'], function () use ($router) {
+            $router->post('create', 'Admin\Ocean\AdExtendController@create');
+            $router->post('update', 'Admin\Ocean\AdExtendController@update');
+            $router->post('select', 'Admin\Ocean\AdExtendController@select');
+            $router->post('read', 'Admin\Ocean\AdExtendController@read');
+        });
+
+        // 回传策略
+        $router->group(['prefix' => 'convert_callback_strategy'], function () use ($router) {
+            $router->post('create', 'Admin\Ocean\ConvertCallbackStrategyController@create');
+            $router->post('update', 'Admin\Ocean\ConvertCallbackStrategyController@update');
+            $router->post('select', 'Admin\Ocean\ConvertCallbackStrategyController@select');
+            $router->post('read', 'Admin\Ocean\ConvertCallbackStrategyController@read');
+        });
     });
 });
 
@@ -161,8 +181,12 @@ $router->group([
     'prefix' => 'front',
     'middleware' => ['api_sign_valid', 'access_control_allow_origin']
 ], function () use ($router) {
-
+    // 转化
+    $router->group(['prefix' => 'convert'], function () use ($router) {
+        $router->post('match', 'Front\ConvertController@match');
+    });
 });
 
 // 巨量
 $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
+$router->get('front/ocean/click', 'Front\Ocean\IndexController@click');

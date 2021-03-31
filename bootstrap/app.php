@@ -66,6 +66,7 @@ $app->singleton(
 
 $app->routeMiddleware([
 	'access_control_allow_origin' => \App\Common\Middleware\AccessControlAllowOrigin::class,
+    'api_sign_valid' => \App\Common\Middleware\ApiSignValid::class,
 	'center_login_auth' => \App\Common\Middleware\CenterLoginAuth::class,
 	'center_menu_auth' => \App\Common\Middleware\CenterMenuAuth::class,
 	'admin_request_log' => \App\Common\Middleware\AdminRequestLog::class,
