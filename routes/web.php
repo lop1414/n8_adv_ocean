@@ -190,3 +190,6 @@ $router->group([
 // 巨量
 $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
 $router->get('front/ocean/click', 'Front\Ocean\IndexController@click');
+
+// 测试
+$router->post('front/ocean/lop', 'Front\Ocean\IndexController@test');
