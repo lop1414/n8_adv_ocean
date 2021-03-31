@@ -17,7 +17,8 @@ class OceanAccountData extends BaseData
         'company',
         'app_id',
         'account_id',
-        'belong_platform'
+        'belong_platform',
+        'status',
     ];
 
     /**
