@@ -96,7 +96,7 @@ class ToolController extends OceanController
 
             if(strpos($uri, 'create') !== false){
                 // 休眠防延迟
-                //sleep(2);
+                sleep(2);
             }
 
             $syncParam = array_merge([
