@@ -20,26 +20,61 @@ class ConvertCallbackStrategyController extends OceanController
         parent::__construct();
     }
 
+    /**
+     * 列表预处理
+     */
     public function selectPrepare(){
-
+        $this->curdService->selectQueryBefore(function(){
+            $this->privateFilter();
+        });
     }
 
-    public function readPrepare(){
-
+    /**
+     * 列表(无分页)预处理
+     */
+    public function getPrepare(){
+        $this->curdService->getQueryBefore(function(){
+            $this->privateFilter();
+        });
     }
 
+    /**
+     * 私有过滤
+     */
+    private function privateFilter(){
+        $this->curdService->customBuilder(function($builder){
+            $adminUserInfo = Functions::getGlobalData('admin_user_info');
+            if(!$adminUserInfo['is_admin']){
+                $builder->whereRaw("
+                        (is_private = 0 OR admin_id = {$adminUserInfo['admin_user']['id']})
+                    ");
+            }
+        });
+    }
+
+    /**
+     * 详情预处理
+     */
+    public function readPrepare(){}
+
+    /**
+     * 创建预处理
+     */
     public function createPrepare(){
         $this->saveHandle();
 
         $this->curdService->addField('status')->addDefaultValue(StatusEnum::ENABLE);
     }
 
+    /**
+     * 更新预处理
+     */
     public function updatePrepare(){
         $this->saveHandle();
     }
 
     /**
-     * 保存校验
+     * 保存处理
      */
     private function saveHandle(){
         $this->curdService->addField('name')->addValidRule('required|max:100');

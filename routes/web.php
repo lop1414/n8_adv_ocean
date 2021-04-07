@@ -170,6 +170,7 @@ $router->group([
             $router->post('create', 'Admin\Ocean\ConvertCallbackStrategyController@create');
             $router->post('update', 'Admin\Ocean\ConvertCallbackStrategyController@update');
             $router->post('select', 'Admin\Ocean\ConvertCallbackStrategyController@select');
+            $router->post('get', 'Admin\Ocean\ConvertCallbackStrategyController@get');
             $router->post('read', 'Admin\Ocean\ConvertCallbackStrategyController@read');
         });
     });
