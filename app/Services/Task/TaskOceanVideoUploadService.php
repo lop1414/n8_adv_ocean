@@ -3,6 +3,7 @@
 namespace App\Services\Task;
 
 use App\Common\Enums\ExecStatusEnum;
+use App\Common\Enums\StatusEnum;
 use App\Common\Enums\TaskTypeEnum;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
@@ -106,6 +107,7 @@ class TaskOceanVideoUploadService extends TaskOceanService
      * 获取可推送视频
      */
     public function getCanPushVideo($signature, $company){
+        $enable = StatusEnum::ENABLE;
         $items = DB::select("
             SELECT
                 v.id, v.signature, a.account_id
@@ -115,7 +117,8 @@ class TaskOceanVideoUploadService extends TaskOceanService
             LEFT JOIN ocean_accounts a ON av.account_id = a.account_id
             WHERE
                 v.signature = '{$signature}'
-            AND a.company = '{$company}'
+                AND a.status = '{$enable}'
+                AND a.company = '{$company}'
             LIMIT 1
         ");
 

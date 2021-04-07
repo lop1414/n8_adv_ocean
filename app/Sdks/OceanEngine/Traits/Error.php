@@ -98,4 +98,21 @@ trait Error
 
         return false;
     }
+
+    /**
+     * @param $result
+     * @return bool
+     * 是否没权限操作
+     */
+    public function isNotPermission($result){
+        $errorCodes = [
+            40002, // 没权限操作
+        ];
+
+        if(in_array($result['code'], $errorCodes)){
+            return true;
+        }
+
+        return false;
+    }
 }

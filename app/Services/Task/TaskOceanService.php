@@ -7,6 +7,7 @@ use App\Common\Enums\TaskStatusEnum;
 use App\Common\Models\TaskModel;
 use App\Common\Services\TaskService;
 use App\Common\Tools\CustomException;
+use App\Models\Ocean\OceanAccountModel;
 use App\Models\Ocean\OceanAccountVideoModel;
 use App\Services\Ocean\OceanToolService;
 
@@ -72,6 +73,8 @@ class TaskOceanService extends TaskService
                         ->delete();
                 }
                 $this->updateReWaitingStatus($failSubTask);
+            }elseif($this->oceanToolService->sdk->isNotPermission($failSubTask->fail_data['result'])){
+                #账户无权限
             }
         }
     }
