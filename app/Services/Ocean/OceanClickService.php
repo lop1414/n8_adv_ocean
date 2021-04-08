@@ -59,6 +59,8 @@ class OceanClickService extends OceanService
             $muid = trim($data['imei']);
         }elseif(!empty($data['idfa'])){
             $muid = trim($data['idfa']);
+        }elseif(!empty($data['muid'])){
+            $muid = trim($data['muid']);
         }
 
         $clickAt = null;
