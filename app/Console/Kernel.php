@@ -93,6 +93,9 @@ class Kernel extends ConsoleKernel
         // 巨量计划创意创建任务
         $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
 
+        // 队列
+        $schedule->command('queue:ocean_click')->cron('* * * * *');
+
         // 巨量转化上报
         $schedule->command('ocean:convert_callback')->cron('* * * * *');
 
