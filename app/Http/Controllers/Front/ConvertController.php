@@ -24,8 +24,10 @@ class ConvertController extends FrontController
      */
     public function match(Request $request){
         $this->validRule($request->post(), [
-            'converts' => 'required|array'
+            'converts' => 'required|array|max:1'
         ]);
+
+        ini_set('max_execution_time', 60);
 
         $converts = $request->post('converts');
 
