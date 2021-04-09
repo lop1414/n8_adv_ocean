@@ -4,6 +4,7 @@ namespace App\Services\Ocean;
 
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Models\Ocean\OceanAudienceTempleteModel;
 use App\Services\Task\TaskOceanAdCreativeCreateService;
 
 class OceanAdCreativeCreateService extends OceanService
@@ -56,6 +57,25 @@ class OceanAdCreativeCreateService extends OceanService
                         'item' => $item,
                     ],
                 ]);
+            }
+
+            // 定向模板
+            $audienceTempleteId = $item['audience_templete_id'] ?? 0;
+            if(!empty($audienceTempleteId)){
+                $audienceTemplete = OceanAudienceTempleteModel::find($audienceTempleteId);
+                if(empty($audienceTemplete)){
+                    throw new CustomException([
+                        'code' => 'NOT_FOUND_AUDIENCE_TEMPLETE',
+                        'message' => '找不到对应定向模板',
+                        'data' => [
+                            'audience_templete_id' => $audienceTemplete,
+                        ],
+                    ]);
+                }
+
+                $audience = json_decode(json_encode($audienceTemplete->audience), true);
+                unset($audience['name'], $audience['description'], $audience['landing_type'], $audience['delivery_range']);
+                $ad = array_merge($ad, $audience);
             }
 
             $account = $this->getAccount($accountId);
