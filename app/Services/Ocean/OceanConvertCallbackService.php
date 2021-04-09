@@ -93,7 +93,6 @@ class OceanConvertCallbackService extends OceanService
 
                 $item->exec_status = ExecStatusEnum::FAIL;
             }
-            $item->callback_at = date('Y-m-d H:i:s', time());
             $item->save();
         }
 
@@ -169,6 +168,8 @@ class OceanConvertCallbackService extends OceanService
 
         $ret = file_get_contents($url .'?'. http_build_query($param));
         $result = json_decode($ret, true);
+
+        $item->callback_at = date('Y-m-d H:i:s', time());
 
         if(!isset($result['code']) || $result['code'] != 0){
             throw new CustomException([
