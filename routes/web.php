@@ -186,6 +186,19 @@ $router->group([
     $router->group(['prefix' => 'convert'], function () use ($router) {
         $router->post('match', 'Front\ConvertController@match');
     });
+
+    // 巨量
+    $router->group(['prefix' => 'ocean'], function () use ($router) {
+        // 创意报表
+        $router->group(['prefix' => 'creative_report'], function () use ($router) {
+            $router->post('hour', 'Front\Ocean\CreativeReportController@hour');
+        });
+
+        // 创意报表
+        $router->group(['prefix' => 'convert_callback'], function () use ($router) {
+            $router->post('get', 'Front\Ocean\ConvertCallbackController@get');
+        });
+    });
 });
 
 // 巨量

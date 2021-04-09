@@ -6,6 +6,7 @@ use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Enums\ExecStatusEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\ErrorLogService;
+use App\Common\Services\SystemApi\AdvOceanApiService;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanConvertCallbackStatusEnum;
 use App\Models\Ocean\OceanConvertCallbackModel;
@@ -92,6 +93,7 @@ class OceanConvertCallbackService extends OceanService
 
                 $item->exec_status = ExecStatusEnum::FAIL;
             }
+            $item->callback_at = date('Y-m-d H:i:s', time());
             $item->save();
         }
 
@@ -196,5 +198,45 @@ class OceanConvertCallbackService extends OceanService
             ConvertTypeEnum::ADD_DESKTOP => 1,
             ConvertTypeEnum::PAY => 2,
         ];
+    }
+
+    /**
+     * @param $converts
+     * @return mixed
+     * @throws CustomException
+     * 按转化列表获取转化回传列表
+     */
+    public function getItemsByConverts($converts){
+        foreach($converts as $k => $v){
+            $converts[$k]['convert_callback'] = $this->getItemByConvert($v);
+        }
+        return $converts;
+    }
+
+    /**
+     * @param $convert
+     * @return mixed
+     * @throws CustomException
+     * 按转化获取转化回传
+     */
+    public function getItemByConvert($convert){
+        $this->validRule($convert, [
+            'convert_type' => 'required',
+            'convert_id' => 'required',
+        ]);
+
+        Functions::hasEnum(ConvertTypeEnum::class, $convert['convert_type']);
+
+        $oceanConvertCallbackModel = new OceanConvertCallbackModel();
+        $item = $oceanConvertCallbackModel->where('convert_type', $convert['convert_type'])
+            ->where('convert_id', $convert['convert_id'])
+            ->first();
+
+        if(!empty($item)){
+            // 关联点击
+            $item->click;
+        }
+
+        return $item;
     }
 }
