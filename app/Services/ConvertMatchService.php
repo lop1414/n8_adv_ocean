@@ -273,7 +273,7 @@ class ConvertMatchService extends BaseService
         $productId = $data['product_id'] ?? 0;
 
         $oceanClickModel = new OceanClickModel();
-        $builder = $oceanClickModel->where('click_at', '>', $lookbackDateTime)
+        $builder = $oceanClickModel->whereBetween('click_at', [$lookbackDateTime, $data['convert_at']])
             ->where('product_id', $productId);
 
         // 规则
