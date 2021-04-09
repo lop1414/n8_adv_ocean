@@ -208,7 +208,35 @@ class OceanConvertCallbackService extends OceanService
      */
     public function getItemsByConverts($converts){
         foreach($converts as $k => $v){
-            $converts[$k]['convert_callback'] = $this->getItemByConvert($v);
+            $item = $this->getItemByConvert($v);
+            if(!empty($item)){
+                $tmp = [
+                    'id' => $item['id'],
+                    'click_id' => $item['click_id'],
+                    'convert_type' => $item['convert_type'],
+                    'convert_id' => $item['convert_id'],
+                    'n8_union_guid' => $item['n8_union_guid'],
+                    'n8_union_channel_id' => $item['n8_union_channel_id'],
+                    'convert_callback_status' => $item['convert_callback_status'],
+                    'callback_at' => $item['callback_at'],
+                ];
+
+                if(!empty($item->click)){
+                    $tmp['click'] = [
+                        'id' => $item->click['id'],
+                        'campaign_id' => $item->click['campaign_id'],
+                        'ad_id' => $item->click['ad_id'],
+                        'creative_id' => $item->click['creative_id'],
+                        'click_at' => $item->click['click_at'],
+                    ];
+                }else{
+                    $tmp['click'] = null;
+                }
+            }else{
+                $tmp = null;
+            }
+
+            $converts[$k]['convert_callback'] = $tmp;
         }
         return $converts;
     }
