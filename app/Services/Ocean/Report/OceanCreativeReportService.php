@@ -2,7 +2,9 @@
 
 namespace App\Services\Ocean\Report;
 
+use App\Common\Helpers\Functions;
 use App\Models\Ocean\Report\OceanCreativeReportModel;
+use Illuminate\Support\Facades\DB;
 
 class OceanCreativeReportService extends OceanReportService
 {
@@ -59,5 +61,24 @@ class OceanCreativeReportService extends OceanReportService
         }
 
         return $creativeAccountIds;
+    }
+
+    public function getReportByHour($date, $hour, $groupBy){
+        Functions::dateCheck($date);
+
+        $dateRange = [
+            "{$date} {$hour}:00:00",
+            "{$date} {$hour}:59:59",
+        ];
+
+        $sql = "
+            SELECT {$groupBy}, SUM(`cost`) `cost`, SUM(`show`) `show`, SUM(`click`) `click`, SUM(`convert`) `convert`
+                FROM ocean_creative_reports
+                WHERE stat_datetime BETWEEN '{$dateRange[0]}' AND '{$dateRange[1]}'
+                GROUP BY {$groupBy}
+        ";
+        $reports = DB::select($sql);
+
+        return $reports;
     }
 }
