@@ -211,6 +211,7 @@ class OceanConvertCallbackService extends OceanService
         foreach($converts as $k => $v){
             $item = $this->getItemByConvert($v);
             if(!empty($item)){
+                $convertCallbackStatusName = Functions::getEnumMapName(OceanConvertCallbackStatusEnum::class, $item['convert_callback_status']);
                 $tmp = [
                     'id' => $item['id'],
                     'click_id' => $item['click_id'],
@@ -219,6 +220,7 @@ class OceanConvertCallbackService extends OceanService
                     'n8_union_guid' => $item['n8_union_guid'],
                     'n8_union_channel_id' => $item['n8_union_channel_id'],
                     'convert_callback_status' => $item['convert_callback_status'],
+                    'convert_callback_status_name' => $convertCallbackStatusName,
                     'callback_at' => $item['callback_at'],
                 ];
 
