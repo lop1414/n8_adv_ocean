@@ -3,6 +3,7 @@
 namespace App\Services\Ocean;
 
 use App\Common\Helpers\Functions;
+use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAdConvertModel;
 
@@ -85,11 +86,21 @@ class OceanAdConvertService extends OceanService
             foreach($items as $item){
                 $account = $this->getAccount($item['advertiser_id']);
 
-                $this->setAppId($account->app_id);
-                $this->setAccountId($account->account_id);
-                $item = array_merge($item, $this->readAdConvert($account->account_id, $item['id']));
+                try{
+                    $this->setAppId($account->app_id);
+                    $this->setAccountId($account->account_id);
+                    $item = array_merge($item, $this->readAdConvert($account->account_id, $item['id']));
 
-                $this->save($item);
+                    $this->save($item);
+                }catch(CustomException $e){
+                    $errorLogService = new ErrorLogService();
+                    $errorLogService->catch($e);
+                    continue;
+                }catch(\Exception $e){
+                    $errorLogService = new ErrorLogService();
+                    $errorLogService->catch($e);
+                    continue;
+                }
             }
         }
 
