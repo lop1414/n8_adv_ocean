@@ -4,7 +4,7 @@ namespace App\Enums;
 
 class QueueEnums
 {
-    const OCEAN_CLICK = 'ocean_click';
+    const CLICK = 'click';
 
     /**
      * @var string
@@ -17,6 +17,6 @@ class QueueEnums
      * 列表
      */
     static public $list = [
-        ['id' => self::OCEAN_CLICK, 'name' => '巨量点击'],
+        ['id' => self::CLICK, 'name' => '点击'],
     ];
 }

@@ -6,7 +6,7 @@ use App\Common\Enums\StatusEnum;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAdExtendModel;
 use App\Models\Ocean\OceanAdModel;
-use App\Models\Ocean\OceanConvertCallbackStrategyModel;
+use App\Common\Models\ConvertCallbackStrategyModel;
 use Illuminate\Http\Request;
 
 class AdExtendController extends OceanController
@@ -56,8 +56,8 @@ class AdExtendController extends OceanController
 
             // 回传规则是否存在
             if(!empty($this->curdService->requestData['convert_callback_strategy_id'])){
-                $oceanConvertCallbackStrategyModel = new OceanConvertCallbackStrategyModel();
-                $strategy = $oceanConvertCallbackStrategyModel->find($this->curdService->requestData['convert_callback_strategy_id']);
+                $convertCallbackStrategyModel = new ConvertCallbackStrategyModel();
+                $strategy = $convertCallbackStrategyModel->find($this->curdService->requestData['convert_callback_strategy_id']);
                 if(empty($strategy)){
                     throw new CustomException([
                         'code' => 'NOT_FOUND_CONCERT_CALLBACK_STRATEGY',

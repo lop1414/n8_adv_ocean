@@ -52,6 +52,6 @@ class OceanAdExtendModel extends OceanModel
      * 关联巨量点击模型 一对一
      */
     public function convert_callback_strategy(){
-        return $this->belongsTo('App\Models\Ocean\OceanConvertCallbackStrategyModel', 'convert_callback_strategy_id', 'id');
+        return $this->belongsTo('App\Common\Models\ConvertCallbackStrategyModel', 'convert_callback_strategy_id', 'id');
     }
 }

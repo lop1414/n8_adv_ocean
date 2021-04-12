@@ -1,0 +1,1 @@
+ALTER TABLE ocean_convert_callback_strategys RENAME TO convert_callback_strategys;

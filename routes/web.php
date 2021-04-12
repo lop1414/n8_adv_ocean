@@ -70,6 +70,15 @@ $router->group([
         });
     });
 
+    // 回传策略
+    $router->group(['prefix' => 'convert_callback_strategy'], function () use ($router) {
+        $router->post('create', '\\App\Common\Controllers\Admin\ConvertCallbackStrategyController@create');
+        $router->post('update', '\\App\Common\Controllers\Admin\ConvertCallbackStrategyController@update');
+        $router->post('select', '\\App\Common\Controllers\Admin\ConvertCallbackStrategyController@select');
+        $router->post('get', '\\App\Common\Controllers\Admin\ConvertCallbackStrategyController@get');
+        $router->post('read', '\\App\Common\Controllers\Admin\ConvertCallbackStrategyController@read');
+    });
+
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 账户
@@ -164,15 +173,6 @@ $router->group([
             $router->post('select', 'Admin\Ocean\AdExtendController@select');
             $router->post('read', 'Admin\Ocean\AdExtendController@read');
         });
-
-        // 回传策略
-        $router->group(['prefix' => 'convert_callback_strategy'], function () use ($router) {
-            $router->post('create', 'Admin\Ocean\ConvertCallbackStrategyController@create');
-            $router->post('update', 'Admin\Ocean\ConvertCallbackStrategyController@update');
-            $router->post('select', 'Admin\Ocean\ConvertCallbackStrategyController@select');
-            $router->post('get', 'Admin\Ocean\ConvertCallbackStrategyController@get');
-            $router->post('read', 'Admin\Ocean\ConvertCallbackStrategyController@read');
-        });
     });
 });
 
@@ -187,23 +187,25 @@ $router->group([
         $router->post('match', 'Front\ConvertController@match');
     });
 
+    // 转化回传
+    $router->group(['prefix' => 'convert_callback'], function () use ($router) {
+        $router->post('get', 'Front\ConvertCallbackController@get');
+    });
+
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 创意报表
         $router->group(['prefix' => 'creative_report'], function () use ($router) {
             $router->post('hour', 'Front\Ocean\CreativeReportController@hour');
         });
-
-        // 创意报表
-        $router->group(['prefix' => 'convert_callback'], function () use ($router) {
-            $router->post('get', 'Front\Ocean\ConvertCallbackController@get');
-        });
     });
 });
 
+// 点击
+$router->get('front/click', '\\App\Common\Controllers\Front\ClickController@index');
+
 // 巨量
 $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
-$router->get('front/ocean/click', 'Front\Ocean\IndexController@click');
 
 // 测试
 $router->post('front/ocean/lop', 'Front\Ocean\IndexController@test');

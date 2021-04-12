@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Front\Ocean;
+namespace App\Http\Controllers\Front;
 
 use App\Common\Controllers\Front\FrontController;
-use App\Services\Ocean\OceanConvertCallbackService;
+use App\Services\AdvConvertCallbackService;
 use Illuminate\Http\Request;
 
 class ConvertCallbackController extends FrontController
@@ -25,8 +25,8 @@ class ConvertCallbackController extends FrontController
     public function get(Request $request){
         $converts = $request->post('converts');
 
-        $oceanConvertCallbackService = new OceanConvertCallbackService();
-        $items = $oceanConvertCallbackService->getItemsByConverts($converts);
+        $advConvertCallbackService = new AdvConvertCallbackService();
+        $items = $advConvertCallbackService->getItemsByConverts($converts);
 
         return $this->success($items);
     }

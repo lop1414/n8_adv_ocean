@@ -1,0 +1,1 @@
+ALTER TABLE ocean_clicks RENAME TO clicks;

@@ -3,7 +3,7 @@
 namespace App\Console;
 
 use App\Common\Helpers\Functions;
-use App\Console\Commands\Ocean\OceanConvertCallbackCommand;
+use App\Common\Console\ConvertCallbackCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
@@ -13,7 +13,7 @@ use App\Console\Commands\Ocean\OceanSyncIndustryCommand;
 use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncCreativeReportCommand;
-use App\Console\Commands\Queue\QueueOceanClickCommand;
+use App\Common\Console\Queue\QueueClickCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
@@ -59,10 +59,10 @@ class Kernel extends ConsoleKernel
         OceanSyncAdConvertCommand::class,
         OceanSyncAccountReportCommand::class,
         OceanSyncCreativeReportCommand::class,
-        OceanConvertCallbackCommand::class,
+        ConvertCallbackCommand::class,
 
         // 队列
-        QueueOceanClickCommand::class,
+        QueueClickCommand::class,
     ];
 
     /**
@@ -94,10 +94,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
 
         // 队列
-        $schedule->command('queue:ocean_click')->cron('* * * * *');
+        $schedule->command('queue:click')->cron('* * * * *');
 
-        // 巨量转化上报
-        $schedule->command('ocean:convert_callback')->cron('* * * * *');
+        // 转化上报
+        $schedule->command('convert_callback')->cron('* * * * *');
 
         // 测试
         if(Functions::isStaging()){

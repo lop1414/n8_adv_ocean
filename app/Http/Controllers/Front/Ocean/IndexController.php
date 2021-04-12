@@ -7,8 +7,6 @@ use App\Common\Enums\ExceptionTypeEnum;
 use App\Common\Services\ErrorLogService;
 use App\Common\Services\SystemApi\AdvOceanApiService;
 use App\Datas\Ocean\OceanAccountData;
-use App\Services\ConvertMatchService;
-use App\Services\Ocean\OceanClickService;
 use Illuminate\Http\Request;
 
 class IndexController extends FrontController
@@ -33,32 +31,26 @@ class IndexController extends FrontController
         return $this->success();
     }
 
-    /**
-     * @param Request $request
-     * @return false|string
-     * 点击
-     */
-    public function click(Request $request){
-        $data = $request->all();
-
-        $oceanClickService = new OceanClickService();
-        $oceanClickService->push($data);
-
-        return json_encode([
-            'code' => 0,
-            'message' => 'SUCCESS'
-        ]);
-    }
-
-    public function test(){
-        //        $this->testModelData();
+    public function test(Request $request){
+        $key = $request->input('key');
+        if($key != 'aut'){
+            return $this->forbidden();
+        }
+//        $this->testModelData();
         $this->testConvertMatch();
+//        $this->testConvertCallbackGet();
     }
 
     private function testConvertMatch(){
         $a = new AdvOceanApiService();
         $ret = $a->apiConvertMatch([]);
-        dd($ret, 11);
+        dd($ret, 'testConvertMatch');
+    }
+
+    private function testConvertCallbackGet(){
+        $a = new AdvOceanApiService();
+        $ret = $a->apiGetConvertCallbacks([]);
+        dd($ret, 'testConvertCallbackGet');
     }
 
     public function testModelData(){

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Common\Controllers\Front\FrontController;
-use App\Services\ConvertMatchService;
+use App\Services\AdvConvertMatchService;
 use Illuminate\Http\Request;
 
 class ConvertController extends FrontController
@@ -31,8 +31,8 @@ class ConvertController extends FrontController
 
         $converts = $request->post('converts');
 
-        $convertMatchService = new ConvertMatchService();
-        $data = $convertMatchService->match($converts);
+        $advConvertMatchService = new AdvConvertMatchService();
+        $data = $advConvertMatchService->match($converts);
 
         return $this->success($data);
     }
