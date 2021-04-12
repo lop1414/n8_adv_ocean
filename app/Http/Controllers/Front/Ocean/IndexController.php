@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Ocean;
 
 use App\Common\Controllers\Front\FrontController;
+use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Enums\ExceptionTypeEnum;
 use App\Common\Services\ErrorLogService;
 use App\Common\Services\SystemApi\AdvOceanApiService;
@@ -43,13 +44,57 @@ class IndexController extends FrontController
 
     private function testConvertMatch(){
         $a = new AdvOceanApiService();
-        $ret = $a->apiConvertMatch([]);
+        $ret = $a->apiConvertMatch([
+            [
+                'convert_type' => ConvertTypeEnum::PAY, // 转化类型
+                'convert_id' => 6666, // 转化id
+                'convert_at' => '2021-03-31 12:05:00', // 转化时间
+                'convert_times' => 1, // 转化次数(包含当前转化)
+                'request_id' => '',
+                'muid' => '',
+                'oaid' => '',
+                'oaid_md5' => '',
+                'ip' => '127.0.0.1',
+                'ua' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.',
+                // 联运用户信息
+                'n8_union_user' => [
+                    'guid' => 1,
+                    'channel_id' => 228,
+                    'created_at' => '2021-03-31 12:00:00',
+                ],
+            ],[
+                'convert_type' => ConvertTypeEnum::PAY, // 转化类型
+                'convert_id' => 6666, // 转化id
+                'convert_at' => '2021-03-31 12:05:00', // 转化时间
+                'convert_times' => 1, // 转化次数(包含当前转化)
+                'request_id' => '',
+                'muid' => '',
+                'oaid' => '',
+                'oaid_md5' => '',
+                'ip' => '127.0.0.1',
+                'ua' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.',
+                // 联运用户信息
+                'n8_union_user' => [
+                    'guid' => 1,
+                    'channel_id' => 228,
+                    'created_at' => '2021-03-31 12:00:00',
+                ],
+            ],
+        ]);
         dd($ret, 'testConvertMatch');
     }
 
     private function testConvertCallbackGet(){
         $a = new AdvOceanApiService();
-        $ret = $a->apiGetConvertCallbacks([]);
+        $ret = $a->apiGetConvertCallbacks([
+            [
+                'convert_type' => ConvertTypeEnum::PAY, // 转化类型
+                'convert_id' => 5555, // 转化id
+            ],[
+                'convert_type' => ConvertTypeEnum::PAY, // 转化类型
+                'convert_id' => 6666, // 转化id
+            ],
+        ]);
         dd($ret, 'testConvertCallbackGet');
     }
 
