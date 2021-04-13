@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Common\Helpers\Functions;
 use App\Common\Models\ClickModel;
 use App\Common\Services\ClickService;
 use App\Common\Tools\CustomException;
@@ -34,7 +35,24 @@ class AdvClickService extends ClickService
 
         $clickAt = null;
         if(!empty($data['click_at'])){
+            if(!is_numeric($data['click_at'])){
+                throw new CustomException([
+                    'code' => 'CLICK_AT_IS_ERROR',
+                    'message' => '点击时间格式错误',
+                    'log' => true,
+                    'data' => $data,
+                ]);
+            }
+
             $clickAt = date('Y-m-d H:i:s', intval($data['click_at'] / 1000));
+            if(!Functions::timeCheck($clickAt)){
+                throw new CustomException([
+                    'code' => 'CLICK_AT_IS_ERROR',
+                    'message' => '点击时间格式错误',
+                    'log' => true,
+                    'data' => $data,
+                ]);
+            }
         }
 
         if(empty($clickAt)){
