@@ -21,18 +21,36 @@ class AdExtendController extends OceanController
         parent::__construct();
     }
 
+    /**
+     * 列表预处理
+     */
     public function selectPrepare(){
-
+        $this->curdService->selectQueryAfter(function(){
+            foreach($this->curdService->responseData['list'] as $v){
+                $v->convert_callback_strategy;
+            }
+        });
     }
 
+    /**
+     * 详情预处理
+     */
     public function readPrepare(){
-
+        $this->curdService->findAfter(function(){
+            $this->curdService->findData->convert_callback_strategy;
+        });
     }
 
+    /**
+     * 创建预处理
+     */
     public function createPrepare(){
         $this->saveValid();
     }
 
+    /**
+     * 更新预处理
+     */
     public function updatePrepare(){
         $this->saveValid();
     }
@@ -43,6 +61,7 @@ class AdExtendController extends OceanController
     private function saveValid(){
         $this->curdService->addField('ad_id')->addValidRule('required');
         $this->curdService->addField('convert_callback_strategy_id')->addValidRule('required|integer');
+        $this->curdService->addField('channel_id')->addValidRule('required|integer');
 
         $this->curdService->saveBefore(function(){
             $ad = OceanAdModel::find($this->curdService->requestData['ad_id']);
