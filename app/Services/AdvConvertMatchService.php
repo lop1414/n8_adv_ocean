@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Common\Enums\ConvertCallbackStatusEnum;
 use App\Common\Enums\ConvertCallbackTimeEnum;
 use App\Common\Enums\ConvertTypeEnum;
+use App\Common\Models\ClickModel;
 use App\Common\Models\ConvertCallbackModel;
 use App\Common\Services\ConvertMatchService;
 use App\Models\Ocean\OceanAdExtendModel;
@@ -13,11 +13,14 @@ class AdvConvertMatchService extends ConvertMatchService
 {
     /**
      * @param $click
-     * @param $convertType
-     * @return array|mixed
+     * @param $convert
+     * @return array|mixed|void
      * 获取转化回传规则
      */
-    protected function getConvertCallbackStrategy($click, $convertType){
+    protected function getConvertCallbackStrategy($click, $convert){
+        // 转化类型
+        $convertType = $convert['convert_type'];
+
         // 默认策略
         $strategy = [
             ConvertTypeEnum::PAY => [
@@ -66,5 +69,26 @@ class AdvConvertMatchService extends ConvertMatchService
         ")->get();
 
         return $convertCallbacks;
+    }
+
+    /**
+     * @param $data
+     * @return ClickModel|void
+     * 获取匹配查询构造器
+     */
+    protected function getMatchByBuilder($data){
+        $builder = new ClickModel();
+
+        $channelId = $data['n8_union_user']['channel_id'] ?? 0;
+        if(!empty($channelId)){
+            $builder = $builder->whereRaw("
+                ad_id IN (
+                    SELECT ad_id FROM ocean_ad_extends
+                        WHERE channel_id = {$channelId}
+                )
+            ");
+        }
+
+        return $builder;
     }
 }

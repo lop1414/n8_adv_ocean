@@ -1,31 +1,31 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost
-Source Server Version : 50724
-Source Host           : localhost:3306
+Source Server         : 120.24.144.128(测试)
+Source Server Version : 50505
+Source Host           : localhost:3367
 Source Database       : n8_adv_ocean
 
 Target Server Type    : MYSQL
-Target Server Version : 50724
+Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2021-03-31 15:59:22
+Date: 2021-04-13 11:51:32
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for ocean_clicks
+-- Table structure for clicks
 -- ----------------------------
-DROP TABLE IF EXISTS `ocean_clicks`;
-CREATE TABLE `ocean_clicks` (
+DROP TABLE IF EXISTS `clicks`;
+CREATE TABLE `clicks` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `campaign_id` varchar(100) NOT NULL DEFAULT '' COMMENT '广告组id',
   `ad_id` varchar(100) NOT NULL DEFAULT '' COMMENT '计划id',
   `creative_id` varchar(100) NOT NULL DEFAULT '' COMMENT '创意id',
   `request_id` varchar(100) NOT NULL,
-  `product_id` int(11) NOT NULL DEFAULT '0' COMMENT '产品id',
+  `product_id` int(11) NOT NULL DEFAULT 0 COMMENT '产品id',
   `creative_type` varchar(50) NOT NULL DEFAULT '' COMMENT '创意样式',
   `creative_site` varchar(100) NOT NULL DEFAULT '' COMMENT '广告投放位置',
   `convert_id` varchar(100) NOT NULL DEFAULT '' COMMENT '转化id',
@@ -52,4 +52,4 @@ CREATE TABLE `ocean_clicks` (
   KEY `click_at` (`click_at`) USING BTREE,
   KEY `product_id` (`product_id`) USING BTREE,
   KEY `ad_id` (`ad_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COMMENT='巨量点击表';
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='巨量点击表';

@@ -1,1 +1,0 @@
-ALTER TABLE ocean_convert_callbacks RENAME TO convert_callbacks;
