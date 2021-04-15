@@ -184,12 +184,12 @@ $router->group([
 ], function () use ($router) {
     // 转化
     $router->group(['prefix' => 'convert'], function () use ($router) {
-        $router->post('match', 'Front\ConvertController@match');
+        $router->post('match', '\\App\Common\Controllers\Front\ConvertController@match');
     });
 
     // 转化回传
     $router->group(['prefix' => 'convert_callback'], function () use ($router) {
-        $router->post('get', 'Front\ConvertCallbackController@get');
+        $router->post('get', '\\App\Common\Controllers\Front\ConvertCallbackController@get');
     });
 
     // 巨量
