@@ -202,7 +202,7 @@ $router->group([
 });
 
 // 点击
-$router->get('front/click', '\\App\Common\Controllers\Front\ClickController@index');
+$router->get('front/click', 'Front\AdvClickController@index');
 
 // 巨量
 $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');

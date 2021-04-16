@@ -41,8 +41,8 @@ class IndexController extends FrontController
 
 //        $this->testModelData();
 //        $this->testConvertMatch();
-        $this->testConvertCallbackGet();
-//        $this->testCreateClick();
+//        $this->testConvertCallbackGet();
+        $this->testCreateClick();
     }
 
     private function testCreateClick(){
