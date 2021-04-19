@@ -331,7 +331,7 @@ class OceanAdCreativeCreateService extends OceanService
      * 创建计划
      */
     public function createAd($param){
-        $ret = $this->forward('2/ad/create/', $param, 'POST');
+        $ret = $this->forward('2/ad/create/', $param, 'POST', [], ['timeout' => 120]);
         return $ret;
     }
 
@@ -342,7 +342,7 @@ class OceanAdCreativeCreateService extends OceanService
      * 创建创意
      */
     public function createCreative($param){
-        $ret = $this->forward('2/creative/create_v2/', $param, 'POST');
+        $ret = $this->forward('2/creative/create_v2/', $param, 'POST', [], ['timeout' => 120]);
         return $ret;
     }
 

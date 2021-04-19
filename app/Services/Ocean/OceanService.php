@@ -391,15 +391,16 @@ $dump && Functions::consoleDump('=============== end =================');
      * @param array $param
      * @param string $method
      * @param array $header
+     * @param array $option
      * @return mixed
      * @throws CustomException
      * 转发
      */
-    public function forward($uri, $param = [], $method = 'GET', $header = []){
+    public function forward($uri, $param = [], $method = 'GET', $header = [], $option = []){
         $this->setAccessToken();
 
         $url = OceanEngine::BASE_URL .'/'. ltrim($uri);
 
-        return $this->sdk->authRequest($url, $param, $method, $header);
+        return $this->sdk->authRequest($url, $param, $method, $header, $option);
     }
 }
