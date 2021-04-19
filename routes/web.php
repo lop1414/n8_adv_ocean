@@ -79,6 +79,12 @@ $router->group([
         $router->post('read', '\\App\Common\Controllers\Admin\ConvertCallbackStrategyController@read');
     });
 
+    // 渠道-计划
+    $router->group(['prefix' => 'channel_ad'], function () use ($router) {
+        $router->post('update', 'Admin\ChannelAdController@update');
+        $router->post('read', 'Admin\ChannelAdController@read');
+    });
+
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 账户
@@ -190,6 +196,11 @@ $router->group([
     // 转化回传
     $router->group(['prefix' => 'convert_callback'], function () use ($router) {
         $router->post('get', '\\App\Common\Controllers\Front\ConvertCallbackController@get');
+    });
+
+    // 渠道-计划
+    $router->group(['prefix' => 'channel_ad'], function () use ($router) {
+        $router->post('update', 'Front\ChannelAdController@update');
     });
 
     // 巨量

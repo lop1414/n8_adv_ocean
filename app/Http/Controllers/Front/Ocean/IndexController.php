@@ -42,7 +42,8 @@ class IndexController extends FrontController
 //        $this->testModelData();
 //        $this->testConvertMatch();
 //        $this->testConvertCallbackGet();
-        $this->testCreateClick();
+//        $this->testCreateClick();
+        $this->testUpdateChannelAd();
     }
 
     private function testCreateClick(){
@@ -75,6 +76,7 @@ class IndexController extends FrontController
                     'guid' => 1,
                     'channel_id' => 228,
                     'created_at' => '2021-01-14 12:00:00',
+                    'click_source' => AdvClickSourceEnum::ADV_CLICK_API,
                 ],
             ],[
                 'convert_type' => ConvertTypeEnum::PAY, // 转化类型
@@ -92,11 +94,12 @@ class IndexController extends FrontController
                     'guid' => 1,
                     'channel_id' => 228,
                     'created_at' => '2021-01-14 12:00:00',
+                    'click_source' => AdvClickSourceEnum::ADV_CLICK_API,
                 ],
             ],
         ];
         $a = new AdvOceanApiService();
-        $ret = $a->apiConvertMatch($converts, AdvClickSourceEnum::N8_TRANSFER);
+        $ret = $a->apiConvertMatch($converts);
         dd($ret, 'testConvertMatch');
     }
 
@@ -127,5 +130,17 @@ class IndexController extends FrontController
 //        $a->clearAll();
 //        dd($a->where('id', '>=', 123)->orderBy('id', 'asc')->first());
         dd($item123, $item124, $item1233, 'item');
+    }
+
+    public function testUpdateChannelAd(){
+        $channelId = 228;
+
+        $adIds = [
+            '1690757112343566',
+            '1690757111708711',
+        ];
+
+        $a = new AdvOceanApiService();
+        $a->apiUpdateChannelAd($channelId, $adIds);
     }
 }
