@@ -61,7 +61,6 @@ class AdExtendController extends OceanController
     private function saveValid(){
         $this->curdService->addField('ad_id')->addValidRule('required');
         $this->curdService->addField('convert_callback_strategy_id')->addValidRule('required|integer');
-        $this->curdService->addField('channel_id')->addValidRule('required|integer');
 
         $this->curdService->saveBefore(function(){
             $ad = OceanAdModel::find($this->curdService->requestData['ad_id']);
