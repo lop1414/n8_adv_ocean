@@ -374,8 +374,8 @@ class OceanAdCreativeCreateService extends OceanService
         $adId = $ret['ad_id'];
 
         // 创建创意
-        $creative = array_merge($item['data']['creative'], ['ad_id' => $adId]);
-        $this->createCreative($creative);
+        $item['data']['creative']['ad_id'] = $adId;
+        $this->createCreative($item['data']['creative']);
 
         return [
             'ad_id' => $adId
