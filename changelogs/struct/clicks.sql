@@ -42,7 +42,7 @@ CREATE TABLE `clicks` (
   `union_site` varchar(100) NOT NULL DEFAULT '',
   `caid` varchar(100) NOT NULL DEFAULT '' COMMENT '不同版本的中国广告协会互联网广告标识，CAID1是20201230版，暂无CAID2',
   `created_at` timestamp NULL DEFAULT NULL COMMENT '创建时间',
-  `updated_at` timestamp NULL DEFAULT NULL COMMENT '更新事件',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `muid` (`muid`) USING BTREE,
   KEY `oaid` (`oaid`) USING BTREE,
