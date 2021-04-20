@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Common\Enums\ConvertCallbackStatusEnum;
 use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Tools\CustomException;
 use App\Common\Services\ConvertCallbackService;
@@ -15,12 +14,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
      * @throws CustomException
      * 回传
      */
-    public function callback($item){
-        // 无需回传
-        if($item->convert_callback_status != ConvertCallbackStatusEnum::WAITING_CALLBACK){
-            return false;
-        }
-
+    protected function callback($item){
         $eventTypeMap = $this->getEventTypeMap();
 
         if(!isset($eventTypeMap[$item->convert_type])){
@@ -77,8 +71,6 @@ class AdvConvertCallbackService extends ConvertCallbackService
                 ],
             ]);
         }
-
-        $item->convert_callback_status = ConvertCallbackStatusEnum::MACHINE_CALLBACK;
 
         return true;
     }

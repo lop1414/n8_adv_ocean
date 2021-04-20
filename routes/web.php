@@ -85,6 +85,11 @@ $router->group([
         $router->post('read', 'Admin\ChannelAdController@read');
     });
 
+    // 转化回传
+    $router->group(['prefix' => 'convert_callback'], function () use ($router) {
+        $router->post('callback', '\\App\Common\Controllers\Admin\ConvertCallbackController@callback');
+    });
+
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 账户
