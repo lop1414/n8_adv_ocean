@@ -59,11 +59,9 @@ class ChannelAdService extends BaseService
             unset($ads[$k]['extends']);
         }
 
-        $channelAd = [
+        return [
             'channel_id' => $data['channel_id'],
-            'ads' => $ads,
+            'list' => $ads
         ];
-
-        return $channelAd;
     }
 }

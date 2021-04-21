@@ -41,8 +41,8 @@ class ChannelAdController extends AdminController
         $data = $request->post();
 
         $channelAdService = new ChannelAdService();
-        $channelAd = $channelAdService->read($data);
+        $data = $channelAdService->read($data);
 
-        return $this->success($channelAd);
+        return $this->success($data);
     }
 }
