@@ -101,6 +101,9 @@ class Kernel extends ConsoleKernel
 
         // 测试
         if(Functions::isStaging()){
+            // 巨量广告组同步
+            $schedule->command('ocean:sync_campaign --create_date=today')->cron('* * * * *');
+
             // 巨量计划同步
             $schedule->command('ocean:sync_ad --update_date=today')->cron('* * * * *');
 //            $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 0 * * *');
