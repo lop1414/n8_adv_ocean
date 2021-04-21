@@ -52,8 +52,15 @@ class ChannelAdService extends BaseService
         $channelAdModel = new ChannelAdModel();
         $adIds = $channelAdModel->where('channel_id', $data['channel_id'])->pluck('ad_id')->toArray();
 
-        $oceanAdModel = new OceanAdModel();
-        $ads = $oceanAdModel->whereIn('id', $adIds)->get();
+        $builder = new OceanAdModel();
+        $builder = $builder->whereIn('id', $adIds);
+
+        // 过滤
+        if(!empty($data['filtering'])){
+            $builder = $builder->filtering($data['filtering']);
+        }
+
+        $ads = $builder->get();
 
         foreach($ads as $k => $v){
             unset($ads[$k]['extends']);
