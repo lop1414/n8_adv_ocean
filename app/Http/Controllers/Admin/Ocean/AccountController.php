@@ -28,11 +28,7 @@ class AccountController extends OceanController
 
         $this->curdService->selectQueryBefore(function(){
             $this->curdService->customBuilder(function($builder){
-                $adminUserInfo = Functions::getGlobalData('admin_user_info');
-                if(!$adminUserInfo['is_admin']){
-                    $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
-                }
-                $builder->where('parent_id', '<>', 0);
+                $this->filter();
             });
         });
     }
@@ -44,13 +40,22 @@ class AccountController extends OceanController
         parent::getPrepare();
 
         $this->curdService->getQueryBefore(function(){
-            $this->curdService->customBuilder(function($builder){
-                $adminUserInfo = Functions::getGlobalData('admin_user_info');
-                if(!$adminUserInfo['is_admin']){
-                    $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
-                }
-                $builder->where('parent_id', '<>', 0);
-            });
+            $this->filter();
+        });
+    }
+
+    /**
+     * 过滤
+     */
+    private function filter(){
+        $this->curdService->customBuilder(function($builder){
+            // 关键词
+            $keyword = $this->curdService->requestData['keyword'] ?? '';
+            if(!empty($keyword)){
+                $builder->whereRaw("(account_id LIKE '%{$keyword}%' OR name LIKE '%{$keyword}%')");
+            }
+
+            $builder->where('parent_id', '<>', 0);
         });
     }
 
