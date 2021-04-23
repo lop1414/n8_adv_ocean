@@ -69,7 +69,7 @@ class TaskOceanVideoUploadService extends TaskOceanService
             ->first();
 
         // 获取可推送视频
-        $video = $this->getCanPushVideo($subTask->n8_material_video_signature, $oceanAccount->company);
+        $video = $this->getCanPushVideo($subTask->n8_material_video_signature, $oceanAccount);
 
         if(!empty($video)){
             // 推送
@@ -102,11 +102,11 @@ class TaskOceanVideoUploadService extends TaskOceanService
 
     /**
      * @param $signature
-     * @param $company
+     * @param $oceanAccount
      * @return bool|mixed
      * 获取可推送视频
      */
-    public function getCanPushVideo($signature, $company){
+    public function getCanPushVideo($signature, $oceanAccount){
         $enable = StatusEnum::ENABLE;
         $items = DB::select("
             SELECT
@@ -118,7 +118,8 @@ class TaskOceanVideoUploadService extends TaskOceanService
             WHERE
                 v.signature = '{$signature}'
                 AND a.status = '{$enable}'
-                AND a.company = '{$company}'
+                AND a.company = '{$oceanAccount->company}'
+                AND a.account_id != {$oceanAccount->account_id}
             LIMIT 1
         ");
 
