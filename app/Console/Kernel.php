@@ -108,6 +108,9 @@ class Kernel extends ConsoleKernel
             $schedule->command('ocean:sync_ad --update_date=today')->cron('* * * * *');
 //            $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 0 * * *');
 
+            // 巨量转化跟踪同步
+            $schedule->command('ocean:sync_ad_convert')->cron('30 3 * * *');
+
             // 巨量账户报表同步
             $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('* * * * *');
 //            $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
