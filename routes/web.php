@@ -122,7 +122,6 @@ $router->group([
             $router->post('select', 'Admin\Ocean\CampaignController@select');
             $router->post('get', 'Admin\Ocean\CampaignController@get');
             $router->post('read', 'Admin\Ocean\CampaignController@read');
-            $router->post('create', 'Admin\Ocean\CampaignController@create');
         });
 
         // 广告计划
@@ -183,6 +182,15 @@ $router->group([
             $router->post('update', 'Admin\Ocean\AdExtendController@update');
             $router->post('select', 'Admin\Ocean\AdExtendController@select');
             $router->post('read', 'Admin\Ocean\AdExtendController@read');
+        });
+
+        // 创意组模板
+        $router->group(['prefix' => 'creative_group_templete'], function () use ($router) {
+            $router->post('create', 'Admin\Ocean\CreativeGroupTempleteController@create');
+            $router->post('update', 'Admin\Ocean\CreativeGroupTempleteController@update');
+            $router->post('select', 'Admin\Ocean\CreativeGroupTempleteController@select');
+            $router->post('read', 'Admin\Ocean\CreativeGroupTempleteController@read');
+            $router->post('delete', 'Admin\Ocean\CreativeGroupTempleteController@delete');
         });
     });
 });
