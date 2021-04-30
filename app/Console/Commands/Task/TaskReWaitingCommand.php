@@ -6,6 +6,7 @@ use App\Common\Console\BaseCommand;
 use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
+use App\Services\Task\TaskOceanAdCreativeCreateService;
 use App\Services\Task\TaskOceanImageUploadService;
 use App\Services\Task\TaskOceanSyncService;
 use App\Services\Task\TaskOceanVideoUploadService;
@@ -62,6 +63,9 @@ class TaskReWaitingCommand extends BaseCommand
 
         $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::VIDEO);
         $taskOceanSyncService->reWaiting();
+
+        $taskOceanAdCreativeCreateService = new TaskOceanAdCreativeCreateService();
+        $taskOceanAdCreativeCreateService->reWaiting();
 
         return true;
     }
