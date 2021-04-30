@@ -34,6 +34,16 @@ class AdController extends OceanController
 
         $this->curdService->selectQueryBefore(function(){
             $this->curdService->customBuilder(function($builder){
+                // 任务创建
+                if(!empty($this->curdService->requestData['task_id'])){
+                    $builder->whereRaw("
+                        id IN (
+                            SELECT ad_id FROM task_ocean_ad_creative_creates
+                                WHERE task_id = {$this->curdService->requestData['task_id']}
+                        )
+                    ");
+                }
+
                 // 时间范围
                 $startDate = $this->curdService->requestData['start_date'] ?? date('Y-m-d');
                 $endDate = $this->curdService->requestData['end_date'] ?? date('Y-m-d');

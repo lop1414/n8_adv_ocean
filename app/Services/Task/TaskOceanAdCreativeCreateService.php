@@ -97,6 +97,8 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
                         'account_id' => $subTask->account_id,
                         'ad_id' => $ret['ad_id'],
                     ];
+
+                    $subTask->ad_id = $ret['ad_id'];
                 }
 
                 $subTask->exec_status = ExecStatusEnum::SUCCESS;
