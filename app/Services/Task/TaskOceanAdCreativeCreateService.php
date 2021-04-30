@@ -120,7 +120,7 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
         }
 
         // 休眠防延迟
-        $sleep = max(1, (10 - ($subTasks->count() * 1)));
+        $sleep = max(1, (20 - ($subTasks->count() * 1)));
         sleep($sleep);
 
         $oceanToolService = new OceanToolService();
