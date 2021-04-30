@@ -102,21 +102,21 @@ class Kernel extends ConsoleKernel
         // 测试
         if(Functions::isStaging()){
             // 巨量广告组同步
-            $schedule->command('ocean:sync_campaign --create_date=today')->cron('* * * * *');
+            $schedule->command('ocean:sync_campaign --create_date=today')->cron('*/15 * * * *');
 
             // 巨量计划同步
-            $schedule->command('ocean:sync_ad --update_date=today')->cron('* * * * *');
+            $schedule->command('ocean:sync_ad --update_date=today')->cron('*/15 * * * *');
 //            $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 0 * * *');
 
             // 巨量转化跟踪同步
             $schedule->command('ocean:sync_ad_convert')->cron('30 3 * * *');
 
             // 巨量账户报表同步
-            $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('* * * * *');
+            $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('*/5 * * * *');
 //            $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
 
             // 巨量创意报表同步
-            $schedule->command('ocean:sync_creative_report --date=today --running=1 --run_by_account_cost=1')->cron('* * * * *');
+            $schedule->command('ocean:sync_creative_report --date=today --running=1 --run_by_account_cost=1')->cron('*/5 * * * *');
 //            $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10 * * *');
         }
 
