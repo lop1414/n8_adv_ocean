@@ -5,6 +5,7 @@ namespace App\Services\Ocean;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAudienceTempleteModel;
+use App\Models\Task\TaskOceanAdCreativeCreateModel;
 use App\Services\Task\TaskOceanAdCreativeCreateService;
 
 class OceanAdCreativeCreateService extends OceanService
@@ -356,22 +357,30 @@ class OceanAdCreativeCreateService extends OceanService
         $this->setAppId($item['app_id']);
         $this->setAccountId($item['account_id']);
 
-        // 创建计划
-        $ret = $this->createAd($item['data']['ad']);
+        if(empty($item['ad_id'])){
+            // 创建计划
+            $ret = $this->createAd($item['data']['ad']);
 
-        if(empty($ret['ad_id'])){
-            throw new CustomException([
-                'code' => 'CREATE_AD_FAIL',
-                'message' => '创建广告计划失败',
-                'data' => [
-                    'item' => $item,
-                ],
-                'log' => true,
-            ]);
+            if(empty($ret['ad_id'])){
+                throw new CustomException([
+                    'code' => 'CREATE_AD_FAIL',
+                    'message' => '创建广告计划失败',
+                    'data' => [
+                        'item' => $item,
+                    ],
+                    'log' => true,
+                ]);
+            }
+
+            $subTask = TaskOceanAdCreativeCreateModel::find($item['id']);
+            $subTask->ad_id = $ret['ad_id'];
+            $subTask->save();
+
+            // 计划id
+            $adId = $ret['ad_id'];
+        }else{
+            $adId = $item['ad_id'];
         }
-
-        // 计划id
-        $adId = $ret['ad_id'];
 
         // 创建创意
         $item['data']['creative']['ad_id'] = $adId;
