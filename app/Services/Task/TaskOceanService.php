@@ -32,7 +32,7 @@ class TaskOceanService extends TaskService
      * 重执行
      */
     public function reWaiting(){
-        $createdAt = date('Y-m-d H:i:s', (time() - 86400));
+        $createdAt = date('Y-m-d H:i:s', (time() - 86400 * 7));
         $taskStatus = TaskStatusEnum::DONE;
         $execStatus = ExecStatusEnum::FAIL;
         $taskType = $this->taskType;
