@@ -41,6 +41,7 @@ $router->group([
     // 任务
     $router->group(['prefix' => 'task'], function () use ($router) {
         $router->post('select', '\\App\Common\Controllers\Admin\TaskController@select');
+        $router->post('open', '\\App\Common\Controllers\Admin\TaskController@open');
         $router->post('close', '\\App\Common\Controllers\Admin\TaskController@close');
     });
 
