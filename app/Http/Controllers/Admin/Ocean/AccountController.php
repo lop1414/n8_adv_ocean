@@ -7,6 +7,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
+use Illuminate\Support\Facades\DB;
 
 class AccountController extends OceanController
 {
@@ -29,6 +30,32 @@ class AccountController extends OceanController
         $this->curdService->selectQueryBefore(function(){
             $this->curdService->customBuilder(function($builder){
                 $this->filter();
+
+                // 时间范围
+                $startDate = $this->curdService->requestData['start_date'] ?? date('Y-m-d');
+                $endDate = $this->curdService->requestData['end_date'] ?? date('Y-m-d');
+                Functions::dateCheck($startDate);
+                Functions::dateCheck($endDate);
+
+                $report = DB::table('ocean_account_reports')
+                    ->whereBetween('stat_datetime', ["{$startDate} 00:00:00", "{$endDate} 23:59:59"])
+                    ->select(DB::raw("
+                        account_id report_account_id,
+                        ROUND(SUM(`cost` / 100), 2) `cost`,
+                        SUM(`click`) `click`,
+                        SUM(`show`) `show`,
+                        SUM(`convert`) `convert`,
+                        ROUND(SUM(`cost` / 100) / SUM(`show`) * 1000, 2) `show_cost`,
+                        ROUND(SUM(`cost` / 100) / SUM(`click`), 2) `click_cost`,
+                        ROUND(SUM(`click`) / SUM(`show`), 4) `click_rate`,
+                        ROUND(SUM(`cost` / 100) / SUM(`convert`), 2) `convert_cost`,
+                        ROUND(SUM(`convert`) / SUM(`click`), 4) `convert_rate`
+                    "))
+                    ->groupBy('account_id');
+
+                $builder->LeftjoinSub($report, 'report', function($join){
+                    $join->on('ocean_accounts.account_id', '=', 'report.report_account_id');
+                });
             });
         });
     }
