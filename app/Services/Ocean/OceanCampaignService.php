@@ -88,7 +88,7 @@ class OceanCampaignService extends OceanService
             }
 
             // 延迟
-            usleep(300000);
+            usleep(600000);
         }
 
         $t = microtime(1) - $t;
