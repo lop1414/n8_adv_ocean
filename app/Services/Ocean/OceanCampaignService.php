@@ -86,6 +86,9 @@ class OceanCampaignService extends OceanService
             foreach($items as $item) {
                 $this->save($item);
             }
+
+            // 延迟
+            usleep(300000);
         }
 
         $t = microtime(1) - $t;
