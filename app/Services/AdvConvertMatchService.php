@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Common\Enums\AdvClickSourceEnum;
 use App\Common\Enums\ConvertCallbackTimeEnum;
 use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Models\ClickModel;
@@ -79,14 +80,16 @@ class AdvConvertMatchService extends ConvertMatchService
     protected function getMatchByBuilder($data){
         $builder = new ClickModel();
 
-        $channelId = $data['n8_union_user']['channel_id'] ?? 0;
-        if(!empty($channelId)){
-            $builder = $builder->whereRaw("
+        if($this->clickSource != AdvClickSourceEnum::N8_TRANSFER){
+            $channelId = $data['n8_union_user']['channel_id'] ?? 0;
+            if(!empty($channelId)){
+                $builder = $builder->whereRaw("
                 ad_id IN (
                     SELECT ad_id FROM channel_ads
                         WHERE channel_id = {$channelId}
                 )
             ");
+            }
         }
 
         return $builder;
