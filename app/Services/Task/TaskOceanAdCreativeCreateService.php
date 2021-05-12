@@ -7,7 +7,6 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
-use App\Models\Task\TaskOceanAdCreativeCreateModel;
 use App\Services\Ocean\OceanAdCreativeCreateService;
 use App\Services\Ocean\OceanToolService;
 
@@ -38,17 +37,17 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
             'start_at' => 'required',
         ]);
 
-        $model = new TaskOceanAdCreativeCreateModel();
-        $model->task_id = $taskId;
-        $model->app_id = $data['app_id'];
-        $model->account_id = $data['account_id'];
-        $model->data = $data['data'];
-        $model->start_at = $data['start_at'];
-        $model->exec_status = ExecStatusEnum::WAITING;
-        $model->admin_id = $data['admin_id'] ?? 0;
-        $model->extends = $data['extends'] ?? [];
+        $subModel = new $this->subModelClass();
+        $subModel->task_id = $taskId;
+        $subModel->app_id = $data['app_id'];
+        $subModel->account_id = $data['account_id'];
+        $subModel->data = $data['data'];
+        $subModel->start_at = $data['start_at'];
+        $subModel->exec_status = ExecStatusEnum::WAITING;
+        $subModel->admin_id = $data['admin_id'] ?? 0;
+        $subModel->extends = $data['extends'] ?? [];
 
-        return $model->save();
+        return $subModel->save();
     }
 
     /**
@@ -57,11 +56,11 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
      * 获取待执行子任务
      */
     public function getWaitingSubTasks($taskId){
-        $taskOceanAdCreativeCreateModel = new TaskOceanAdCreativeCreateModel();
+        $subModel = new $this->subModelClass();
 
         $datetime = date('Y-m-d H:i:s');
 
-        $subTasks = $taskOceanAdCreativeCreateModel->where('task_id', $taskId)
+        $subTasks = $subModel->where('task_id', $taskId)
             ->where('exec_status', ExecStatusEnum::WAITING)
             ->where('start_at', '<', $datetime)
             ->orderBy('id', 'asc')

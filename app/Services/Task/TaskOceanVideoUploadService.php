@@ -7,7 +7,6 @@ use App\Common\Enums\StatusEnum;
 use App\Common\Enums\TaskTypeEnum;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
-use App\Models\Task\TaskOceanVideoUploadModel;
 use App\Services\Ocean\OceanMaterialService;
 use App\Services\Ocean\OceanVideoService;
 use Illuminate\Support\Facades\DB;
@@ -40,19 +39,19 @@ class TaskOceanVideoUploadService extends TaskOceanService
             'n8_material_video_signature' => 'required',
         ]);
 
-        $model = new TaskOceanVideoUploadModel();
-        $model->task_id = $taskId;
-        $model->app_id = $data['app_id'];
-        $model->account_id = $data['account_id'];
-        $model->n8_material_video_id = $data['n8_material_video_id'];
-        $model->n8_material_video_path = $data['n8_material_video_path'];
-        $model->n8_material_video_name = $data['n8_material_video_name'];
-        $model->n8_material_video_signature = $data['n8_material_video_signature'];
-        $model->exec_status = ExecStatusEnum::WAITING;
-        $model->admin_id = $data['admin_id'] ?? 0;
-        $model->extends = $data['extends'] ?? [];
+        $subModel = new $this->subModelClass();
+        $subModel->task_id = $taskId;
+        $subModel->app_id = $data['app_id'];
+        $subModel->account_id = $data['account_id'];
+        $subModel->n8_material_video_id = $data['n8_material_video_id'];
+        $subModel->n8_material_video_path = $data['n8_material_video_path'];
+        $subModel->n8_material_video_name = $data['n8_material_video_name'];
+        $subModel->n8_material_video_signature = $data['n8_material_video_signature'];
+        $subModel->exec_status = ExecStatusEnum::WAITING;
+        $subModel->admin_id = $data['admin_id'] ?? 0;
+        $subModel->extends = $data['extends'] ?? [];
 
-        return $model->save();
+        return $subModel->save();
     }
 
     /**

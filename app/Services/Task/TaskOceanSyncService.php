@@ -7,7 +7,6 @@ use App\Common\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
-use App\Models\Task\TaskOceanSyncModel;
 use App\Services\Ocean\OceanAdConvertService;
 use App\Services\Ocean\OceanAdService;
 use App\Services\Ocean\OceanCampaignService;
@@ -53,16 +52,16 @@ class TaskOceanSyncService extends TaskOceanService
         // 校验
         Functions::hasEnum(OceanSyncTypeEnum::class, $this->syncType);
 
-        $model = new TaskOceanSyncModel();
-        $model->task_id = $taskId;
-        $model->app_id = $data['app_id'];
-        $model->account_id = $data['account_id'];
-        $model->sync_type = $this->syncType;
-        $model->exec_status = ExecStatusEnum::WAITING;
-        $model->admin_id = $data['admin_id'] ?? 0;
-        $model->extends = $data['extends'] ?? [];
+        $subModel = new $this->subModelClass();
+        $subModel->task_id = $taskId;
+        $subModel->app_id = $data['app_id'];
+        $subModel->account_id = $data['account_id'];
+        $subModel->sync_type = $this->syncType;
+        $subModel->exec_status = ExecStatusEnum::WAITING;
+        $subModel->admin_id = $data['admin_id'] ?? 0;
+        $subModel->extends = $data['extends'] ?? [];
 
-        return $model->save();
+        return $subModel->save();
     }
 
     /**
@@ -71,9 +70,9 @@ class TaskOceanSyncService extends TaskOceanService
      * 获取待执行子任务
      */
     public function getWaitingSubTasks($taskId){
-        $taskOceanSyncModel = new TaskOceanSyncModel();
+        $subModel = new $this->subModelClass();
 
-        $builder = $taskOceanSyncModel->where('task_id', $taskId)
+        $builder = $subModel->where('task_id', $taskId)
             ->where('sync_type', $this->syncType)
             ->where('exec_status', ExecStatusEnum::WAITING);
 

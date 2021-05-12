@@ -5,7 +5,6 @@ namespace App\Services\Task;
 use App\Common\Enums\ExecStatusEnum;
 use App\Common\Enums\TaskTypeEnum;
 use App\Common\Tools\CustomException;
-use App\Models\Task\TaskOceanImageUploadModel;
 use App\Services\Ocean\OceanImageService;
 
 class TaskOceanImageUploadService extends TaskOceanService
@@ -37,19 +36,19 @@ class TaskOceanImageUploadService extends TaskOceanService
             'n8_material_image_signature' => 'required',
         ]);
 
-        $model = new TaskOceanImageUploadModel();
-        $model->task_id = $taskId;
-        $model->app_id = $data['app_id'];
-        $model->account_id = $data['account_id'];
-        $model->n8_material_image_id = $data['n8_material_image_id'];
-        $model->n8_material_image_path = $data['n8_material_image_path'];
-        $model->n8_material_image_name = $data['n8_material_image_name'];
-        $model->n8_material_image_signature = $data['n8_material_image_signature'];
-        $model->exec_status = ExecStatusEnum::WAITING;
-        $model->admin_id = $data['admin_id'] ?? 0;
-        $model->extends = $data['extends'] ?? [];
+        $subModel = new $this->subModelClass();
+        $subModel->task_id = $taskId;
+        $subModel->app_id = $data['app_id'];
+        $subModel->account_id = $data['account_id'];
+        $subModel->n8_material_image_id = $data['n8_material_image_id'];
+        $subModel->n8_material_image_path = $data['n8_material_image_path'];
+        $subModel->n8_material_image_name = $data['n8_material_image_name'];
+        $subModel->n8_material_image_signature = $data['n8_material_image_signature'];
+        $subModel->exec_status = ExecStatusEnum::WAITING;
+        $subModel->admin_id = $data['admin_id'] ?? 0;
+        $subModel->extends = $data['extends'] ?? [];
 
-        return $model->save();
+        return $subModel->save();
     }
 
     /**
@@ -58,9 +57,9 @@ class TaskOceanImageUploadService extends TaskOceanService
      * 获取待执行子任务
      */
     public function getWaitingSubTasks($taskId){
-        $taskOceanImageUploadModel = new TaskOceanImageUploadModel();
+        $subModel = new $this->subModelClass();
 
-        $subTasks = $taskOceanImageUploadModel->where('task_id', $taskId)
+        $subTasks = $subModel->where('task_id', $taskId)
             ->where('exec_status', ExecStatusEnum::WAITING)
             ->orderBy('id', 'asc')
             ->get();
