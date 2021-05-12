@@ -71,7 +71,7 @@ class ToolController extends OceanController
             'app_id' => $account->app_id,
             'account_id' => $account->account_id,
             'param' => $param,
-            'result' => $result,
+            'result' => &$result,
         ]);
 
         return $this->success($result);
@@ -108,6 +108,15 @@ class ToolController extends OceanController
             $oceanToolService = new OceanToolService();
             $oceanToolService->sync($syncType, $syncParam);
         }
+
+        if($this->isSameUri($uri, '2/dpa/detail/get/')){
+            // 商品列表
+            $list = $data['result']['list'] ?? [];
+            foreach($list as $k => $v){
+                // long 转字符串
+                $data['result']['list'][$k]['product_id'] = strval($v['product_id']);
+            }
+        }
     }
 
     /**
@@ -139,13 +148,17 @@ class ToolController extends OceanController
 
         foreach($map as $syncType => $syncUris){
             foreach($syncUris as $syncUri){
-                if(rtrim($uri, '/') == rtrim($syncUri, '/')){
+                if($this->isSameUri($uri, $syncUri)){
                     return $syncType;
                 }
             }
         }
 
         return false;
+    }
+
+    private function isSameUri($uri1, $uri2){
+        return rtrim($uri1, '/') == rtrim($uri2, '/');
     }
 
     /**
