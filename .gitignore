@@ -5,3 +5,5 @@ Homestead.yaml
 .env
 composer.lock
 /app/Common
+config/common.php
+config/database.php
