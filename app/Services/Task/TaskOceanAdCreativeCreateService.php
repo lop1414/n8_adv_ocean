@@ -3,7 +3,7 @@
 namespace App\Services\Task;
 
 use App\Common\Enums\ExecStatusEnum;
-use App\Common\Enums\TaskTypeEnum;
+use App\Enums\TaskTypeEnum;
 use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;

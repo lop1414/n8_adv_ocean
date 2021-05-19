@@ -4,7 +4,7 @@ namespace App\Services\Task;
 
 use App\Common\Enums\ExecStatusEnum;
 use App\Common\Enums\StatusEnum;
-use App\Common\Enums\TaskTypeEnum;
+use App\Enums\TaskTypeEnum;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
 use App\Services\Ocean\OceanMaterialService;
