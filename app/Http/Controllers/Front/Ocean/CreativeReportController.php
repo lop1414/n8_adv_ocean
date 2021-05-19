@@ -16,13 +16,19 @@ class CreativeReportController extends FrontController
         parent::__construct();
     }
 
-    public function hour(Request $request){
-        $date = $request->post('date');
-        $hour = $request->post('hour');
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \App\Common\Tools\CustomException
+     * 获取
+     */
+    public function get(Request $request){
+        $startTime = $request->post('start_time');
+        $endTime = $request->post('end_time');
         $groupBy = $request->post('group_by');
 
         $oceanCreativeReportService = new OceanCreativeReportService();
-        $reports = $oceanCreativeReportService->getReportByHour($date, $hour, $groupBy);
+        $reports = $oceanCreativeReportService->getReports($startTime, $endTime, $groupBy);
 
         return $this->success($reports);
     }

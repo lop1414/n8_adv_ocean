@@ -222,7 +222,7 @@ $router->group([
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 创意报表
         $router->group(['prefix' => 'creative_report'], function () use ($router) {
-            $router->post('hour', 'Front\Ocean\CreativeReportController@hour');
+            $router->post('get', 'Front\Ocean\CreativeReportController@get');
         });
     });
 });

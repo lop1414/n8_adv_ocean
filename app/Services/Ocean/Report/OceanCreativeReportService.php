@@ -3,6 +3,7 @@
 namespace App\Services\Ocean\Report;
 
 use App\Common\Helpers\Functions;
+use App\Common\Tools\CustomException;
 use App\Models\Ocean\Report\OceanCreativeReportModel;
 use Illuminate\Support\Facades\DB;
 
@@ -43,7 +44,7 @@ class OceanCreativeReportService extends OceanReportService
     /**
      * @param $accountIds
      * @return array|mixed
-     * @throws \App\Common\Tools\CustomException
+     * @throws CustomException
      * 按账户消耗执行
      */
     protected function runByAccountCost($accountIds){
@@ -63,18 +64,28 @@ class OceanCreativeReportService extends OceanReportService
         return $creativeAccountIds;
     }
 
-    public function getReportByHour($date, $hour, $groupBy){
-        Functions::dateCheck($date);
-
-        $dateRange = [
-            "{$date} {$hour}:00:00",
-            "{$date} {$hour}:59:59",
-        ];
+    /**
+     * @param $startTime
+     * @param $endTime
+     * @param $groupBy
+     * @return array
+     * @throws CustomException
+     * 获取报表
+     */
+    public function getReports($startTime, $endTime, $groupBy){
+        Functions::timeCheck($startTime);
+        Functions::timeCheck($endTime);
+        if($startTime > $endTime){
+            throw new CustomException([
+                'code' => 'START_TTME_MORE_THAN_END_TIME',
+                'message' => '开始时间不能大于结束时间',
+            ]);
+        }
 
         $sql = "
             SELECT {$groupBy}, SUM(`cost`) `cost`, SUM(`show`) `show`, SUM(`click`) `click`, SUM(`convert`) `convert`
                 FROM ocean_creative_reports
-                WHERE stat_datetime BETWEEN '{$dateRange[0]}' AND '{$dateRange[1]}'
+                WHERE stat_datetime BETWEEN '{$startTime}' AND '{$endTime}'
                 GROUP BY {$groupBy}
         ";
         $reports = DB::select($sql);
