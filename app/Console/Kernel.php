@@ -17,6 +17,7 @@ use App\Common\Console\Queue\QueueClickCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
+use App\Console\Commands\Task\TaskOceanAdUpdateCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
 use App\Console\Commands\Task\TaskOceanSyncCommand;
 use App\Console\Commands\Task\TaskOceanVideoUploadCommand;
@@ -47,6 +48,9 @@ class Kernel extends ConsoleKernel
 
         // 巨量计划创意创建任务
         TaskOceanAdCreativeCreateCommand::class,
+
+        // 巨量计划更新任务
+        TaskOceanAdUpdateCommand::class,
 
         // 巨量
         OceanSyncCampaignCommand::class,
@@ -92,6 +96,9 @@ class Kernel extends ConsoleKernel
 
         // 巨量计划创意创建任务
         $schedule->command('task:ocean_ad_creative_create')->cron('* * * * *');
+
+        // 巨量计划更新任务
+        $schedule->command('task:ocean_ad_update')->cron('* * * * *');
 
         // 队列
         $schedule->command('queue:click')->cron('* * * * *');

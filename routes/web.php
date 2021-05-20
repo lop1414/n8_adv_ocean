@@ -70,6 +70,13 @@ $router->group([
             $router->post('select', 'Admin\SubTask\TaskOceanAdCreativeCreateController@select');
             $router->post('read', 'Admin\SubTask\TaskOceanAdCreativeCreateController@read');
         });
+
+        // 巨量计划更新
+        $router->group(['prefix' => 'ocean_ad_update'], function () use ($router) {
+            $router->post('select', 'Admin\SubTask\TaskOceanAdUpdateController@select');
+            $router->post('read', 'Admin\SubTask\TaskOceanAdUpdateController@read');
+            $router->post('create', 'Admin\SubTask\TaskOceanAdUpdateController@create');
+        });
     });
 
     // 回传策略

@@ -23,8 +23,6 @@ class SubTaskOceanController extends SubTaskController
 
         $this->curdService->selectQueryAfter(function(){
             foreach($this->curdService->responseData['list'] as $item){
-                $item->fail_reason = $this->getFailReason($item->fail_data);
-
                 // 关联巨量账户
                 $item->ocean_account;
             }
@@ -36,9 +34,9 @@ class SubTaskOceanController extends SubTaskController
      */
     public function readPrepare(){
         parent::readPrepare();
-
         $this->curdService->findAfter(function(){
-            $this->curdService->findData->fail_reason = $this->getFailReason($this->curdService->findData->fail_data);
+            // 关联巨量账户
+            $this->curdService->findData->ocean_account;
         });
     }
 
@@ -48,12 +46,12 @@ class SubTaskOceanController extends SubTaskController
      * 获取失败原因
      */
     public function getFailReason($failData){
-        if(empty($failData['result'])){
+        if(empty($failData)){
             return '';
         }
 
-        $code = $failData['result']['code'] ?? '';
-        $message = $failData['result']['message'] ?? '';
+        $code = $failData['code'] ?? '';
+        $message = $failData['message'] ?? '';
 
         $sdk = new OceanEngine();
         $map = $sdk->getCodeMessageMap();

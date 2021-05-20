@@ -32,6 +32,7 @@ trait AccessToken
             throw new CustomException([
                 'code' => 'NOT_FOUND_ACCESS_TOKEN',
                 'message' => '尚未设置access_token',
+                'log' => true,
             ]);
         }
         return $this->accessToken;

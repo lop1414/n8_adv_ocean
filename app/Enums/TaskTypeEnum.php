@@ -4,6 +4,7 @@ namespace App\Enums;
 
 use App\Common\Enums\SystemAliasEnum;
 use App\Models\Task\TaskOceanAdCreativeCreateModel;
+use App\Models\Task\TaskOceanAdUpdateModel;
 use App\Models\Task\TaskOceanImageUploadModel;
 use App\Models\Task\TaskOceanSyncModel;
 use App\Models\Task\TaskOceanVideoUploadModel;
@@ -14,6 +15,7 @@ class TaskTypeEnum
     const OCEAN_IMAGE_UPLOAD = 'OCEAN_IMAGE_UPLOAD';
     const OCEAN_SYNC = 'OCEAN_SYNC';
     const OCEAN_AD_CREATIVE_CREATE = 'OCEAN_AD_CREATIVE_CREATE';
+    const OCEAN_AD_UPDATE = 'OCEAN_AD_UPDATE';
 
     /**
      * @var string
@@ -48,6 +50,12 @@ class TaskTypeEnum
             'id' => self::OCEAN_AD_CREATIVE_CREATE,
             'name' => '巨量计划创意创建',
             'sub_model_class' => TaskOceanAdCreativeCreateModel::class,
+            'system_alias' => SystemAliasEnum::ADV_OCEAN,
+        ],
+        [
+            'id' => self::OCEAN_AD_UPDATE,
+            'name' => '巨量计划批量更新',
+            'sub_model_class' => TaskOceanAdUpdateModel::class,
             'system_alias' => SystemAliasEnum::ADV_OCEAN,
         ],
     ];

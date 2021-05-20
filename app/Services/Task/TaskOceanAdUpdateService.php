@@ -3,14 +3,17 @@
 namespace App\Services\Task;
 
 use App\Common\Enums\ExecStatusEnum;
+use App\Common\Helpers\Functions;
+use App\Enums\Ocean\OceanAdUpdateTypeEnum;
 use App\Enums\TaskTypeEnum;
 use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Services\Ocean\OceanAdCreativeCreateService;
+use App\Services\Ocean\OceanAdUpdateService;
 use App\Services\Ocean\OceanToolService;
 
-class TaskOceanAdCreativeCreateService extends TaskOceanService
+class TaskOceanAdUpdateService extends TaskOceanService
 {
     /**
      * TaskOceanAdCreativeCreateService constructor.
@@ -18,7 +21,7 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
      */
     public function __construct()
     {
-        parent::__construct(TaskTypeEnum::OCEAN_AD_CREATIVE_CREATE);
+        parent::__construct(TaskTypeEnum::OCEAN_AD_UPDATE);
     }
 
     /**
@@ -33,16 +36,40 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
         $this->validRule($data, [
             'app_id' => 'required',
             'account_id' => 'required',
+            'ad_id' => 'required',
+            'ad_update_type' => 'required',
             'data' => 'required',
-            'start_at' => 'required',
         ]);
+        Functions::hasEnum(OceanAdUpdateTypeEnum::class, $data['ad_update_type']);
+
+        // data 验证
+        if($data['ad_update_type'] == OceanAdUpdateTypeEnum::STATUS){
+            $this->validRule($data, ['data.opt_status' => 'required']);
+            if(!in_array($data['data']['opt_status'], ['enable', 'disable', 'delete'])){
+                throw new CustomException([
+                    'code' => 'OPT_STATUS_ERROR',
+                    'message' => '操作状态错误',
+                ]);
+            }
+        }elseif($data['ad_update_type'] == OceanAdUpdateTypeEnum::BUDGET){
+            $this->validRule($data, ['data.budget' => 'required']);
+        }elseif($data['ad_update_type'] == OceanAdUpdateTypeEnum::BID){
+            $this->validRule($data, ['data.bid' => 'required']);
+        }else{
+            throw new CustomException([
+                'code' => 'PLEASE_WRITE_CREATE_SUB_TASK_BY_OCEAN_AD_UPDATE_TYPE_CODE',
+                'message' => '请书写按类型创建巨量计划更新任务代码',
+            ]);
+        }
 
         $subModel = new $this->subModelClass();
         $subModel->task_id = $taskId;
         $subModel->app_id = $data['app_id'];
         $subModel->account_id = $data['account_id'];
+        $subModel->ad_id = $data['ad_id'];
+        $subModel->ad_update_type = $data['ad_update_type'];
         $subModel->data = $data['data'];
-        $subModel->start_at = $data['start_at'];
+        $subModel->start_at = $data['start_at'] ?? date('Y-m-d H:i:s', time());
         $subModel->exec_status = ExecStatusEnum::WAITING;
         $subModel->admin_id = $data['admin_id'] ?? 0;
         $subModel->extends = $data['extends'] ?? [];
@@ -73,7 +100,6 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
      * @param $task
      * @param $option
      * @return bool
-     * @throws CustomException
      * 执行子任务
      */
     public function runSubs($task, $option){
@@ -84,19 +110,10 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
             return false;
         }
 
-        $syncs = [];
         foreach($subTasks as $subTask){
             try{
-                $oceanAdCreativeCreateService = new OceanAdCreativeCreateService();
-                $ret = $oceanAdCreativeCreateService->createAdCreative($subTask->toArray());
-
-                if(!empty($ret['ad_id'])){
-                    $syncs[] = [
-                        'app_id' => $subTask->app_id,
-                        'account_id' => $subTask->account_id,
-                        'ad_id' => $ret['ad_id'],
-                    ];
-                }
+                $oceanAdUpdateService = new OceanAdUpdateService();
+                $oceanAdUpdateService->update($subTask);
 
                 $subTask->exec_status = ExecStatusEnum::SUCCESS;
             }catch(CustomException $e){
@@ -116,15 +133,6 @@ class TaskOceanAdCreativeCreateService extends TaskOceanService
             }
 
             $subTask->save();
-        }
-
-        // 休眠防延迟
-        $sleep = max(1, (60 - ($subTasks->count() * 1)));
-        sleep($sleep);
-
-        $oceanToolService = new OceanToolService();
-        foreach($syncs as $sync){
-            $oceanToolService->sync(OceanSyncTypeEnum::AD, $sync);
         }
 
         return true;
