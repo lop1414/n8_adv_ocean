@@ -59,10 +59,11 @@ class TaskOceanService extends TaskService
                 continue;
             }
 
-            if($this->oceanToolService->sdk->isNetworkError($failSubTask->fail_data['result'])){
+            $failResult = $failSubTask->fail_data['data']['result'] ?? [];
+            if($this->oceanToolService->sdk->isNetworkError($failResult)){
                 // 网络错误
                 $this->updateReWaitingStatus($failSubTask);
-            }elseif($this->oceanToolService->sdk->isVideoNotExist($failSubTask->fail_data['result'])){
+            }elseif($this->oceanToolService->sdk->isVideoNotExist($failResult)){
                 $param = json_decode($failSubTask->fail_data['param'], true);
 
                 // 删除视频记录
@@ -73,7 +74,7 @@ class TaskOceanService extends TaskService
                         ->delete();
                 }
                 $this->updateReWaitingStatus($failSubTask);
-            }elseif($this->oceanToolService->sdk->isNotPermission($failSubTask->fail_data['result'])){
+            }elseif($this->oceanToolService->sdk->isNotPermission($failResult)){
                 #账户无权限
             }
         }
