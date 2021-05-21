@@ -7,7 +7,6 @@ use App\Common\Enums\TaskStatusEnum;
 use App\Common\Models\TaskModel;
 use App\Common\Services\TaskService;
 use App\Common\Tools\CustomException;
-use App\Models\Ocean\OceanAccountModel;
 use App\Models\Ocean\OceanAccountVideoModel;
 use App\Services\Ocean\OceanToolService;
 
@@ -64,7 +63,8 @@ class TaskOceanService extends TaskService
                 // 网络错误
                 $this->updateReWaitingStatus($failSubTask);
             }elseif($this->oceanToolService->sdk->isVideoNotExist($failResult)){
-                $param = json_decode($failSubTask->fail_data['param'], true);
+                // 视频不存在
+                $param = json_decode($failSubTask->fail_data['data']['param'], true);
 
                 // 删除视频记录
                 if(!empty($param['advertiser_id']) && !empty($param['video_ids'])){
@@ -75,7 +75,15 @@ class TaskOceanService extends TaskService
                 }
                 $this->updateReWaitingStatus($failSubTask);
             }elseif($this->oceanToolService->sdk->isNotPermission($failResult)){
-                #账户无权限
+                // 账户无权限
+                $param = json_decode($failSubTask->fail_data['data']['param'], true);
+
+                // 删除帐号记录
+                if(!empty($param['advertiser_id'])){
+                    $oceanAccountVideoModel = new OceanAccountVideoModel();
+                    $oceanAccountVideoModel->where('account_id', $param['advertiser_id'])->delete();
+                }
+                $this->updateReWaitingStatus($failSubTask);
             }
         }
     }
