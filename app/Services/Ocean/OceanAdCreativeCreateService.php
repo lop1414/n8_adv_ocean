@@ -181,6 +181,7 @@ class OceanAdCreativeCreateService extends OceanService
                 'data' => [
                     'ad' => $item['data']['ad'],
                     'creative' => $item['data']['creative'],
+                    'view' => $item['data']['view'] ?? null,
                 ],
                 'start_at' => $ruleOption['start_at'],
                 'admin_id' => $adminId,
@@ -231,6 +232,7 @@ class OceanAdCreativeCreateService extends OceanService
                     'data' => [
                         'ad' => $item['data']['ad'],
                         'creative' => $item['data']['creative'],
+                        'view' => $item['data']['view'] ?? null,
                     ],
                     'start_at' => date('Y-m-d H:i:s', $startTime),
                     'admin_id' => $adminId,
@@ -296,6 +298,7 @@ class OceanAdCreativeCreateService extends OceanService
                     'data' => [
                         'ad' => $item['data']['ad'],
                         'creative' => $item['data']['creative'],
+                        'view' => $item['data']['view'] ?? null,
                     ],
                     'start_at' => $startAt,
                     'admin_id' => $adminId,
