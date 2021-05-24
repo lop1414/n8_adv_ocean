@@ -84,6 +84,9 @@ class TaskOceanService extends TaskService
                     $oceanAccountVideoModel->where('account_id', $param['advertiser_id'])->delete();
                 }
                 $this->updateReWaitingStatus($failSubTask);
+            }elseif($this->oceanToolService->sdk->isGetConfigError($failResult)){
+                // 获取配置错误
+                $this->updateReWaitingStatus($failSubTask);
             }
         }
     }

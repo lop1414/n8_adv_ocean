@@ -48,6 +48,7 @@ trait Error
             // 补充
             51007 => '查询素材错误',
             40501 => '视频不存在',
+            40700 => '获取创意组件配置信息异常',
         ];
     }
 
@@ -107,6 +108,23 @@ trait Error
     public function isNotPermission($result){
         $errorCodes = [
             40002, // 没权限操作
+        ];
+
+        if(in_array($result['code'], $errorCodes)){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $result
+     * @return bool
+     * 是否获取配置错误
+     */
+    public function isGetConfigError($result){
+        $errorCodes = [
+            40700, // 获取创意组件配置信息异常
         ];
 
         if(in_array($result['code'], $errorCodes)){
