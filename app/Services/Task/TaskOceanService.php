@@ -92,16 +92,16 @@ class TaskOceanService extends TaskService
     }
 
     /**
-     * @param $failSubTask
+     * @param $subTask
      * @return bool
      * @throws CustomException
      * 更新重执行状态
      */
-    private function updateReWaitingStatus($failSubTask){
-        $failSubTask->exec_status = ExecStatusEnum::WAITING;
-        $failSubTask->save();
+    public function updateReWaitingStatus($subTask){
+        $subTask->exec_status = ExecStatusEnum::WAITING;
+        $subTask->save();
 
-        $task = TaskModel::find($failSubTask->task_id);
+        $task = TaskModel::find($subTask->task_id);
         $this->updateTaskStatus($task, TaskStatusEnum::WAITING);
 
         return true;
