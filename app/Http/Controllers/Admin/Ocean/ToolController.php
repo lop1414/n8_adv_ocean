@@ -94,7 +94,7 @@ class ToolController extends OceanController
         if(!empty($syncType)){
             ini_set('max_execution_time', 60);
 
-            if(strpos($uri, 'create') !== false){
+            if(strpos($uri, 'create') !== false || strpos($uri, 'update') !== false){
                 // 休眠防延迟
                 sleep(2);
             }
