@@ -50,6 +50,7 @@ class OceanAdCreativeCreateService extends OceanService
             $accountId = $item['account_id'] ?? '';
             $ad = $item['ad'] ?? [];
             $creative = $item['creative'] ?? [];
+            $view = $item['view'] ?? [];
             if(empty($accountId) || empty($ad) || empty($creative)){
                 throw new CustomException([
                     'code' => 'PARAM_ERROR',
@@ -93,6 +94,7 @@ class OceanAdCreativeCreateService extends OceanService
                 'data' => [
                     'ad' => $ad,
                     'creative' => $creative,
+                    'view' => $view,
                 ],
             ];
         }
