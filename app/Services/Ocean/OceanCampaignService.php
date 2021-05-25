@@ -29,7 +29,7 @@ class OceanCampaignService extends OceanService
      */
     public function sdkMultiGetList($accountIds, $accessToken, $filtering, $page, $pageSize, $param = []){
         // 延迟
-        usleep(1000000);
+        usleep(500000);
         return $this->sdk->multiGetCampaignList($accountIds, $accessToken, $filtering, $page, $pageSize, $param);
     }
 
