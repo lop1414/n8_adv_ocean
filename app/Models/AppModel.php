@@ -34,6 +34,6 @@ class AppModel extends BaseModel
      * 关联角色模型   一对多
      */
     public function ocean_account(){
-        return $this->hasMany('App\Models\OceanAccountModel', 'app_id', 'app_id');
+        return $this->hasMany('App\Models\Ocean\OceanAccountModel', 'app_id', 'app_id');
     }
 }
