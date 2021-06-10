@@ -154,13 +154,16 @@ class VideoController extends OceanController
         $subs = [];
         foreach($accounts as $account){
             foreach($videos as $video){
+                $videoPath = $video['source_path'] ?? $video['path'];
+                $videoSignature = $video['source_signature'] ?? $video['signature'];
+
                 $subs[] = [
                     'app_id' => $account->app_id,
                     'account_id' => $account->account_id,
                     'n8_material_video_id' => $video['id'],
-                    'n8_material_video_path' => $video['source_path'],
+                    'n8_material_video_path' => $videoPath,
                     'n8_material_video_name' => $video['name'],
-                    'n8_material_video_signature' => $video['source_signature'],
+                    'n8_material_video_signature' => $videoSignature,
                     'admin_id' => $adminUserInfo['admin_user']['id'],
                 ];
             }
