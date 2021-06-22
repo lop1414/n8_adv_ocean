@@ -14,6 +14,7 @@ trait Error
             0 => '成功',
 
             // 通用返回
+            40000 => '没有权限操作视频',
             40001 => '参数错误',
             40002 => '没有权限进行相关操作',
             40003 => '过滤条件的field字段错误',
@@ -107,6 +108,7 @@ trait Error
      */
     public function isNotPermission($result){
         $errorCodes = [
+            40000, // 没权限操作视频
             40002, // 没权限操作
         ];
 
