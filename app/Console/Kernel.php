@@ -107,13 +107,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('convert_callback')->cron('* * * * *');
 
         // 测试
-        if(Functions::isStaging()){
+        if(Functions::isProduction()){
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');
 
             // 巨量计划同步
             $schedule->command('ocean:sync_ad --update_date=today')->cron('*/15 * * * *');
-//            $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 0 * * *');
+            $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 2 * * *');
 
             // 巨量转化跟踪同步
             $schedule->command('ocean:sync_ad_convert')->cron('30 3 * * *');
