@@ -224,14 +224,6 @@ $router->group([
     $router->group(['prefix' => 'channel_ad'], function () use ($router) {
         $router->post('update', 'Front\ChannelAdController@update');
     });
-
-    // 巨量
-    $router->group(['prefix' => 'ocean'], function () use ($router) {
-        // 创意报表
-        $router->group(['prefix' => 'creative_report'], function () use ($router) {
-            $router->post('get', 'Front\Ocean\CreativeReportController@get');
-        });
-    });
 });
 
 // 点击

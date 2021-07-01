@@ -63,33 +63,4 @@ class OceanCreativeReportService extends OceanReportService
 
         return $creativeAccountIds;
     }
-
-    /**
-     * @param $startTime
-     * @param $endTime
-     * @param $groupBy
-     * @return array
-     * @throws CustomException
-     * 获取报表
-     */
-    public function getReports($startTime, $endTime, $groupBy){
-        Functions::timeCheck($startTime);
-        Functions::timeCheck($endTime);
-        if($startTime > $endTime){
-            throw new CustomException([
-                'code' => 'START_TTME_MORE_THAN_END_TIME',
-                'message' => '开始时间不能大于结束时间',
-            ]);
-        }
-
-        $sql = "
-            SELECT {$groupBy}, SUM(`cost`) `cost`, SUM(`show`) `show`, SUM(`click`) `click`, SUM(`convert`) `convert`
-                FROM ocean_creative_reports
-                WHERE stat_datetime BETWEEN '{$startTime}' AND '{$endTime}'
-                GROUP BY {$groupBy}
-        ";
-        $reports = DB::select($sql);
-
-        return $reports;
-    }
 }
