@@ -12,13 +12,13 @@ class ChannelAdController extends FrontController
      * @param Request $request
      * @return mixed
      * @throws \App\Common\Tools\CustomException
-     * 更新
+     * 批量更新
      */
-    public function update(Request $request){
+    public function batchUpdate(Request $request){
         $data = $request->post();
 
-        $channelAdService = new ChannelAdService($data);
-        $ret = $channelAdService->update($data);
+        $channelAdService = new ChannelAdService();
+        $ret = $channelAdService->batchUpdate($data);
 
         return $this->ret($ret);
     }

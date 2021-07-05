@@ -2,14 +2,14 @@
 
 namespace App\Models\Ocean;
 
-class ChannelAdModel extends OceanModel
+class ChannelAdLogModel extends OceanModel
 {
     /**
      * 关联到模型的数据表
      *
      * @var string
      */
-    protected $table = 'channel_ads';
+    protected $table = 'channel_ad_logs';
 
     /**
      * 属性访问器

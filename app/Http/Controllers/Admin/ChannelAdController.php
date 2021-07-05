@@ -20,13 +20,13 @@ class ChannelAdController extends AdminController
      * @param Request $request
      * @return mixed
      * @throws \App\Common\Tools\CustomException
-     * 更新
+     * 批量更新
      */
     public function update(Request $request){
         $data = $request->post();
 
         $channelAdService = new ChannelAdService();
-        $ret = $channelAdService->update($data);
+        $ret = $channelAdService->batchUpdate($data);
 
         return $this->ret($ret);
     }

@@ -222,7 +222,7 @@ $router->group([
 
     // 渠道-计划
     $router->group(['prefix' => 'channel_ad'], function () use ($router) {
-        $router->post('update', 'Front\ChannelAdController@update');
+        $router->post('batch_update', 'Front\ChannelAdController@batchUpdate');
     });
 });
 

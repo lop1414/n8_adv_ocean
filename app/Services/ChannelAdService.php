@@ -2,10 +2,14 @@
 
 namespace App\Services;
 
+use App\Common\Enums\PlatformEnum;
+use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
+use App\Models\Ocean\ChannelAdLogModel;
 use App\Models\Ocean\ChannelAdModel;
 use App\Models\Ocean\OceanAdModel;
+use Illuminate\Support\Facades\DB;
 
 class ChannelAdService extends BaseService
 {
@@ -13,29 +17,117 @@ class ChannelAdService extends BaseService
      * @param $data
      * @return bool
      * @throws CustomException
-     * 更新
+     * 批量更新
      */
-    public function update($data){
+    public function batchUpdate($data){
         $this->validRule($data, [
             'channel_id' => 'required|integer',
             'ad_ids' => 'required|array',
+            'channel' => 'required',
+            'platform' => 'required'
         ]);
 
-        foreach($data['ad_ids'] as $adId){
-            $oceanAdChannelModel = new ChannelAdModel();
-            $oceanAdChannel = $oceanAdChannelModel->where('channel_id', $data['channel_id'])
-                ->where('ad_id', $adId)
-                ->first();
-
-            if(empty($oceanAdChannel)){
-                $oceanAdChannel = new ChannelAdModel();
-                $oceanAdChannel->channel_id = $data['channel_id'];
-                $oceanAdChannel->ad_id = $adId;
-                $oceanAdChannel->save();
-            }
+        Functions::hasEnum(PlatformEnum::class, $data['platform']);
+        if($data['platform'] == PlatformEnum::DEFAULT){
+            $platforms = [PlatformEnum::ANDROID, PlatformEnum::IOS];
+        }else{
+            $platforms = [$data['platform']];
         }
 
+        DB::beginTransaction();
+
+        try{
+            foreach($data['ad_ids'] as $adId){
+                foreach($platforms as $platform){
+                    $this->update([
+                        'ad_id' => $adId,
+                        'channel_id' => $data['channel_id'],
+                        'platform' => $platform,
+                        'extends' => [
+                            'channel' => $data['channel'],
+                        ],
+                    ]);
+                }
+            }
+        }catch(CustomException $e){
+            DB::rollBack();
+            throw $e;
+        }catch(\Exception $e){
+            DB::rollBack();
+            throw $e;
+        }
+
+        DB::commit();
+
         return true;
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     * 更新
+     */
+    public function update($data){
+        $channelAdModel = new ChannelAdModel();
+        $channelAd = $channelAdModel->where('ad_id', $data['ad_id'])
+            ->where('platform', $data['platform'])
+            ->first();
+
+        $flag = $this->buildFlag($channelAd);
+        if(empty($channelAd)){
+            $channelAd = new ChannelAdModel();
+        }
+
+        $channelAd->ad_id = $data['ad_id'];
+        $channelAd->channel_id = $data['channel_id'];
+        $channelAd->platform = $data['platform'];
+        $channelAd->extends = $data['extends'];
+        $ret = $channelAd->save();
+
+        if($ret && !empty($channelAd->id) && $flag != $this->buildFlag($channelAd)){
+            $this->createChannelAdLog([
+                'channel_ad_id' => $channelAd->id,
+                'ad_id' => $data['ad_id'],
+                'channel_id' => $data['channel_id'],
+                'platform' => $data['platform'],
+                'extends' => $data['extends'],
+            ]);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @param $channelAd
+     * @return string
+     * 构建标识
+     */
+    protected function buildFlag($channelAd){
+        if(empty($channelAd)){
+            $flag = '';
+        }else{
+            $flag = implode("_", [
+                $channelAd->ad_id,
+                $channelAd->channel_id,
+                $channelAd->platform,
+            ]);
+        }
+        return $flag;
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     * 创建渠道-计划日志
+     */
+    protected function createChannelAdLog($data){
+        $channelAdLogModel = new ChannelAdLogModel();
+        $channelAdLogModel->channel_ad_id = $data['channel_ad_id'];
+        $channelAdLogModel->ad_id = $data['ad_id'];
+        $channelAdLogModel->channel_id = $data['channel_id'];
+        $channelAdLogModel->platform = $data['platform'];
+        $channelAdLogModel->extends = $data['extends'];
+        return $channelAdLogModel->save();
     }
 
     /**
