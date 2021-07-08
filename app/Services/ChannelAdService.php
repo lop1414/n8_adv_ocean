@@ -29,25 +29,22 @@ class ChannelAdService extends BaseService
 
         Functions::hasEnum(PlatformEnum::class, $data['platform']);
         if($data['platform'] == PlatformEnum::DEFAULT){
-            $platforms = [PlatformEnum::ANDROID, PlatformEnum::IOS];
+            $platform = PlatformEnum::UNKNOWN;
         }else{
-            $platforms = [$data['platform']];
+            $platform = $data['platform'];
         }
-
         DB::beginTransaction();
 
         try{
             foreach($data['ad_ids'] as $adId){
-                foreach($platforms as $platform){
-                    $this->update([
-                        'ad_id' => $adId,
-                        'channel_id' => $data['channel_id'],
-                        'platform' => $platform,
-                        'extends' => [
-                            'channel' => $data['channel'],
-                        ],
-                    ]);
-                }
+                $this->update([
+                    'ad_id' => $adId,
+                    'channel_id' => $data['channel_id'],
+                    'platform' => $platform,
+                    'extends' => [
+                        'channel' => $data['channel'],
+                    ],
+                ]);
             }
         }catch(CustomException $e){
             DB::rollBack();
