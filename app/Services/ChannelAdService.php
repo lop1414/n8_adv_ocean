@@ -28,11 +28,7 @@ class ChannelAdService extends BaseService
         ]);
 
         Functions::hasEnum(PlatformEnum::class, $data['platform']);
-        if($data['platform'] == PlatformEnum::DEFAULT){
-            $platform = PlatformEnum::UNKNOWN;
-        }else{
-            $platform = $data['platform'];
-        }
+
         DB::beginTransaction();
 
         try{
@@ -40,7 +36,7 @@ class ChannelAdService extends BaseService
                 $this->update([
                     'ad_id' => $adId,
                     'channel_id' => $data['channel_id'],
-                    'platform' => $platform,
+                    'platform' => $data['platform'],
                     'extends' => [
                         'channel' => $data['channel'],
                     ],
