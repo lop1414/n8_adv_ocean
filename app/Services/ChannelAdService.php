@@ -160,7 +160,9 @@ class ChannelAdService extends BaseService
                 $data[] = [
                     'channel_id' => $channelAd['channel_id'],
                     'ad_id' => $channelAd['ad_id'],
+                    'ad_name' => $oceanAd['name'],
                     'account_id' => $oceanAd['account_id'],
+                    'account_name' => $oceanAccount['name'],
                     'admin_id' => $oceanAccount['admin_id'],
                 ];
                 $distinct[$channelAd['channel_id']] = 1;
