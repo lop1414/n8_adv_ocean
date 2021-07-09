@@ -226,8 +226,10 @@ $router->group([
     });
 });
 
-// 点击
-$router->get('front/click', 'Front\AdvClickController@index');
+$router->group(['middleware' => ['api_sign_valid', 'access_control_allow_origin']], function () use ($router) {
+    // 点击
+    $router->get('front/click', 'Front\AdvClickController@index');
+});
 
 // 巨量
 $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
