@@ -22,4 +22,19 @@ class ChannelAdController extends FrontController
 
         return $this->ret($ret);
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \App\Common\Tools\CustomException
+     * 列表
+     */
+    public function select(Request $request){
+        $param = $request->post();
+
+        $channelAdService = new ChannelAdService();
+        $data = $channelAdService->select($param);
+
+        return $this->success($data);
+    }
 }

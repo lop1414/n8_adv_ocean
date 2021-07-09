@@ -8,6 +8,7 @@ use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\ChannelAdLogModel;
 use App\Models\Ocean\ChannelAdModel;
+use App\Models\Ocean\OceanAccountModel;
 use App\Models\Ocean\OceanAdModel;
 use Illuminate\Support\Facades\DB;
 
@@ -123,6 +124,50 @@ class ChannelAdService extends BaseService
         $channelAdLogModel->platform = $data['platform'];
         $channelAdLogModel->extends = $data['extends'];
         return $channelAdLogModel->save();
+    }
+
+    /**
+     * @param $param
+     * @return array
+     * @throws CustomException
+     * 列表
+     */
+    public function select($param){
+        $this->validRule($param, [
+            'start_datetime' => 'required',
+            'end_datetime' => 'required',
+        ]);
+        Functions::timeCheck($param['start_datetime']);
+        Functions::timeCheck($param['end_datetime']);
+        $channelAdModel = new ChannelAdModel();
+        $channelAds = $channelAdModel->whereBetween('updated_at', [$param['start_datetime'], $param['end_datetime']])->get();
+
+        $distinct = $data = [];
+        foreach($channelAds as $channelAd){
+            if(empty($distinct[$channelAd['channel_id']])){
+                // 计划
+                $oceanAd = OceanAdModel::find($channelAd['ad_id']);
+                if(empty($oceanAd)){
+                    continue;
+                }
+
+                // 账户
+                $oceanAccount = (new OceanAccountModel())->where('account_id', $oceanAd['account_id'])->first();
+                if(empty($oceanAccount)){
+                    continue;
+                }
+
+                $data[] = [
+                    'channel_id' => $channelAd['channel_id'],
+                    'ad_id' => $channelAd['ad_id'],
+                    'account_id' => $oceanAd['account_id'],
+                    'admin_id' => $oceanAccount['admin_id'],
+                ];
+                $distinct[$channelAd['channel_id']] = 1;
+            }
+        }
+
+        return $data;
     }
 
     /**
