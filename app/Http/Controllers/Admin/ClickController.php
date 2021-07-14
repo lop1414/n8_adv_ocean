@@ -36,8 +36,8 @@ class ClickController extends AdminController
     public function selectPrepare(){
         $this->curdService->selectQueryBefore(function(){
             $this->curdService->customBuilder(function($builder){
-                // 7天内
-                $datetime = date('Y-m-d H:i:s', strtotime("- 1 days"));
+                // 24小时内
+                $datetime = date('Y-m-d H:i:s', strtotime("-24 hours"));
                 $builder->where('click_at', '>', $datetime);
             });
         });
@@ -77,10 +77,20 @@ class ClickController extends AdminController
             $click->link = $link;
         }else{
             $this->validRule($request->post(), [
-                'id' => 'required',
+                'convert_id' => 'required',
             ]);
-            $id = $request->post('id');
-            $click = $this->found($id);
+            $convertId = $request->post('convert_id');
+
+            $datetime = date('Y-m-d H:i:s', strtotime("-24 hours"));
+
+            $clickModel = new ClickModel();
+            $click = $clickModel->where('click_at', '>', $datetime)->where('convert_id', $convertId)->first();
+            if(empty($click)){
+                throw new CustomException([
+                    'code' => 'NOT_FOUND_CLICK',
+                    'message' => '找不到对应点击',
+                ]);
+            }
         }
 
         $ret = $advConvertCallbackService->runCallback($click, $eventType);
