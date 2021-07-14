@@ -28,7 +28,6 @@ class AdvConvertCallbackService extends ConvertCallbackService
                 ],
             ]);
         }
-        $eventType = $eventTypeMap[$item->convert_type];
 
         // 关联点击
         if(empty($item->click)){
@@ -42,21 +41,42 @@ class AdvConvertCallbackService extends ConvertCallbackService
             ]);
         }
 
-        $url = 'https://ad.oceanengine.com/track/activate/';
-        $param = [
-            'callback' => $item->click->callback_param,
-            'event_type' => $eventType,
-        ];
+        $eventType = $eventTypeMap[$item->convert_type];
 
-        #TODO:添加props参数
-//        if(!empty($props)){
-//            $param['props'] = json_encode($props);
-//        }
+//        $props = ['pay_amount' => 0];
+
+        $this->runCallback($item->click, $eventType);
+
+        return true;
+    }
+
+    /**
+     * @param $click
+     * @param $eventType
+     * @param array $props
+     * @return bool
+     * @throws CustomException
+     * 执行回传
+     */
+    public function runCallback($click, $eventType, $props = []){
+        $url = 'https://ad.oceanengine.com/track/activate/';
+        if(!empty($click->link)){
+            $param = [
+                'link' => $click->link
+            ];
+        }else{
+            $param = [
+                'callback' => $click->callback_param,
+                'event_type' => $eventType,
+            ];
+        }
+
+        if(!empty($props)){
+            $param['props'] = json_encode($props);
+        }
 
         $ret = file_get_contents($url .'?'. http_build_query($param));
         $result = json_decode($ret, true);
-
-        $item->callback_at = date('Y-m-d H:i:s', time());
 
         if(!isset($result['code']) || $result['code'] != 0){
             throw new CustomException([
@@ -64,7 +84,6 @@ class AdvConvertCallbackService extends ConvertCallbackService
                 'message' => '巨量转化回传失败',
                 'log' => true,
                 'data' => [
-                    'item' => $item,
                     'url' => $url,
                     'param' => $param,
                     'result' => $result,
@@ -79,7 +98,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
      * @return array
      * 获取事件映射
      */
-    private function getEventTypeMap(){
+    public function getEventTypeMap(){
         return [
             ConvertTypeEnum::ADD_DESKTOP => 1,
             ConvertTypeEnum::PAY => 2,

@@ -99,6 +99,12 @@ $router->group([
         $router->post('callback', '\\App\Common\Controllers\Admin\ConvertCallbackController@callback');
     });
 
+    // 点击
+    $router->group(['prefix' => 'click'], function () use ($router) {
+        $router->post('select', 'Admin\ClickController@select');
+        $router->post('callback', 'Admin\ClickController@callback');
+    });
+
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 账户
