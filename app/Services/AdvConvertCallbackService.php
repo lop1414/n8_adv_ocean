@@ -43,9 +43,13 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
         $eventType = $eventTypeMap[$item->convert_type];
 
-//        $props = ['pay_amount' => 0];
+        $props = [];
+        if(!empty($item->extends->amount) && $item->extends->amount >= 20){
+            // 付费金额
+            $props = ['pay_amount' => $item->extends->amount * 100];
+        }
 
-        $this->runCallback($item->click, $eventType);
+        $this->runCallback($item->click, $eventType, $props);
 
         return true;
     }
