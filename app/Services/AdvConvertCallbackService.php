@@ -100,6 +100,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
      */
     public function getEventTypeMap(){
         return [
+            ConvertTypeEnum::ACTIVATION => 0,
             ConvertTypeEnum::ADD_DESKTOP => 1,
             ConvertTypeEnum::PAY => 2,
         ];
