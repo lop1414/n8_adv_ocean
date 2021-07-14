@@ -8,6 +8,8 @@ use App\Common\Models\ClickModel;
 use App\Common\Services\ClickService;
 use App\Common\Tools\CustomException;
 use App\Enums\QueueEnums;
+use Illuminate\Http\Request;
+use Jenssegers\Agent\Agent;
 
 class AdvClickService extends ClickService
 {
@@ -70,6 +72,38 @@ class AdvClickService extends ClickService
                 'log' => true,
                 'data' => $data
             ]);
+        }
+
+        if($data['click_source'] == AdvClickSourceEnum::ADV_CLICK_API){
+            // 广告商api
+            $data['os'] = $data['os'] ?? 0;
+            if($data['os'] == 1 && !empty($data['ios_channel_id'])){
+                // IOS
+                $data['channel_id'] = $data['ios_channel_id'];
+            }elseif($data['os'] == 0 && !empty($data['android_channel_id'])){
+                // ANDROID
+                $data['channel_id'] = $data['android_channel_id'];
+            }else{
+                $data['channel_id'] = 0;
+            }
+        }elseif($data['click_source'] == AdvClickSourceEnum::N8_AD_PAGE){
+            // n8广告页
+            $agent = new Agent();
+            $agent->setUserAgent($data['ua']);
+
+            if($agent->isIOS() && !empty($data['ios_channel_id'])){
+                $data['channel_id'] = $data['ios_channel_id'];
+            }elseif($agent->isAndroidOS() && !empty($data['android_channel_id'])){
+                $data['channel_id'] = $data['android_channel_id'];
+            }else{
+                $data['channel_id'] = 0;
+            }
+        }
+
+        if(!empty($data['link'])){
+            if($data['link'] == base64_encode(base64_decode($data['link']))){
+                $data['link'] = base64_decode($data['link']);
+            }
         }
 
         $data['click_at'] = $clickAt;
