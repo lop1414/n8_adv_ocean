@@ -13,6 +13,8 @@ class OceanLandingTypeEnum
     const SHOP = 'SHOP';
     const APP_ANDROID = 'APP_ANDROID';
     const APP_IOS = 'APP_IOS';
+    const APP = 'APP';
+    const LINK = 'LINK';
 
     /**
      * @var string
@@ -34,5 +36,7 @@ class OceanLandingTypeEnum
         ['id' => self::SHOP, 'name' => '店铺直投'],
         ['id' => self::APP_ANDROID, 'name' => '应用下载-安卓'],
         ['id' => self::APP_IOS, 'name' => '应用下载-IOS'],
+        ['id' => self::APP, 'name' => '应用推广'],
+        ['id' => self::LINK, 'name' => '销售线索收集'],
     ];
 }

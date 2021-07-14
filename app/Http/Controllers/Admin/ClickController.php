@@ -6,6 +6,7 @@ use App\Common\Controllers\Admin\AdminController;
 use App\Common\Helpers\Functions;
 use App\Common\Models\ClickModel;
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanLandingTypeEnum;
 use App\Models\Ocean\OceanAdModel;
 use App\Services\AdvConvertCallbackService;
 use Illuminate\Http\Request;
@@ -50,14 +51,12 @@ class ClickController extends AdminController
      */
     public function callback(Request $request){
         $this->validRule($request->post(), [
-            'id' => 'required',
             'event_type' => 'required',
+            'landing_type' => 'required',
         ]);
 
-        $id = $request->post('id');
         $eventType = $request->post('event_type');
-
-        $click = $this->found($id);
+        $landingType = $request->post('landing_type');
 
         $advConvertCallbackService = new AdvConvertCallbackService();
         $eventTypeMap = $advConvertCallbackService->getEventTypeMap();
@@ -67,6 +66,21 @@ class ClickController extends AdminController
                 'code' => 'UNKNOWN_EVENT_TYPE',
                 'message' => '非合法回传类型',
             ]);
+        }
+
+        if($landingType == OceanLandingTypeEnum::LINK){
+            $this->validRule($request->post(), [
+                'link' => 'required',
+            ]);
+            $link = $request->post('link');
+            $click = new ClickModel();
+            $click->link = $link;
+        }else{
+            $this->validRule($request->post(), [
+                'id' => 'required',
+            ]);
+            $id = $request->post('id');
+            $click = $this->found($id);
         }
 
         $ret = $advConvertCallbackService->runCallback($click, $eventType);

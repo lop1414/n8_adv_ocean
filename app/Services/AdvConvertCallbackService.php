@@ -60,15 +60,13 @@ class AdvConvertCallbackService extends ConvertCallbackService
      */
     public function runCallback($click, $eventType, $props = []){
         $url = 'https://ad.oceanengine.com/track/activate/';
+        $param = [
+            'event_type' => $eventType
+        ];
         if(!empty($click->link)){
-            $param = [
-                'link' => $click->link
-            ];
+            $param['link'] = $click->link;
         }else{
-            $param = [
-                'callback' => $click->callback_param,
-                'event_type' => $eventType,
-            ];
+            $param['callback'] = $click->callback_param;
         }
 
         if(!empty($props)){
