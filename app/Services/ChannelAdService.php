@@ -7,6 +7,7 @@ use App\Common\Enums\PlatformEnum;
 use App\Common\Helpers\Advs;
 use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
+use App\Common\Services\SystemApi\UnionApiService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\ChannelAdLogModel;
 use App\Models\Ocean\ChannelAdModel;
@@ -238,24 +239,40 @@ class ChannelAdService extends BaseService
                 $ret = parse_url($actionTrackUrl);
                 parse_str($ret['query'], $param);
 
+                $unionApiService = new UnionApiService();
+
                 if(!empty($param['android_channel_id'])){
+                    $channel = $unionApiService->apiReadChannel(['id' => $param['android_channel_id']]);
+                    $chanenlExtends = $channel['channel_extends'] ?? [];
+                    $channel['admin_id'] = $chanenlExtends['admin_id'] ?? 0;
+                    unset($channel['extends']);
+                    unset($channel['channel_extends']);
+
                     $this->update([
                         'ad_id' => $oceanAd->id,
                         'channel_id' => $param['android_channel_id'],
                         'platform' => PlatformEnum::ANDROID,
                         'extends' => [
                             'action_track_url' => $actionTrackUrl,
+                            'channel' => $channel,
                         ],
                     ]);
                 }
 
                 if(!empty($param['ios_channel_id'])){
+                    $channel = $unionApiService->apiReadChannel(['id' => $param['ios_channel_id']]);
+                    $chanenlExtends = $channel['channel_extends'] ?? [];
+                    $channel['admin_id'] = $chanenlExtends['admin_id'] ?? 0;
+                    unset($channel['extends']);
+                    unset($channel['channel_extends']);
+
                     $this->update([
                         'ad_id' => $oceanAd->id,
                         'channel_id' => $param['ios_channel_id'],
                         'platform' => PlatformEnum::IOS,
                         'extends' => [
                             'action_track_url' => $actionTrackUrl,
+                            'channel' => $channel,
                         ],
                     ]);
                 }
