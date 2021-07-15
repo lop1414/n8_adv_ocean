@@ -226,38 +226,39 @@ class ChannelAdService extends BaseService
 
         foreach($oceanAds as $oceanAd){
             $actionTrackUrls = $oceanAd->extends->action_track_url ?? [];
-            $actionTrackUrl = current($actionTrackUrls);
-            if(empty($actionTrackUrl)){
-                continue;
-            }
+            foreach($actionTrackUrls as $actionTrackUrl){
+                if(empty($actionTrackUrl)){
+                    continue;
+                }
 
-            if(strpos($actionTrackUrl, $keyword) === false){
-                continue;
-            }
+                if(strpos($actionTrackUrl, $keyword) === false){
+                    continue;
+                }
 
-            $ret = parse_url($actionTrackUrl);
-            parse_str($ret['query'], $param);
+                $ret = parse_url($actionTrackUrl);
+                parse_str($ret['query'], $param);
 
-            if(!empty($param['android_channel_id'])){
-                $this->update([
-                    'ad_id' => $oceanAd->id,
-                    'channel_id' => $param['android_channel_id'],
-                    'platform' => PlatformEnum::ANDROID,
-                    'extends' => [
-                        'action_track_url' => $actionTrackUrl,
-                    ],
-                ]);
-            }
+                if(!empty($param['android_channel_id'])){
+                    $this->update([
+                        'ad_id' => $oceanAd->id,
+                        'channel_id' => $param['android_channel_id'],
+                        'platform' => PlatformEnum::ANDROID,
+                        'extends' => [
+                            'action_track_url' => $actionTrackUrl,
+                        ],
+                    ]);
+                }
 
-            if(!empty($param['ios_channel_id'])){
-                $this->update([
-                    'ad_id' => $oceanAd->id,
-                    'channel_id' => $param['ios_channel_id'],
-                    'platform' => PlatformEnum::IOS,
-                    'extends' => [
-                        'action_track_url' => $actionTrackUrl,
-                    ],
-                ]);
+                if(!empty($param['ios_channel_id'])){
+                    $this->update([
+                        'ad_id' => $oceanAd->id,
+                        'channel_id' => $param['ios_channel_id'],
+                        'platform' => PlatformEnum::IOS,
+                        'extends' => [
+                            'action_track_url' => $actionTrackUrl,
+                        ],
+                    ]);
+                }
             }
         }
 
