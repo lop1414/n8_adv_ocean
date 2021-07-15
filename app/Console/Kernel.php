@@ -111,7 +111,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('convert_callback')->cron('* * * * *');
 
         // 同步渠道-计划
-        $schedule->command('sync_channel_ad')->cron('*/2 * * * *');
+        $schedule->command('sync_channel_ad --date=today')->cron('*/2 * * * *');
 
         // 测试
         if(Functions::isProduction()){
