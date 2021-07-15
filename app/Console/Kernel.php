@@ -16,6 +16,7 @@ use App\Console\Commands\Ocean\Report\OceanSyncCreativeReportCommand;
 use App\Common\Console\Queue\QueueClickCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
+use App\Console\Commands\SyncChannelAdCommand;
 use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
 use App\Console\Commands\Task\TaskOceanAdUpdateCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
@@ -65,6 +66,9 @@ class Kernel extends ConsoleKernel
         OceanSyncCreativeReportCommand::class,
         ConvertCallbackCommand::class,
 
+        // 同步渠道-计划关联
+        SyncChannelAdCommand::class,
+
         // 队列
         QueueClickCommand::class,
     ];
@@ -105,6 +109,9 @@ class Kernel extends ConsoleKernel
 
         // 转化上报
         $schedule->command('convert_callback')->cron('* * * * *');
+
+        // 同步渠道-计划
+        $schedule->command('sync_channel_ad')->cron('*/2 * * * *');
 
         // 测试
         if(Functions::isProduction()){

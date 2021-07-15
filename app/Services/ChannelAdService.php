@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Common\Enums\AdvAliasEnum;
 use App\Common\Enums\PlatformEnum;
+use App\Common\Helpers\Advs;
 use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
@@ -204,5 +206,61 @@ class ChannelAdService extends BaseService
             'channel_id' => $data['channel_id'],
             'list' => $ads
         ];
+    }
+
+    /**
+     * @param $param
+     * @return bool
+     * 同步
+     */
+    public function sync($param){
+        $date = $param['date'];
+
+        $startTime = date('Y-m-d H:i:s', strtotime('-2 hours', strtotime($date)));
+        $endTime = "{$date} 23:59:59";
+
+        $oceanAdModel = new OceanAdModel();
+        $oceanAds = $oceanAdModel->whereBetween('ad_modify_time', [$startTime, $endTime])->get();
+
+        $keyword = 'sign='. Advs::getAdvClickSign(AdvAliasEnum::OCEAN);
+
+        foreach($oceanAds as $oceanAd){
+            $actionTrackUrls = $oceanAd->extends->action_track_url ?? [];
+            $actionTrackUrl = current($actionTrackUrls);
+            if(empty($actionTrackUrl)){
+                continue;
+            }
+
+            if(strpos($actionTrackUrl, $keyword) === false){
+                continue;
+            }
+
+            $ret = parse_url($actionTrackUrl);
+            parse_str($ret['query'], $param);
+
+            if(!empty($param['android_channel_id'])){
+                $this->update([
+                    'ad_id' => $oceanAd->id,
+                    'channel_id' => $param['android_channel_id'],
+                    'platform' => PlatformEnum::ANDROID,
+                    'extends' => [
+                        'action_track_url' => $actionTrackUrl,
+                    ],
+                ]);
+            }
+
+            if(!empty($param['ios_channel_id'])){
+                $this->update([
+                    'ad_id' => $oceanAd->id,
+                    'channel_id' => $param['ios_channel_id'],
+                    'platform' => PlatformEnum::IOS,
+                    'extends' => [
+                        'action_track_url' => $actionTrackUrl,
+                    ],
+                ]);
+            }
+        }
+
+        return true;
     }
 }
