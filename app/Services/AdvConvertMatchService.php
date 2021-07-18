@@ -25,7 +25,7 @@ class AdvConvertMatchService extends ConvertMatchService
         // 默认策略
         $strategy = [
             ConvertTypeEnum::PAY => [
-                'time_range' => ConvertCallbackTimeEnum::HOUR_24,
+                'time_range' => ConvertCallbackTimeEnum::TODAY,
                 'times' => 1,
                 'callback_rate' => 100,
             ],
