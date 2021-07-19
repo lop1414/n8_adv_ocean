@@ -55,7 +55,7 @@ class OceanCreativeReportService extends OceanReportService
 
         $creativeAccountIds = ['xx'];
         foreach($accountReportMap as $accountId => $cost){
-            if(isset($creativeReportMap[$accountId]) && bcsub($creativeReportMap[$accountId], $cost) >= 0){
+            if(isset($creativeReportMap[$accountId]) && bcsub($creativeReportMap[$accountId] * 100, $cost * 100) >= 0){
                 continue;
             }
             $creativeAccountIds[] = $accountId;
