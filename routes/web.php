@@ -197,6 +197,7 @@ $router->group([
             $router->post('update', 'Admin\Ocean\AdExtendController@update');
             $router->post('select', 'Admin\Ocean\AdExtendController@select');
             $router->post('read', 'Admin\Ocean\AdExtendController@read');
+            $router->post('batch_update', 'Admin\Ocean\AdExtendController@batchUpdate');
         });
 
         // 创意组模板

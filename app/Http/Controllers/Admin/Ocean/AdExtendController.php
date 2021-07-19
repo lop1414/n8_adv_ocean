@@ -92,4 +92,62 @@ class AdExtendController extends OceanController
             }
         });
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws CustomException
+     * 批量更新
+     */
+    public function batchUpdate(Request $request){
+        $this->validRule($request->post(), [
+            'ad_ids' => 'required|array',
+            'convert_callback_strategy_id' => 'required',
+        ]);
+        $adIds = $request->post('ad_ids');
+        $convertCallbackStrategyId = $request->post('convert_callback_strategy_id');
+
+        // 回传规则是否存在
+        $convertCallbackStrategyModel = new ConvertCallbackStrategyModel();
+        $strategy = $convertCallbackStrategyModel->find($convertCallbackStrategyId);
+        if(empty($strategy)){
+            throw new CustomException([
+                'code' => 'NOT_FOUND_CONCERT_CALLBACK_STRATEGY',
+                'message' => '找不到对应回传策略',
+            ]);
+        }
+
+        if($strategy->status != StatusEnum::ENABLE){
+            throw new CustomException([
+                'code' => 'CONCERT_CALLBACK_STRATEGY_IS_NOT_ENABLE',
+                'message' => '该回传策略已被禁用',
+            ]);
+        }
+
+        $ads = [];
+        foreach($adIds as $adId){
+            $ad = OceanAdModel::find($adId);
+            if(empty($ad)){
+                throw new CustomException([
+                    'code' => 'NOT_FOUND_AD',
+                    'message' => "找不到该计划{{$adId}}",
+                ]);
+            }
+            $ads[] = $ad;
+        }
+
+        foreach($ads as $ad){
+            $oceanAdExtend = OceanAdExtendModel::find($ad->id);
+
+            if(empty($oceanAdExtend)){
+                $oceanAdExtend = new OceanAdExtendModel();
+                $oceanAdExtend->ad_id = $ad->id;
+            }
+
+            $oceanAdExtend->convert_callback_strategy_id = $convertCallbackStrategyId;
+            $oceanAdExtend->save();
+        }
+
+        return $this->success();
+    }
 }
