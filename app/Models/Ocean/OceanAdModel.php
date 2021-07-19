@@ -148,4 +148,12 @@ $today = '2021-02-03';
             ->whereBetween("{$creativeTable}.stat_datetime", ["{$today} 00:00:00", "{$today} 23:59:59"])
             ->groupBy('ad_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * 关联计划扩展模型 一对一
+     */
+    public function ocean_ad_extends(){
+        return $this->hasOne('App\Models\Ocean\OceanAdExtendModel', 'ad_id', 'id');
+    }
 }
