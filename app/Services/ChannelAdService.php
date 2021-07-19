@@ -33,9 +33,9 @@ class ChannelAdService extends BaseService
 
         Functions::hasEnum(PlatformEnum::class, $data['platform']);
 
-        DB::beginTransaction();
-
-        try{
+//        DB::beginTransaction();
+//
+//        try{
             foreach($data['ad_ids'] as $adId){
                 $this->update([
                     'ad_id' => $adId,
@@ -46,15 +46,15 @@ class ChannelAdService extends BaseService
                     ],
                 ]);
             }
-        }catch(CustomException $e){
-            DB::rollBack();
-            throw $e;
-        }catch(\Exception $e){
-            DB::rollBack();
-            throw $e;
-        }
-
-        DB::commit();
+//        }catch(CustomException $e){
+//            DB::rollBack();
+//            throw $e;
+//        }catch(\Exception $e){
+//            DB::rollBack();
+//            throw $e;
+//        }
+//
+//        DB::commit();
 
         return true;
     }
