@@ -23,6 +23,7 @@ use App\Console\Commands\Task\TaskOceanImageUploadCommand;
 use App\Console\Commands\Task\TaskOceanSyncCommand;
 use App\Console\Commands\Task\TaskOceanVideoUploadCommand;
 use App\Console\Commands\Task\TaskReWaitingCommand;
+use App\Console\Commands\TestCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -71,6 +72,9 @@ class Kernel extends ConsoleKernel
 
         // 队列
         QueueClickCommand::class,
+
+        // 测试
+        TestCommand::class,
     ];
 
     /**
