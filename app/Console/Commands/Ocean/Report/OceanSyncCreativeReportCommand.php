@@ -49,9 +49,9 @@ class OceanSyncCreativeReportCommand extends BaseCommand
         }
 
         // key 日期
-//        if(!empty($param['date'])){
-//            $lockKey .= '_'. Functions::getDate($param['date']);
-//        }
+        if(!empty($param['date'])){
+            $lockKey .= '_'. $param['date'];
+        }
 
         // key 后缀
         if(!empty($param['key_suffix'])){
