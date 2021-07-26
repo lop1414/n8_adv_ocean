@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Common\Helpers\Functions;
 use App\Common\Console\ConvertCallbackCommand;
+use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
@@ -65,6 +66,9 @@ class Kernel extends ConsoleKernel
         OceanSyncAdConvertCommand::class,
         OceanSyncAccountReportCommand::class,
         OceanSyncCreativeReportCommand::class,
+        OceanCreativeNoticeCommand::class,
+
+        // 转化回传
         ConvertCallbackCommand::class,
 
         // 同步渠道-计划关联
@@ -119,12 +123,18 @@ class Kernel extends ConsoleKernel
 
         // 测试
         if(Functions::isProduction()){
+            // 巨量创意通知
+            $schedule->command('ocean:creative_notice')->cron('* * * * *');
+
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');
 
             // 巨量计划同步
             $schedule->command('ocean:sync_ad --update_date=today')->cron('*/15 * * * *');
             $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 2 * * *');
+
+            // 巨量创意同步
+            $schedule->command('ocean:sync_creative --update_date=today --create_log=1')->cron('*/15 * * * *');
 
             // 巨量转化跟踪同步
             $schedule->command('ocean:sync_ad_convert')->cron('30 3 * * *');

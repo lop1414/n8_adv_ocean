@@ -12,7 +12,7 @@ class OceanSyncCreativeCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_creative  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--multi_chunk_size=} {--key_suffix=}';
+    protected $signature = 'ocean:sync_creative  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--create_log=} {--multi_chunk_size=} {--key_suffix=}';
 
     /**
      * 命令描述

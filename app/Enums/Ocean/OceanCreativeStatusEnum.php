@@ -49,7 +49,7 @@ class OceanCreativeStatusEnum
         ['id' => self::CREATIVE_STATUS_DELETE, 'name' => '已删除'],
         ['id' => self::CREATIVE_STATUS_DONE, 'name' => '已完成（投放达到结束时间）'],
         ['id' => self::CREATIVE_STATUS_AD_DISABLE, 'name' => '广告计划暂停'],
-        ['id' => self::CREATIVE_STATUS_AUDIT_DENY, 'name' => '审核不通过'],
+        ['id' => self::CREATIVE_STATUS_AUDIT_DENY, 'name' => '创意审核不通过'],
         ['id' => self::CREATIVE_STATUS_BALANCE_EXCEED, 'name' => '账户余额不足'],
         ['id' => self::CREATIVE_STATUS_BUDGET_EXCEED, 'name' => '超出预算'],
         ['id' => self::CREATIVE_STATUS_DATA_ERROR, 'name' => '数据错误（数据错误时返回，极少出现）'],
