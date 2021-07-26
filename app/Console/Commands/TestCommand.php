@@ -35,6 +35,7 @@ class TestCommand extends BaseCommand
      */
     public function handle(){
         $this->reflashConvertCallback();
+        dd('done');
     }
 
     /**
@@ -42,16 +43,19 @@ class TestCommand extends BaseCommand
      */
     public function reflashConvertCallback(){
         $convertCallbackModel = new ConvertCallbackModel();
-        $convertCallbacks = $convertCallbackModel->orderBy('id', 'asc')->get();
-        foreach($convertCallbacks as $convertCallback){
-            if(empty($convertCallback->extends->convert)){
-                $extends = [
-                    'convert' => $convertCallback->extends,
-                ];
-                $convertCallback->extends = $extends;
-                $convertCallback->save();
-                var_dump($convertCallback->id);
+        do{
+            $convertCallbacks = $convertCallbackModel->where('updated_at', '<', '2021-07-22 11:00:00')->orderBy('id', 'asc')->take(5000)->get();
+            var_dump($convertCallbacks->count());
+            foreach($convertCallbacks as $convertCallback){
+                if(empty($convertCallback->extends->convert)){
+                    $extends = [
+                        'convert' => $convertCallback->extends,
+                    ];
+                    $convertCallback->extends = $extends;
+                    $convertCallback->save();
+                    var_dump($convertCallback->id);
+                }
             }
-        }
+        }while($convertCallbacks->count() > 0);
     }
 }
