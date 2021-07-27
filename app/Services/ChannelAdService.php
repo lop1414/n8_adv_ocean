@@ -8,8 +8,10 @@ use App\Common\Helpers\Advs;
 use App\Common\Helpers\Functions;
 use App\Common\Models\ConvertCallbackStrategyModel;
 use App\Common\Services\BaseService;
+use App\Common\Services\SystemApi\NoticeApiService;
 use App\Common\Services\SystemApi\UnionApiService;
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanAdStatusEnum;
 use App\Models\Ocean\ChannelAdLogModel;
 use App\Models\Ocean\ChannelAdModel;
 use App\Models\Ocean\OceanAccountModel;
@@ -221,6 +223,7 @@ class ChannelAdService extends BaseService
     /**
      * @param $param
      * @return bool
+     * @throws CustomException
      * 同步
      */
     public function sync($param){
@@ -236,6 +239,7 @@ class ChannelAdService extends BaseService
 
         foreach($oceanAds as $oceanAd){
             $actionTrackUrls = $oceanAd->extends->action_track_url ?? [];
+            $hasKeyword = false;
             foreach($actionTrackUrls as $actionTrackUrl){
                 if(empty($actionTrackUrl)){
                     continue;
@@ -284,6 +288,43 @@ class ChannelAdService extends BaseService
                             'channel' => $channel,
                         ],
                     ]);
+                }
+
+                $hasKeyword = true;
+            }
+
+            // 不需通知状态
+            $oceanAdStatus = [
+                OceanAdStatusEnum::AD_STATUS_DELETE,
+                OceanAdStatusEnum::AD_STATUS_DISABLE,
+            ];
+
+            if(!in_array($oceanAd->status, $oceanAdStatus) && !$hasKeyword){
+                $oceanAccountModel = new OceanAccountModel();
+                $oceanAccount = $oceanAccountModel->where('account_id', $oceanAd->account_id)->first();
+
+                if(!empty($oceanAccount->admin_id)){
+                    $title = "计划监测链错误";
+                    $c = [
+                        "账户id: {$oceanAccount->account_id}",
+                        "账户名称: {$oceanAccount->name}",
+                        "计划id: {$oceanAd->id}",
+                        "计划名称: {$oceanAd->name}",
+                        "请在 联运系统 > 渠道 中复制正确监测链！！",
+                    ];
+
+                    $i = 1;
+                    foreach($actionTrackUrls as $actionTrackUrl){
+                        $c[] = "当前计划监测链{$i}:$actionTrackUrl}";
+                        $i++;
+                    }
+
+                    $content = implode("<br>", $c);
+
+                    $adminId = $oceanAccount->admin_id;
+
+                    $noticeApiService = new NoticeApiService();
+                    $noticeApiService->apiSendFeishuMessage($title, $content, $adminId, 1800);
                 }
             }
         }
