@@ -141,11 +141,11 @@ class Kernel extends ConsoleKernel
 
             // 巨量账户报表同步
             $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('*/5 * * * *');
-            $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
+            $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10,15 * * *');
 
             // 巨量创意报表同步
             $schedule->command('ocean:sync_creative_report --date=today --running=1 --run_by_account_cost=1')->cron('*/5 * * * *');
-            $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10 * * *');
+            $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9,14 * * *');
         }
 
     }
