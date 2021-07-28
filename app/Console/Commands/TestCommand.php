@@ -3,7 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Common\Console\BaseCommand;
+use App\Common\Enums\PlatformEnum;
 use App\Common\Models\ConvertCallbackModel;
+use App\Common\Services\SystemApi\UnionApiService;
+use App\Models\Ocean\ChannelAdLogModel;
 
 class TestCommand extends BaseCommand
 {
@@ -34,8 +37,55 @@ class TestCommand extends BaseCommand
      * 处理
      */
     public function handle(){
-        $this->reflashConvertCallback();
+        $this->reflashChannelAdLog();
         dd('done');
+    }
+
+    /**
+     * @throws \App\Common\Tools\CustomException
+     * 刷新渠道-计划日志
+     */
+    public function reflashChannelAdLog(){
+        $channelAdLogModel = new ChannelAdLogModel();
+        $channelAdLogs = $channelAdLogModel->whereRaw("
+            extends not LIKE '%cp_channel_id%'
+        ")->get();
+
+        $unionApiService = new UnionApiService();
+        foreach($channelAdLogs as $channelAdLog){
+            if(!empty($channelAdLog->extends->action_track_url)){
+                $ret = parse_url($channelAdLog->extends->action_track_url);
+                parse_str($ret['query'], $param);
+
+                if($channelAdLog->platform == PlatformEnum::ANDROID && !empty($param['android_channel_id'])){
+                    $channel = $unionApiService->apiReadChannel(['id' => $param['android_channel_id']]);
+                    $chanenlExtends = $channel['channel_extends'] ?? [];
+                    $channel['admin_id'] = $chanenlExtends['admin_id'] ?? 0;
+                    unset($channel['extends']);
+                    unset($channel['channel_extends']);
+
+                    $channelAdLog->extends = [
+                        'action_track_url' => $channelAdLog->extends->action_track_url,
+                        'channel' => $channel,
+                    ];
+
+                    $channelAdLog->save();
+                }elseif($channelAdLog->platform == PlatformEnum::IOS && !empty($param['ios_channel_id'])){
+                    $channel = $unionApiService->apiReadChannel(['id' => $param['ios_channel_id']]);
+                    $chanenlExtends = $channel['channel_extends'] ?? [];
+                    $channel['admin_id'] = $chanenlExtends['admin_id'] ?? 0;
+                    unset($channel['extends']);
+                    unset($channel['channel_extends']);
+
+                    $channelAdLog->extends = [
+                        'action_track_url' => $channelAdLog->extends->action_track_url,
+                        'channel' => $channel,
+                    ];
+
+                    $channelAdLog->save();
+                }
+            }
+        }
     }
 
     /**
