@@ -104,4 +104,20 @@ trait Image
 
         return $valid;
     }
+
+    /**
+     * @param array $accountIds
+     * @param $accessToken
+     * @param array $filtering
+     * @param int $page
+     * @param int $pageSize
+     * @param array $param
+     * @return mixed
+     * 并发获取图片列表
+     */
+    public function multiGetImageList(array $accountIds, $accessToken, $filtering = [], $page = 1, $pageSize = 10, $param = []){
+        $url = $this->getUrl('2/file/image/get/');
+
+        return $this->multiGetPageList($url, $accountIds, $accessToken, $filtering, $page, $pageSize, $param);
+    }
 }

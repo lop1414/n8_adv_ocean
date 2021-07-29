@@ -4,8 +4,10 @@ namespace App\Services\Ocean;
 
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Common\Enums\MaterialTypeEnums;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Models\Ocean\OceanAccountVideoModel;
+use App\Models\Ocean\OceanMaterialModel;
 use App\Models\Ocean\OceanVideoModel;
 use App\Services\Task\TaskOceanSyncService;
 
@@ -119,6 +121,7 @@ class OceanVideoService extends OceanService
     /**
      * @param $video
      * @return bool
+     * @throws CustomException
      * 保存
      */
     public function save($video){
@@ -141,12 +144,12 @@ class OceanVideoService extends OceanService
         $oceanVideo->material_id = $video['material_id'];
         $oceanVideo->source = $video['source'];
         $oceanVideo->create_time = $video['create_time'];
-        $oceanVideo->filename = $video['filename'];
+        $oceanVideo->filename = $video['filename'] ?? '';
 
         $ret = $oceanVideo->save();
 
         if($ret){
-            // 添加关联关系
+            // 视频-账户关联
             $oceanAccountVideoModel = new OceanAccountVideoModel();
             $oceanAccountVideo = $oceanAccountVideoModel->where('account_id', $video['advertiser_id'])
                 ->where('video_id', $video['id'])
@@ -157,6 +160,17 @@ class OceanVideoService extends OceanService
                 $oceanAccountVideo->account_id = $video['advertiser_id'];
                 $oceanAccountVideo->video_id = $video['id'];
                 $oceanAccountVideo->save();
+            }
+
+            // 视频-素材关联
+            $oceanMaterial = OceanMaterialModel::find($video['material_id']);
+            if(empty($oceanMaterial)){
+                $oceanMaterialService = new OceanMaterialService();
+                $oceanMaterialService->create([
+                    'id' => $video['material_id'],
+                    'material_type' => MaterialTypeEnums::VIDEO,
+                    'file_id' => $video['id']
+                ]);
             }
         }
 

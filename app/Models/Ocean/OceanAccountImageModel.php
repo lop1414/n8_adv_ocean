@@ -2,14 +2,14 @@
 
 namespace App\Models\Ocean;
 
-class OceanAccountVideoModel extends OceanModel
+class OceanAccountImageModel extends OceanModel
 {
     /**
      * 关联到模型的数据表
      *
      * @var string
      */
-    protected $table = 'ocean_accounts_videos';
+    protected $table = 'ocean_accounts_images';
 
     /**
      * @var bool

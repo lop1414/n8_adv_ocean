@@ -6,6 +6,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Console\ConvertCallbackCommand;
 use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
+use App\Console\Commands\Ocean\OceanSyncImageCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
 use App\Console\Commands\Ocean\OceanSyncAdConvertCommand;
@@ -58,6 +59,7 @@ class Kernel extends ConsoleKernel
         // 巨量
         OceanSyncCampaignCommand::class,
         OceanSyncVideoCommand::class,
+        OceanSyncImageCommand::class,
         OceanSyncRegionCommand::class,
         OceanSyncCityCommand::class,
         OceanSyncIndustryCommand::class,
@@ -135,6 +137,10 @@ class Kernel extends ConsoleKernel
 
             // 巨量创意同步
             $schedule->command('ocean:sync_creative --update_date=today --create_log=1')->cron('*/15 * * * *');
+
+            // 巨量素材同步
+            $schedule->command('ocean:sync_video --date=today')->cron('*/10 * * * *');
+            $schedule->command('ocean:sync_image --date=today')->cron('*/10 * * * *');
 
             // 巨量转化跟踪同步
             $schedule->command('ocean:sync_ad_convert')->cron('30 3 * * *');
