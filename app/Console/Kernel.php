@@ -16,6 +16,7 @@ use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncCreativeReportCommand;
 use App\Common\Console\Queue\QueueClickCommand;
+use App\Console\Commands\Ocean\Report\OceanSyncMaterialReportCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\SyncChannelAdCommand;
@@ -68,6 +69,7 @@ class Kernel extends ConsoleKernel
         OceanSyncAdConvertCommand::class,
         OceanSyncAccountReportCommand::class,
         OceanSyncCreativeReportCommand::class,
+        OceanSyncMaterialReportCommand::class,
         OceanCreativeNoticeCommand::class,
 
         // 转化回传
@@ -152,6 +154,9 @@ class Kernel extends ConsoleKernel
             // 巨量创意报表同步
             $schedule->command('ocean:sync_creative_report --date=today --running=1 --run_by_account_cost=1')->cron('*/5 * * * *');
             $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
+
+            // 巨量素材报表同步
+            $schedule->command('ocean:sync_material_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
         }
 
     }

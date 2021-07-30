@@ -39,13 +39,13 @@ class OceanReportService extends OceanService
         if(!empty($option['account_ids'])){
             $accountIds = $option['account_ids'];
         }
-		
+
         // 并发分片大小
         if(!empty($option['multi_chunk_size'])){
             $multiChunkSize = min(intval($option['multi_chunk_size']), 8);
             $this->sdk->setMultiChunkSize($multiChunkSize);
         }
-		
+
         // 在跑账户
         if(!empty($option['running'])){
             $runningAccountIds = $this->getRunningAccountIds();
@@ -101,6 +101,7 @@ class OceanReportService extends OceanService
             $pageSize = 200;
             foreach($accountGroup as $g){
                 $items = $this->multiGetPageList($g, $filtering, $pageSize, $param);
+
                 Functions::consoleDump('count:'. count($items));
 
                 $cost = 0;
