@@ -38,7 +38,23 @@ class OceanMaterialReportService extends OceanReportService
      * 获取过滤条件
      */
     protected function getFiltering(){
-        return [];
+        return [
+            "image_mode" => [
+                "CREATIVE_IMAGE_MODE_SMALL",
+                "CREATIVE_IMAGE_MODE_LARGE",
+                "CREATIVE_IMAGE_MODE_GROUP",
+                "CREATIVE_IMAGE_MODE_VIDEO",
+                "CREATIVE_IMAGE_MODE_GIF",
+                "CREATIVE_IMAGE_MODE_LARGE_VERTICAL",
+                "CREATIVE_IMAGE_MODE_VIDEO_VERTICAL",
+                "TOUTIAO_SEARCH_AD_IMAGE",
+                "SEARCH_AD_SMALL_IMAGE",
+                "CREATIVE_IMAGE_MODE_UNION_SPLASH",
+                "CREATIVE_IMAGE_MODE_UNION_SPLASH_VIDEO",
+                "CREATIVE_IMAGE_MODE_DISPLAY_WINDOW",
+                "CREATIVE_IMAGE_MODE_AWEME_LIVE",
+            ],
+        ];
     }
 
     /**
