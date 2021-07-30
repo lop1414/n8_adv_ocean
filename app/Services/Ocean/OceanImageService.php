@@ -113,7 +113,7 @@ class OceanImageService extends OceanService
         $oceanImage->size = $image['size'];
         $oceanImage->width = $image['width'];
         $oceanImage->height = $image['height'];
-        $oceanImage->format = $image['format'];
+        $oceanImage->format = $image['format'] ?? '';
         $oceanImage->signature = $image['signature'];
         $oceanImage->url = $image['url'];
         $oceanImage->material_id = $image['material_id'];

@@ -136,7 +136,7 @@ class OceanVideoService extends OceanService
         $oceanVideo->size = $video['size'];
         $oceanVideo->width = $video['width'];
         $oceanVideo->height = $video['height'];
-        $oceanVideo->format = $video['format'];
+        $oceanVideo->format = $video['format'] ?? '';
         $oceanVideo->signature = $video['signature'];
         $oceanVideo->poster_url = $video['poster_url'];
         $oceanVideo->bit_rate = $video['bit_rate'];
