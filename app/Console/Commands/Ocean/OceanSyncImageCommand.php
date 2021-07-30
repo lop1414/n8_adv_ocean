@@ -3,23 +3,22 @@
 namespace App\Console\Commands\Ocean;
 
 use App\Common\Console\BaseCommand;
-use App\Services\Ocean\OceanAdService;
-use App\Services\Ocean\OceanCreativeService;
+use App\Services\Ocean\OceanImageService;
 
-class OceanSyncCreativeCommand extends BaseCommand
+class OceanSyncImageCommand extends BaseCommand
 {
     /**
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_creative  {--create_date=} {--update_date=} {--account_ids=} {--status=} {--create_log=} {--multi_chunk_size=} {--key_suffix=}';
+    protected $signature = 'ocean:sync_image  {--date=} {--account_ids=} {--ids=}';
 
     /**
      * 命令描述
      *
      * @var string
      */
-    protected $description = '同步头条广告创意';
+    protected $description = '同步头条图片';
 
     /**
      * Create a new command instance.
@@ -42,19 +41,16 @@ class OceanSyncCreativeCommand extends BaseCommand
             $param['account_ids'] = explode(",", $param['account_ids']);
         }
 
-        // 锁 key
-        $lockKey = 'ocean_sync_creative';
-
-        // key 后缀
-        if(!empty($param['key_suffix'])){
-            $lockKey .= '_'. trim($param['key_suffix']);
+        // id
+        if(!empty($param['ids'])){
+            $param['ids'] = explode(",", $param['ids']);
         }
 
-        $oceanCreativeService = new OceanCreativeService();
+        $oceanImageService = new OceanImageService();
         $option = ['log' => true];
         $this->lockRun(
-            [$oceanCreativeService, 'sync'],
-            $lockKey,
+            [$oceanImageService, 'sync'],
+            'ocean_sync_image',
             43200,
             $option,
             $param

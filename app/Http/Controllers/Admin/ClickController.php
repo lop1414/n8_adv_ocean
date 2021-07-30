@@ -72,14 +72,14 @@ class ClickController extends AdminController
             $this->validRule($request->post(), [
                 'link' => 'required',
             ]);
-            $link = $request->post('link');
+            $link = trim($request->post('link'));
             $click = new ClickModel();
             $click->link = $link;
         }else{
             $this->validRule($request->post(), [
                 'convert_id' => 'required',
             ]);
-            $convertId = $request->post('convert_id');
+            $convertId = trim($request->post('convert_id'));
 
             $datetime = date('Y-m-d H:i:s', strtotime("-24 hours"));
 

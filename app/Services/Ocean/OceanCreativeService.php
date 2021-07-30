@@ -2,10 +2,12 @@
 
 namespace App\Services\Ocean;
 
+use App\Common\Enums\NoticeStatusEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanCreativeStatusEnum;
 use App\Models\Ocean\OceanAdModel;
+use App\Models\Ocean\OceanCreativeLogModel;
 use App\Models\Ocean\OceanCreativeModel;
 
 class OceanCreativeService extends OceanService
@@ -104,7 +106,13 @@ class OceanCreativeService extends OceanService
 
                 $item['created_at'] = $datetime;
                 $item['updated_at'] = $datetime;
+
                 $data[] = $item;
+
+                if(!empty($option['create_log'])){
+                    // 创建日志
+                    $this->createLog($item);
+                }
             }
 
             // 批量保存
@@ -125,6 +133,35 @@ class OceanCreativeService extends OceanService
     public function batchSave($data){
         $oceanCreativeModel = new OceanCreativeModel();
         $oceanCreativeModel->chunkInsertOrUpdate($data, 50, $oceanCreativeModel->getTable(), $oceanCreativeModel->getTableColumnsWithPrimaryKey());
+        return true;
+    }
+
+    /**
+     * @param $item
+     * @return bool
+     * 创建日志
+     */
+    public function createLog($item){
+        $oceanCreative = OceanCreativeModel::find($item['id']);
+
+        $beforeStatus = '';
+        $afterStatus = $item['status'];
+        if(!empty($oceanCreative)){
+            $beforeStatus = $oceanCreative['status'];
+        }
+
+        // 状态发生变化
+        if($beforeStatus != $afterStatus){
+            $oceanCreativeLogService = new OceanCreativeLogService();
+            $oceanCreativeLogService->create([
+                'account_id' => $item['account_id'],
+                'ad_id' => $item['ad_id'],
+                'creative_id' => $item['creative_id'],
+                'before_status' => $beforeStatus,
+                'after_status' => $afterStatus,
+            ]);
+        }
+
         return true;
     }
 }

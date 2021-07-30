@@ -5,21 +5,22 @@ namespace App\Console\Commands\Ocean\Report;
 use App\Common\Console\BaseCommand;
 use App\Common\Helpers\Functions;
 use App\Services\Ocean\Report\OceanCreativeReportService;
+use App\Services\Ocean\Report\OceanMaterialReportService;
 
-class OceanSyncCreativeReportCommand extends BaseCommand
+class OceanSyncMaterialReportCommand extends BaseCommand
 {
     /**
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_creative_report  {--date=} {--account_ids=} {--delete=} {--running=} {--multi_chunk_size=} {--key_suffix=} {--run_by_account_cost=}';
+    protected $signature = 'ocean:sync_material_report  {--date=} {--account_ids=} {--delete=} {--multi_chunk_size=} {--key_suffix=}';
 
     /**
      * 命令描述
      *
      * @var string
      */
-    protected $description = '同步头条创意报表';
+    protected $description = '同步头条素材报表';
 
     /**
      * Create a new command instance.
@@ -43,10 +44,7 @@ class OceanSyncCreativeReportCommand extends BaseCommand
         }
 
         // 锁 key
-        $lockKey = 'ocean_sync_creative_report';
-        if(!empty($param['running'])){
-            $lockKey .= '_running';
-        }
+        $lockKey = 'ocean_sync_material_report';
 
         // key 日期
         if(!empty($param['date'])){
@@ -58,10 +56,10 @@ class OceanSyncCreativeReportCommand extends BaseCommand
             $lockKey .= '_'. trim($param['key_suffix']);
         }
 
-        $oceanCreativeReportService = new OceanCreativeReportService();
+        $oceanMaterialReportService = new OceanMaterialReportService();
         $option = ['log' => true];
         $this->lockRun(
-            [$oceanCreativeReportService, 'sync'],
+            [$oceanMaterialReportService, 'sync'],
             $lockKey,
             43200,
             $option,

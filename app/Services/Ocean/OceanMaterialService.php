@@ -2,8 +2,11 @@
 
 namespace App\Services\Ocean;
 
+use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Common\Enums\MaterialTypeEnums;
 use App\Enums\Ocean\OceanSyncTypeEnum;
+use App\Models\Ocean\OceanMaterialModel;
 use App\Services\Task\TaskOceanSyncService;
 
 class OceanMaterialService extends OceanService
@@ -48,5 +51,26 @@ class OceanMaterialService extends OceanService
         }
 
         return $ret;
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     * @throws CustomException
+     * 创建
+     */
+    public function create($data){
+        $this->validRule($data, [
+            'id' => 'required',
+            'material_type' => 'required',
+            'file_id' => 'required',
+        ]);
+        Functions::hasEnum(MaterialTypeEnums::class, $data['material_type']);
+
+        $oceanMaterialModel = new OceanMaterialModel();
+        $oceanMaterialModel->id = $data['id'];
+        $oceanMaterialModel->material_type = $data['material_type'];
+        $oceanMaterialModel->file_id = $data['file_id'];
+        return $oceanMaterialModel->save();
     }
 }

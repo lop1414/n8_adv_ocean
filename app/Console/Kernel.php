@@ -4,7 +4,9 @@ namespace App\Console;
 
 use App\Common\Helpers\Functions;
 use App\Common\Console\ConvertCallbackCommand;
+use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
+use App\Console\Commands\Ocean\OceanSyncImageCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
 use App\Console\Commands\Ocean\OceanSyncAdCommand;
 use App\Console\Commands\Ocean\OceanSyncAdConvertCommand;
@@ -14,6 +16,7 @@ use App\Console\Commands\Ocean\OceanSyncRegionCommand;
 use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncCreativeReportCommand;
 use App\Common\Console\Queue\QueueClickCommand;
+use App\Console\Commands\Ocean\Report\OceanSyncMaterialReportCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\SyncChannelAdCommand;
@@ -23,6 +26,7 @@ use App\Console\Commands\Task\TaskOceanImageUploadCommand;
 use App\Console\Commands\Task\TaskOceanSyncCommand;
 use App\Console\Commands\Task\TaskOceanVideoUploadCommand;
 use App\Console\Commands\Task\TaskReWaitingCommand;
+use App\Console\Commands\TestCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -56,6 +60,7 @@ class Kernel extends ConsoleKernel
         // 巨量
         OceanSyncCampaignCommand::class,
         OceanSyncVideoCommand::class,
+        OceanSyncImageCommand::class,
         OceanSyncRegionCommand::class,
         OceanSyncCityCommand::class,
         OceanSyncIndustryCommand::class,
@@ -64,6 +69,10 @@ class Kernel extends ConsoleKernel
         OceanSyncAdConvertCommand::class,
         OceanSyncAccountReportCommand::class,
         OceanSyncCreativeReportCommand::class,
+        OceanSyncMaterialReportCommand::class,
+        OceanCreativeNoticeCommand::class,
+
+        // 转化回传
         ConvertCallbackCommand::class,
 
         // 同步渠道-计划关联
@@ -71,6 +80,9 @@ class Kernel extends ConsoleKernel
 
         // 队列
         QueueClickCommand::class,
+
+        // 测试
+        TestCommand::class,
     ];
 
     /**
@@ -115,6 +127,9 @@ class Kernel extends ConsoleKernel
 
         // 测试
         if(Functions::isProduction()){
+            // 巨量创意通知
+            $schedule->command('ocean:creative_notice')->cron('* * * * *');
+
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');
 
@@ -122,16 +137,26 @@ class Kernel extends ConsoleKernel
             $schedule->command('ocean:sync_ad --update_date=today')->cron('*/15 * * * *');
             $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 2 * * *');
 
+            // 巨量创意同步
+            $schedule->command('ocean:sync_creative --update_date=today --create_log=1')->cron('*/15 * * * *');
+
+            // 巨量素材同步
+            $schedule->command('ocean:sync_video --date=today')->cron('*/10 * * * *');
+            $schedule->command('ocean:sync_image --date=today')->cron('*/10 * * * *');
+
             // 巨量转化跟踪同步
             $schedule->command('ocean:sync_ad_convert')->cron('30 3 * * *');
 
             // 巨量账户报表同步
             $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('*/5 * * * *');
-//            $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
+            $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
 
             // 巨量创意报表同步
             $schedule->command('ocean:sync_creative_report --date=today --running=1 --run_by_account_cost=1')->cron('*/5 * * * *');
-//            $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10 * * *');
+            $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
+
+            // 巨量素材报表同步
+            $schedule->command('ocean:sync_material_report --date=yesterday --key_suffix=yesterday')->cron('25-30 9 * * *');
         }
 
     }
