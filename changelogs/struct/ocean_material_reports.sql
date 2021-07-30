@@ -32,8 +32,10 @@ CREATE TABLE `ocean_material_reports` (
   `convert` int(11) NOT NULL DEFAULT '0' COMMENT '转化数',
   `extends` text COMMENT '扩展字段',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `stat_datetime_material_id` (`stat_datetime`,`material_id`) USING BTREE,
+  UNIQUE KEY `uni` (`stat_datetime`,`material_id`,`ad_id`) USING BTREE,
   KEY `account_id` (`account_id`) USING BTREE,
   KEY `campaign_id` (`campaign_id`) USING BTREE,
   KEY `ad_id` (`ad_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=536 DEFAULT CHARSET=utf8 COMMENT='巨量素材报表';
+) ENGINE=InnoDB AUTO_INCREMENT=1605 DEFAULT CHARSET=utf8 COMMENT='巨量素材报表';
+
+
