@@ -141,11 +141,11 @@ class Kernel extends ConsoleKernel
             $schedule->command('ocean:sync_creative --update_date=today --create_log=1')->cron('*/15 * * * *');
 
             // 巨量素材同步
-            $schedule->command('ocean:sync_video --date=today')->cron('*/10 * * * *');
-            $schedule->command('ocean:sync_image --date=today')->cron('*/10 * * * *');
+            $schedule->command('ocean:sync_video --date=today')->cron('40-42 * * * *');
+            $schedule->command('ocean:sync_image --date=today')->cron('40-42 * * * *');
 
             // 巨量转化跟踪同步
-            $schedule->command('ocean:sync_ad_convert')->cron('30 3 * * *');
+            $schedule->command('ocean:sync_ad_convert')->cron('30-32 3 * * *');
 
             // 巨量账户报表同步
             $schedule->command('ocean:sync_account_report --date=today --running=1')->cron('*/5 * * * *');
