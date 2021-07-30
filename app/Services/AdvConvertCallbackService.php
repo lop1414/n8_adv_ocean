@@ -108,4 +108,21 @@ class AdvConvertCallbackService extends ConvertCallbackService
             ConvertTypeEnum::PAY => 2,
         ];
     }
+
+
+
+    /**
+     * @param $click
+     * @return array|void
+     * 点击数据过滤
+     */
+    public function filterClickData($click){
+        return [
+            'id' => $click['id'],
+            'campaign_id' => $click['campaign_id'],
+            'ad_id' => $click['ad_id'],
+            'creative_id' => $click['creative_id'],
+            'click_at' => $click['click_at'],
+        ];
+    }
 }
