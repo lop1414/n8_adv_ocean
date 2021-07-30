@@ -110,7 +110,7 @@ class OceanImageService extends OceanService
         }
 
         $oceanImage->id = $image['id'];
-        $oceanImage->size = $image['size'];
+        $oceanImage->size = $image['size'] ?? 0;
         $oceanImage->width = $image['width'];
         $oceanImage->height = $image['height'];
         $oceanImage->format = $image['format'] ?? '';

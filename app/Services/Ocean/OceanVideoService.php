@@ -133,7 +133,7 @@ class OceanVideoService extends OceanService
         }
 
         $oceanVideo->id = $video['id'];
-        $oceanVideo->size = $video['size'];
+        $oceanVideo->size = $video['size'] ?? 0;
         $oceanVideo->width = $video['width'];
         $oceanVideo->height = $video['height'];
         $oceanVideo->format = $video['format'] ?? '';
