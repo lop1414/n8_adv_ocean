@@ -142,7 +142,7 @@ class OceanVideoService extends OceanService
         $oceanVideo->bit_rate = $video['bit_rate'];
         $oceanVideo->duration = $video['duration'];
         $oceanVideo->material_id = $video['material_id'];
-        $oceanVideo->source = $video['source'];
+        $oceanVideo->source = $video['source'] ?? '';
         $oceanVideo->create_time = $video['create_time'];
         $oceanVideo->filename = $video['filename'] ?? '';
 
