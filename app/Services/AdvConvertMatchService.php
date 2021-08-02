@@ -8,6 +8,7 @@ use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Models\ClickModel;
 use App\Common\Models\ConvertCallbackModel;
 use App\Common\Services\ConvertMatchService;
+use App\Common\Services\SystemApi\AdvOceanApiService;
 use App\Models\Ocean\OceanAdExtendModel;
 
 class AdvConvertMatchService extends ConvertMatchService
@@ -39,6 +40,11 @@ class AdvConvertMatchService extends ConvertMatchService
         }
 
         $convertStrategy = $strategy[$convertType] ?? ['time_range' => ConvertCallbackTimeEnum::NEVER];
+
+        // 兼容历史数据
+        if(!isset($convertStrategy['min_amount'])){
+            $convertStrategy['min_amount'] = 20;
+        }
 
         return $convertStrategy;
     }
