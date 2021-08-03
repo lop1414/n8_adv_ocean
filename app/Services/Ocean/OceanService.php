@@ -161,7 +161,7 @@ class OceanService extends BaseService
             ");
         }
 
-        $subAccount = $builder->where('parent_id', '<>', 0)->get();
+        $subAccount = $builder->where('parent_id', '<>', 0)->orderBy('id', 'desc')->get();
 
         return $subAccount;
     }
