@@ -64,6 +64,12 @@ class OceanImageService extends OceanService
             $accountIds = $option['account_ids'];
         }
 
+        // 并发分片大小
+        if(!empty($option['multi_chunk_size'])){
+            $multiChunkSize = min(intval($option['multi_chunk_size']), 8);
+            $this->sdk->setMultiChunkSize($multiChunkSize);
+        }
+
         $filtering = [];
         if(!empty($option['date'])){
             $filtering['start_time'] = Functions::getDate($option['date']);

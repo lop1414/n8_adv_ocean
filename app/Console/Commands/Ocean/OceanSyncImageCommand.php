@@ -11,7 +11,7 @@ class OceanSyncImageCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_image  {--date=} {--account_ids=} {--ids=}';
+    protected $signature = 'ocean:sync_image  {--date=} {--account_ids=} {--ids=} {--multi_chunk_size=} {--key_suffix=}';
 
     /**
      * 命令描述
@@ -46,11 +46,19 @@ class OceanSyncImageCommand extends BaseCommand
             $param['ids'] = explode(",", $param['ids']);
         }
 
+        // 锁 key
+        $lockKey = 'ocean_sync_image';
+
+        // key 后缀
+        if(!empty($param['key_suffix'])){
+            $lockKey .= '_'. trim($param['key_suffix']);
+        }
+
         $oceanImageService = new OceanImageService();
         $option = ['log' => true];
         $this->lockRun(
             [$oceanImageService, 'sync'],
-            'ocean_sync_image',
+            $lockKey,
             43200,
             $option,
             $param

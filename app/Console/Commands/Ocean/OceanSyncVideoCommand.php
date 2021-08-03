@@ -11,7 +11,7 @@ class OceanSyncVideoCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_video  {--date=} {--account_ids=} {--ids=}';
+    protected $signature = 'ocean:sync_video  {--date=} {--account_ids=} {--ids=} {--multi_chunk_size=} {--key_suffix=}';
 
     /**
      * 命令描述
@@ -46,11 +46,19 @@ class OceanSyncVideoCommand extends BaseCommand
             $param['ids'] = explode(",", $param['ids']);
         }
 
+        // 锁 key
+        $lockKey = 'ocean_sync_video';
+
+        // key 后缀
+        if(!empty($param['key_suffix'])){
+            $lockKey .= '_'. trim($param['key_suffix']);
+        }
+
         $oceanVideoService = new OceanVideoService();
         $option = ['log' => true];
         $this->lockRun(
             [$oceanVideoService, 'sync'],
-            'ocean_sync_video',
+            $lockKey,
             43200,
             $option,
             $param

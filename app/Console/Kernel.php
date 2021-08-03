@@ -140,9 +140,13 @@ class Kernel extends ConsoleKernel
             // 巨量创意同步
             $schedule->command('ocean:sync_creative --update_date=today --create_log=1')->cron('*/2 * * * *');
 
-            // 巨量素材同步
-            $schedule->command('ocean:sync_video --date=today')->cron('40-42 * * * *');
-            $schedule->command('ocean:sync_image --date=today')->cron('40-42 * * * *');
+            // 巨量视频同步
+            $schedule->command('ocean:sync_video --date=today --multi_chunk_size=2')->cron('40-42 * * * *');
+            $schedule->command('ocean:sync_video --date=yesterday  --key_suffix=yesterday')->cron('25-30 2 * * *');
+
+            // 巨量图片同步
+            $schedule->command('ocean:sync_image --date=today --multi_chunk_size=2')->cron('40-42 * * * *');
+            $schedule->command('ocean:sync_image --date=yesterday  --key_suffix=yesterday')->cron('25-30 2 * * *');
 
             // 巨量转化跟踪同步
             $schedule->command('ocean:sync_ad_convert')->cron('30-32 3 * * *');
