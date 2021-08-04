@@ -49,7 +49,7 @@ class AdvClickService extends ClickService
                 throw new CustomException([
                     'code' => 'CLICK_AT_IS_ERROR',
                     'message' => '点击时间格式错误',
-                    'log' => true,
+                    'log' => false,
                     'data' => $data,
                 ]);
             }
@@ -59,7 +59,7 @@ class AdvClickService extends ClickService
                 throw new CustomException([
                     'code' => 'CLICK_AT_IS_ERROR',
                     'message' => '点击时间格式错误',
-                    'log' => true,
+                    'log' => false,
                     'data' => $data,
                 ]);
             }
