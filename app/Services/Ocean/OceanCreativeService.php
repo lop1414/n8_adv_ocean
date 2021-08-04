@@ -147,7 +147,7 @@ class OceanCreativeService extends OceanService
         $beforeStatus = '';
         $afterStatus = $item['status'];
         if(!empty($oceanCreative)){
-            $beforeStatus = $oceanCreative['status'];
+            $beforeStatus = $oceanCreative['status'] ?? '';
         }
 
         // 状态发生变化
