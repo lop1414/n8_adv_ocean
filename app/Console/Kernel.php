@@ -135,10 +135,11 @@ class Kernel extends ConsoleKernel
 
             // 巨量计划同步
             $schedule->command('ocean:sync_ad --update_date=today')->cron('*/2 * * * *');
-            $schedule->command('ocean:sync_ad --key_suffix=yesterday')->cron('25-30 2 * * *');
+            $schedule->command('ocean:sync_ad --update_date=yesterday --key_suffix=yesterday')->cron('25-30 2 * * *');
 
             // 巨量创意同步
             $schedule->command('ocean:sync_creative --update_date=today --create_log=1')->cron('*/2 * * * *');
+            $schedule->command('ocean:sync_creative --update_date=yesterday --create_log=1 --key_suffix=yesterday')->cron('25-30 1 * * *');
 
             // 巨量视频同步
             $schedule->command('ocean:sync_video --date=today --multi_chunk_size=2')->cron('10-12 * * * *');
