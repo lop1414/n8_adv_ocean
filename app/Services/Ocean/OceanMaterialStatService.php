@@ -56,14 +56,17 @@ class OceanMaterialStatService extends OceanService
 
         $day7 = date('Y-m-d 00:00:00', strtotime('-7 days'));
         $day30 = date('Y-m-d 00:00:00', strtotime('-30 days'));
-        $audit = $ok = $deny = $total = $creativeDay7 = $creativeDay30 = 0;
 
         $materialId = '';
+        $audit = $ok = $deny = $total = $creativeDay7 = $creativeDay30 = 0;
         foreach($items as $item){
             $materialId = $item->material_id;
 
             if($item->status == OceanCreativeStatusEnum::CREATIVE_STATUS_DELETE){
                 $status = $this->getCreativeBeforeStatus($item->creative_id, $item->status);
+                if($status == OceanCreativeStatusEnum::CREATIVE_STATUS_AUDIT){
+                    continue;
+                }
             }else{
                 $status = $item->status;
             }
@@ -121,6 +124,7 @@ class OceanMaterialStatService extends OceanService
         $oceanCreativeLog = $oceanCreativeLogModel->where('creative_id', $creativeId)
             ->where('after_status', $status)
             ->first();
+
         if(empty($oceanCreativeLog)){
             return '';
         }
