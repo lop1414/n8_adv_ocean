@@ -5,8 +5,6 @@ namespace App\Services\Ocean;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Common\Enums\MaterialTypeEnums;
-use App\Enums\Ocean\OceanCreativeStatusEnum;
-use App\Models\Ocean\OceanCreativeLogModel;
 use App\Models\Ocean\OceanCreativeModel;
 use App\Models\Ocean\OceanImageModel;
 use App\Models\Ocean\OceanMaterialCreativeModel;
@@ -25,6 +23,7 @@ class OceanMaterialCreativeService extends OceanService
 
     /**
      * @param array $option
+     * @return bool
      * @throws CustomException
      * 同步
      */
@@ -59,6 +58,8 @@ class OceanMaterialCreativeService extends OceanService
                 ]);
             }
         }
+
+        return true;
     }
 
     /**
