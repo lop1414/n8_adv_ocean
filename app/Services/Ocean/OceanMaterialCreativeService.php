@@ -31,7 +31,7 @@ class OceanMaterialCreativeService extends OceanService
         $oceanCreativeModel = new OceanCreativeModel();
         if(!empty($option['date'])){
             $date = Functions::getDate($option['date']);
-            $oceanCreativeModel = $oceanCreativeModel->where('creative_modify_time', '>', "{$date} 00:00:00");
+            $oceanCreativeModel = $oceanCreativeModel->whereBetween('creative_modify_time', ["{$date} 00:00:00", "{$date} 23:59:59"]);
         }
         $oceanCreatives = $oceanCreativeModel->get();
 
