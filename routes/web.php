@@ -244,3 +244,6 @@ $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
 
 // 测试
 $router->post('front/ocean/lop', 'Front\Ocean\IndexController@test');
+
+// 测试
+$router->post('front/ocean/material_stat/get', 'Front\Ocean\MaterialStatController@get');

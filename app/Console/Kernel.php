@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Common\Helpers\Functions;
 use App\Common\Console\ConvertCallbackCommand;
 use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
+use App\Console\Commands\Ocean\OceanMaterialCreativeSyncCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
 use App\Console\Commands\Ocean\OceanSyncImageCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
@@ -71,6 +72,7 @@ class Kernel extends ConsoleKernel
         OceanSyncCreativeReportCommand::class,
         OceanSyncMaterialReportCommand::class,
         OceanCreativeNoticeCommand::class,
+        OceanMaterialCreativeSyncCommand::class,
 
         // 转化回传
         ConvertCallbackCommand::class,
