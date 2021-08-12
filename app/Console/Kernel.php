@@ -127,10 +127,14 @@ class Kernel extends ConsoleKernel
         // 同步渠道-计划
         $schedule->command('sync_channel_ad --date=today')->cron('*/2 * * * *');
 
-        // 测试
+
+        // 正式
         if(Functions::isProduction()){
             // 巨量创意通知
             $schedule->command('ocean:creative_notice')->cron('* * * * *');
+
+            // 同步素材-创意关联
+            $schedule->command('ocean:material_creative_sync --date=today')->cron('*/20 * * * *');
 
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');
