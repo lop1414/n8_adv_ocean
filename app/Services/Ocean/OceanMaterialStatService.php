@@ -152,11 +152,18 @@ class OceanMaterialStatService extends OceanService
             $convert += $oceanMaterialReport->convert;
         }
 
+        $clickRate = $show > 0 ? round($click / $show, 4) * 100 : 0;
+        $convertRate = $click > 0 ? round($convert / $click, 4) * 100 : 0;
+        $convertCost = $convert > 0 ? round($cost / $convert, 2) : 0;
+
         return [
             'cost' => round($cost, 2),
             'show' => $show,
             'click' => $click,
+            'click_rate' => $clickRate .'%',
             'convert' => $convert,
+            'convert_rate' => $convertRate,
+            'convert_cost' => $convertCost,
         ];
     }
 }
