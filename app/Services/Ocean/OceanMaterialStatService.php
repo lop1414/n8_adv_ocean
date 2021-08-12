@@ -162,7 +162,7 @@ class OceanMaterialStatService extends OceanService
             'click' => $click,
             'click_rate' => $clickRate .'%',
             'convert' => $convert,
-            'convert_rate' => $convertRate,
+            'convert_rate' => $convertRate .'%',
             'convert_cost' => $convertCost,
         ];
     }
