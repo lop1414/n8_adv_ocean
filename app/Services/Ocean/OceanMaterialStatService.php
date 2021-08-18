@@ -186,18 +186,16 @@ class OceanMaterialStatService extends OceanService
     public function newest($param){
         $this->validRule($param, [
             'material_type' => 'required',
-            'datetime' => 'date_format:Y-m-d H:i:s',
+            'start_time' => 'required|date_format:Y-m-d H:i:s',
+            'end_time' => 'required|date_format:Y-m-d H:i:s',
         ]);
 
-        if(!empty($param['datetime'])){
-            $datetime = $param['datetime'];
-        }else{
-            $datetime = date('Y-m-d H:i:s', strtotime('-2 hours'));
-        }
+        ini_set('max_execution_time', 300);
+        ini_set('memory_limit', '512M');
 
         $sql = "SELECT *
             FROM ocean_material_creatives omc
-            WHERE updated_at > '{$datetime}'
+            WHERE updated_at BETWEEN '{$param['start_time']}' AND '{$param['end_time']}'
             AND n8_material_id > 0
         ";
         $items = DB::select($sql);
