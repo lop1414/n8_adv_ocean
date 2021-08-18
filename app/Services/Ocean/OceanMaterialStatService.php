@@ -206,14 +206,6 @@ class OceanMaterialStatService extends OceanService
         }
         $n8MaterialIds = array_keys($n8MaterialIds);
 
-        $map = [];
-        if(!empty($n8MaterialIds)){
-            $map = $this->get([
-                'material_type' => $param['material_type'],
-                'n8_material_ids' => $n8MaterialIds,
-            ]);
-        }
-
-        return $map;
+        return $n8MaterialIds;
     }
 }
