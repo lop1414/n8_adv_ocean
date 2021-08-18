@@ -2,9 +2,12 @@
 
 namespace App\Services\Ocean;
 
+use App\Common\Enums\MaterialTypeEnums;
+use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanCreativeStatusEnum;
 use App\Models\Ocean\OceanCreativeLogModel;
+use App\Models\Ocean\OceanMaterialCreativeModel;
 use App\Models\Ocean\Report\OceanMaterialReportModel;
 use Illuminate\Support\Facades\DB;
 
@@ -56,12 +59,14 @@ class OceanMaterialStatService extends OceanService
 
         $day7 = date('Y-m-d 00:00:00', strtotime('-7 days'));
         $day30 = date('Y-m-d 00:00:00', strtotime('-30 days'));
+        $today = date('Y-m-d 00:00:00', strtotime('today'));
 
         $materialId = '';
-        $audit = $ok = $deny = $total = $creativeDay7 = $creativeDay30 = 0;
+        $audit = $ok = $deny = $total = $creativeDay7 = $creativeDay30 = $creativeRunningToday = 0;
         foreach($items as $item){
             $materialId = $item->material_id;
 
+            $originStatus = $item->status;
             if($item->status == OceanCreativeStatusEnum::CREATIVE_STATUS_DELETE){
                 $status = $this->getCreativeBeforeStatus($item->creative_id, $item->status);
                 if($status == OceanCreativeStatusEnum::CREATIVE_STATUS_AUDIT){
@@ -81,6 +86,10 @@ class OceanMaterialStatService extends OceanService
 
             if($item->creative_create_time > $day30){
                 $creativeDay30 += 1;
+            }
+
+            if($item->creative_create_time > $today && $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
+                $creativeRunningToday += 1;
             }
 
             if($status == OceanCreativeStatusEnum::CREATIVE_STATUS_AUDIT){
@@ -108,6 +117,7 @@ class OceanMaterialStatService extends OceanService
             'ok_rate' => $okRate .'%',
             'creative_day_7' => $creativeDay7,
             'creative_day_30' => $creativeDay30,
+            'creative_running_today' => $creativeRunningToday,
             'report_day_7' => $reportDay7,
             'report_day_30' => $reportDay30,
         ];
@@ -165,5 +175,44 @@ class OceanMaterialStatService extends OceanService
             'convert_rate' => $convertRate .'%',
             'convert_cost' => $convertCost,
         ];
+    }
+
+    /**
+     * @param $param
+     * @return array
+     * @throws CustomException
+     * 最新
+     */
+    public function newest($param){
+        $this->validRule($param, [
+            'material_type' => 'required',
+            'datetime' => 'date_format:Y-m-d H:i:s',
+        ]);
+
+        if(!empty($param['datetime'])){
+            $datetime = $param['datetime'];
+        }else{
+            $datetime = date('Y-m-d H:i:s', strtotime('-2 hours'));
+        }
+
+        $sql = "SELECT *
+            FROM ocean_material_creatives omc
+            WHERE updated_at > '{$datetime}'
+            AND n8_material_id > 0
+        ";
+        $items = DB::select($sql);
+
+        $n8MaterialIds = [];
+        foreach($items as $item){
+            $n8MaterialIds[$item->n8_material_id] = 1;
+        }
+        $n8MaterialIds = array_keys($n8MaterialIds);
+
+        $map = $this->get([
+            'material_type' => $param['material_type'],
+            'n8_material_ids' => $n8MaterialIds,
+        ]);
+
+        return $map;
     }
 }

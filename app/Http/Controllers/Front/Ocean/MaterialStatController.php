@@ -30,4 +30,19 @@ class MaterialStatController extends FrontController
 
         return $this->success($data);
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \App\Common\Tools\CustomException
+     * 最新
+     */
+    public function newest(Request $request){
+        $requestData = $request->post();
+
+        $oceanMaterialStatService = new OceanMaterialStatService();
+        $data = $oceanMaterialStatService->newest($requestData);
+
+        return $this->success($data);
+    }
 }

@@ -245,5 +245,6 @@ $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
 // 测试
 $router->post('front/ocean/lop', 'Front\Ocean\IndexController@test');
 
-// 测试
+// 素材统计
 $router->post('front/ocean/material_stat/get', 'Front\Ocean\MaterialStatController@get');
+$router->post('front/ocean/material_stat/newest', 'Front\Ocean\MaterialStatController@newest');
