@@ -6,8 +6,13 @@ use App\Common\Controllers\Front\FrontController;
 use App\Common\Enums\AdvClickSourceEnum;
 use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Enums\ExceptionTypeEnum;
+use App\Common\Enums\MaterialTypeEnums;
+use App\Common\Enums\PlatformEnum;
 use App\Common\Services\ErrorLogService;
 use App\Common\Services\SystemApi\AdvOceanApiService;
+use App\Common\Tools\CustomException;
+use App\Common\Tools\CustomLock;
+use App\Common\Tools\CustomRedis;
 use App\Datas\Ocean\OceanAccountData;
 use Illuminate\Http\Request;
 
@@ -43,7 +48,43 @@ class IndexController extends FrontController
 //        $this->testConvertMatch();
 //        $this->testConvertCallbackGet();
 //        $this->testCreateClick();
-        $this->testUpdateChannelAd();
+//        $this->testUpdateChannelAd();
+//        $this->redisSelect();
+//        $this->exception();
+//        $this->testGetChannelAds();
+        $this->testGetMaterialCreative();
+    }
+
+    private function testGetMaterialCreative(){
+        $a = new AdvOceanApiService();
+        $data = $a->apiGetMaterialStat([16219, 16687, 111], MaterialTypeEnums::VIDEO);
+        dd($data);
+    }
+
+    public function exception(){
+        try{
+            throw new CustomException([
+                'code' => 'aa',
+                'message' => 'bb',
+            ]);
+        }catch (\Exception $e){
+            dd($e->getMessage());
+        }
+    }
+
+    public function redisSelect(){
+
+        $b = new CustomRedis();
+        $b->set('ttb', 1);
+
+        $a = new CustomLock('tta');
+        $a->set();
+
+        $c = new CustomRedis();
+        $c->set('ttc', 1);
+
+//        $a->del();
+        dd(11);
     }
 
     private function testCreateClick(){
@@ -62,38 +103,21 @@ class IndexController extends FrontController
         $converts = [
             [
                 'convert_type' => ConvertTypeEnum::PAY, // 转化类型
-                'convert_id' => 6666, // 转化id
-                'convert_at' => '2021-01-14 12:05:00', // 转化时间
+                'convert_id' => 444, // 转化id
+                'convert_at' => '2021-07-15 12:05:00', // 转化时间
                 'convert_times' => 1, // 转化次数(包含当前转化)
-                'request_id' => '',
+                "amount" => 28,
+                'request_id' => 'request_id',
                 'muid' => '',
                 'oaid' => '',
                 'oaid_md5' => '',
                 'ip' => '127.0.0.1',
-                'ua' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.',
+                'ua' => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36',
                 // 联运用户信息
                 'n8_union_user' => [
                     'guid' => 1,
                     'channel_id' => 228,
-                    'created_at' => '2021-01-14 12:00:00',
-                    'click_source' => AdvClickSourceEnum::ADV_CLICK_API,
-                ],
-            ],[
-                'convert_type' => ConvertTypeEnum::PAY, // 转化类型
-                'convert_id' => 6666, // 转化id
-                'convert_at' => '2021-01-14 12:05:00', // 转化时间
-                'convert_times' => 1, // 转化次数(包含当前转化)
-                'request_id' => '',
-                'muid' => '',
-                'oaid' => '',
-                'oaid_md5' => '',
-                'ip' => '127.0.0.1',
-                'ua' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.',
-                // 联运用户信息
-                'n8_union_user' => [
-                    'guid' => 1,
-                    'channel_id' => 228,
-                    'created_at' => '2021-01-14 12:00:00',
+                    'created_at' => '2021-07-15 12:00:00',
                     'click_source' => AdvClickSourceEnum::ADV_CLICK_API,
                 ],
             ],
@@ -141,6 +165,13 @@ class IndexController extends FrontController
         ];
 
         $a = new AdvOceanApiService();
-        $a->apiUpdateChannelAd($channelId, $adIds);
+        $ret = $a->apiUpdateChannelAd($channelId, $adIds, PlatformEnum::DEFAULT, ['book_id' => 11, 'product_id' => 33]);
+        dd($ret);
+    }
+
+    public function testGetChannelAds(){
+        $a = new AdvOceanApiService();
+        $data = $a->apiGetChannelAds('2021-07-01 00:00:00', '2021-07-08 23:59:59');
+        dd($data);
     }
 }
