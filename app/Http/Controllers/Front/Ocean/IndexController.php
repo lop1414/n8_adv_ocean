@@ -14,6 +14,7 @@ use App\Common\Tools\CustomException;
 use App\Common\Tools\CustomLock;
 use App\Common\Tools\CustomRedis;
 use App\Datas\Ocean\OceanAccountData;
+use App\Services\Ocean\OceanService;
 use Illuminate\Http\Request;
 
 class IndexController extends FrontController
@@ -38,6 +39,36 @@ class IndexController extends FrontController
         return $this->success();
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \App\Common\Tools\CustomException
+     * 授权
+     */
+    public function grant(Request $request){
+        $data = $request->all();
+        $this->validRule($data, [
+            'app_id' => 'required',
+            'auth_code' => 'required',
+        ]);
+
+        $errorLogService = new ErrorLogService();
+        $errorLogService->create('OCEAN_OAUTH_GRANT_LOG', '巨量Oauth授权日志', $data, ExceptionTypeEnum::CUSTOM);
+
+        $appId = $data['app_id'];
+        $authCode = $data['auth_code'];
+
+        $oceanService = new OceanService($appId);
+        $ret = $oceanService->grant($authCode);
+
+        return $this->ret($ret);
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * 测试
+     */
     public function test(Request $request){
         $key = $request->input('key');
         if($key != 'aut'){
@@ -45,14 +76,14 @@ class IndexController extends FrontController
         }
 
 //        $this->testModelData();
-//        $this->testConvertMatch();
+        $this->testConvertMatch();
 //        $this->testConvertCallbackGet();
 //        $this->testCreateClick();
 //        $this->testUpdateChannelAd();
 //        $this->redisSelect();
 //        $this->exception();
 //        $this->testGetChannelAds();
-        $this->testGetMaterialCreative();
+//        $this->testGetMaterialCreative();
     }
 
     private function testGetMaterialCreative(){

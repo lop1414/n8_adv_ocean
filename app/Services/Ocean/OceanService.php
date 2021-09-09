@@ -8,6 +8,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanAdStatusEnum;
+use App\Models\AppModel;
 use App\Models\Ocean\OceanAccountModel;
 use App\Models\Ocean\OceanAdModel;
 use App\Sdks\OceanEngine\OceanEngine;
@@ -140,6 +141,33 @@ class OceanService extends BaseService
             }
         }
         return $oceanAccount;
+    }
+
+    /**
+     * @param $authCode
+     * @return bool
+     * @throws CustomException
+     * 授权
+     */
+    public function grant($authCode){
+        $appId = $this->sdk->getAppId();
+
+        $appModel = new AppModel();
+        $app = $appModel->where('app_id', $appId)->first();
+        if(empty($app)){
+            throw new CustomException([
+                'code' => 'NOT_FOUND_APP',
+                'message' => '找不到对应app',
+                'data' => [
+                    'app_id' => $appId,
+                ],
+            ]);
+        }
+
+//        $data = $this->sdk->grant($app->id, $app->secret, $authCode);
+//        dd($data);
+
+        return true;
     }
 
     /**

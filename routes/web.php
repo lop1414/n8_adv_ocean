@@ -241,6 +241,7 @@ $router->group(['middleware' => ['access_control_allow_origin']], function () us
 
 // 巨量
 $router->post('front/ocean/spi', 'Front\Ocean\IndexController@spi');
+$router->get('front/ocean/grant', 'Front\Ocean\IndexController@grant');
 
 // 测试
 $router->post('front/ocean/lop', 'Front\Ocean\IndexController@test');
