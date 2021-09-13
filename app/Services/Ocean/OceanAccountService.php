@@ -243,7 +243,7 @@ class OceanAccountService extends OceanService
             $oceanAccountModel->where('parent_id', $oceanAccount->account_id)->update([
                 'belong_platform' => AdvAccountBelongTypeEnum::LOCAL,
                 'access_token' => $oceanAccount->access_token,
-                'refresh_token' => $oceanAccount->refresh_token,
+                'refresh_token' => '',
                 'fail_at' => $oceanAccount->fail_at,
             ]);
         }
