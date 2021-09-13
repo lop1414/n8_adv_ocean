@@ -45,6 +45,7 @@ class OceanAccountService extends OceanService
 
         if(!Functions::isLocal()){
             $info = $this->sdk->grant($appId, $app->secret, $authCode);
+            var_dump($info);
         }else{
             $info = [
                 'advertiser_id' => '1687583265567758',
@@ -58,6 +59,16 @@ class OceanAccountService extends OceanService
         $oceanAccount = $oceanAccountModel->where('app_id', $appId)
             ->where('account_id', $info['advertiser_id'])
             ->first();
+
+        if(empty($oceanAccount)){
+            throw new CustomException([
+                'code' => 'NOT_FOUND_ACCOUNT',
+                'message' => '找不到对应账户,请确认账户是否正确',
+                'data' => [
+                    'account_id' => $info['advertiser_id'],
+                ],
+            ]);
+        }
 
         $oceanAccount->belong_platform = AdvAccountBelongTypeEnum::LOCAL;
         $oceanAccount->access_token = $info['access_token'];
