@@ -13,6 +13,12 @@ use Illuminate\Http\Request;
 class AccountController extends OceanController
 {
     /**
+     * @var string
+     * 默认排序字段
+     */
+    protected $defaultOrderBy = 'account_id';
+
+    /**
      * constructor.
      */
     public function __construct()
