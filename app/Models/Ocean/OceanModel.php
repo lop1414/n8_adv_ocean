@@ -15,12 +15,14 @@ class OceanModel extends BaseModel
     public function scopeWithPermission($query){
         $adminUserInfo = Functions::getGlobalData('admin_user_info');
         $table = $this->getTable();
-        $query->whereRaw("
-            {$table}.account_id IN (
-                SELECT account_id FROM ocean_accounts
-                    WHERE admin_id = {$adminUserInfo['admin_user']['id']}
-            )
-        ");
+        if(!$adminUserInfo['is_admin']){
+            $query->whereRaw("
+                {$table}.account_id IN (
+                    SELECT account_id FROM ocean_accounts
+                        WHERE admin_id = {$adminUserInfo['admin_user']['id']}
+                )
+            ");
+        }
         return $query;
     }
 
@@ -32,14 +34,12 @@ class OceanModel extends BaseModel
     public function scopeWithAdminPermission($query){
         $adminUserInfo = Functions::getGlobalData('admin_user_info');
         $table = $this->getTable();
-        if(!$adminUserInfo['is_admin']){
         $query->whereRaw("
-                {$table}.account_id IN (
-                    SELECT account_id FROM ocean_accounts
-                        WHERE admin_id = {$adminUserInfo['admin_user']['id']}
-                )
-            ");
-        }
+            {$table}.account_id IN (
+                SELECT account_id FROM ocean_accounts
+                    WHERE admin_id = {$adminUserInfo['admin_user']['id']}
+            )
+        ");
         return $query;
     }
 }
