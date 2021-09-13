@@ -37,4 +37,27 @@ trait AccessToken
         }
         return $this->accessToken;
     }
+
+    /**
+     * @param $appId
+     * @param $secret
+     * @param $refreshToken
+     * @param string $grantType
+     * @return mixed
+     * 刷新access token
+     */
+    public function refreshAccessToken($appId, $secret, $refreshToken, $grantType = 'refresh_token'){
+        $url = $this->getUrl('oauth2/refresh_token/');
+
+        $param = json_encode([
+            'app_id' => $appId,
+            'secret' => $secret,
+            'grant_type' => $grantType,
+            'refresh_token' => $refreshToken,
+        ]);
+
+        $header = ['Content-Type: application/json; charset=utf-8'];
+
+        return $this->publicRequest($url, $param, 'POST', $header);
+    }
 }

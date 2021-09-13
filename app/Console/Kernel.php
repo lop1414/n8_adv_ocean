@@ -6,6 +6,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Console\ConvertCallbackCommand;
 use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanMaterialCreativeSyncCommand;
+use App\Console\Commands\Ocean\OceanRefreshAccessTokenCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
 use App\Console\Commands\Ocean\OceanSyncImageCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
@@ -74,6 +75,9 @@ class Kernel extends ConsoleKernel
         OceanCreativeNoticeCommand::class,
         OceanMaterialCreativeSyncCommand::class,
 
+        // 巨量刷新access_token
+        OceanRefreshAccessTokenCommand::class,
+
         // 转化回传
         ConvertCallbackCommand::class,
 
@@ -96,7 +100,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // 二版
-        $schedule->command('second_version:sync_jrtt_account')->cron('5 * * * *');
+        //$schedule->command('second_version:sync_jrtt_account')->cron('5 * * * *');
 
         // 任务重执行
         $schedule->command('task:re_waiting')->cron('* * * * *');
@@ -106,6 +110,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:ocean_video_upload')->cron('* * * * *');
 
         // 巨量同步任务
+        $schedule->command('task:ocean_sync --type=account')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=video')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=campaign')->cron('* * * * *');
         $schedule->command('task:ocean_sync --type=ad')->cron('* * * * *');
@@ -127,7 +132,6 @@ class Kernel extends ConsoleKernel
         // 同步渠道-计划
         $schedule->command('sync_channel_ad --date=today')->cron('*/2 * * * *');
 
-
         // 正式
         if(Functions::isProduction()){
             // 巨量创意通知
@@ -135,6 +139,9 @@ class Kernel extends ConsoleKernel
 
             // 同步素材-创意关联
             $schedule->command('ocean:material_creative_sync --date=today')->cron('*/20 * * * *');
+
+            // 巨量刷新 access_token
+            $schedule->command('ocean:refresh_access_token')->cron('0 */8 * * *');
 
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');
@@ -169,6 +176,5 @@ class Kernel extends ConsoleKernel
             // 巨量素材报表同步
             $schedule->command('ocean:sync_material_report --date=yesterday --key_suffix=yesterday')->cron('30-35 9,14 * * *');
         }
-
     }
 }

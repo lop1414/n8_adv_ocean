@@ -7,6 +7,7 @@ use App\Enums\TaskTypeEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
+use App\Services\Ocean\OceanAccountService;
 use App\Services\Ocean\OceanAdConvertService;
 use App\Services\Ocean\OceanAdService;
 use App\Services\Ocean\OceanCampaignService;
@@ -95,7 +96,9 @@ class TaskOceanSyncService extends TaskOceanService
      * 执行单个子任务
      */
     public function runSub($subTask){
-        if($this->syncType == OceanSyncTypeEnum::CAMPAIGN){
+        if($this->syncType == OceanSyncTypeEnum::ACCOUNT){
+            $this->syncAccount($subTask);
+        }elseif($this->syncType == OceanSyncTypeEnum::CAMPAIGN){
             $this->syncCampaign($subTask);
         }elseif($this->syncType == OceanSyncTypeEnum::VIDEO){
             $this->syncVideo($subTask);
@@ -112,6 +115,22 @@ class TaskOceanSyncService extends TaskOceanService
             ]);
         }
 
+        return true;
+    }
+
+    /**
+     * @param $subTask
+     * @return bool
+     * @throws CustomException
+     * 同步广告账户
+     */
+    private function syncAccount($subTask){
+        $oceanAccountService = new OceanAccountService($subTask->app_id);
+        $option = [
+            'app_id' => $subTask->app_id,
+            'account_id' => $subTask->account_id,
+        ];
+        $oceanAccountService->sync($option);
         return true;
     }
 

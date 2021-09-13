@@ -19,6 +19,12 @@ class OceanAccountModel extends OceanModel
     protected $primaryKey = 'id';
 
     /**
+     * @var array
+     * 批量更新忽略字段
+     */
+    protected $updateIgnoreFields = ['company', 'account_role', 'created_at', 'status', 'admin_id'];
+
+    /**
      * 属性访问器
      * @param $value
      * @return mixed

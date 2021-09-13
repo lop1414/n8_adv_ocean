@@ -39,13 +39,15 @@ trait App
     public function grant($appId, $secret, $authCode, $grantType = 'auth_code'){
         $url = $this->getUrl('oauth2/access_token/');
 
-        $param = [
+        $param = json_encode([
             'app_id' => $appId,
             'secret' => $secret,
             'grant_type' => $grantType,
             'auth_code' => $authCode,
-        ];
+        ]);
 
-        return $this->publicRequest($url, $param, 'POST');
+        $header = ['Content-Type: application/json; charset=utf-8'];
+
+        return $this->publicRequest($url, $param, 'POST', $header);
     }
 }

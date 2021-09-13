@@ -14,6 +14,7 @@ use App\Common\Tools\CustomException;
 use App\Common\Tools\CustomLock;
 use App\Common\Tools\CustomRedis;
 use App\Datas\Ocean\OceanAccountData;
+use App\Services\Ocean\OceanAccountService;
 use App\Services\Ocean\OceanService;
 use Illuminate\Http\Request;
 
@@ -58,8 +59,8 @@ class IndexController extends FrontController
         $appId = $data['app_id'];
         $authCode = $data['auth_code'];
 
-        $oceanService = new OceanService($appId);
-        $ret = $oceanService->grant($authCode);
+        $oceanAccountService = new OceanAccountService($appId);
+        $ret = $oceanAccountService->grant($authCode);
 
         return $this->ret($ret);
     }

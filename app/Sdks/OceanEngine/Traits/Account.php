@@ -66,4 +66,19 @@ trait Account
 
         return $this->authRequest($url, $param, 'GET');
     }
+
+    /**
+     * @param $accountId
+     * @return mixed
+     * 获取账户列表
+     */
+    public function getAccountList($accountId){
+        $url = $this->getUrl('/2/majordomo/advertiser/select/');
+
+        $param = [
+            'advertiser_id' => $accountId
+        ];
+
+        return $this->authRequest($url, $param, 'GET');
+    }
 }
