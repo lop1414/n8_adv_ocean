@@ -59,6 +59,19 @@ class AccountController extends OceanController
                 });
             });
         });
+
+        $this->curdService->selectQueryAfter(function(){
+            // 获取管理员列表
+            $centerApiService = new CenterApiService();
+            $adminUsers = $centerApiService->apiGetAdminUsers();
+
+            // 映射
+            $adminUserMap = array_column($adminUsers, null, 'id');
+
+            foreach($this->curdService->responseData['list'] as $k => $v){
+                $this->curdService->responseData['list'][$k]['admin_name'] = isset($adminUserMap[$v->admin_id]) ? $adminUserMap[$v->admin_id]['name'] : '';
+            }
+        });
     }
 
     /**
