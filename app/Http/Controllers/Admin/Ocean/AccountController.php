@@ -8,6 +8,7 @@ use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class AccountController extends OceanController
 {
@@ -114,5 +115,33 @@ class AccountController extends OceanController
                 }
             }
         });
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws CustomException
+     * 批量更新管理员
+     */
+    public function batchUpdateAdmin(Request $request){
+        $requestData = $request->post();
+        $this->validRule($requestData, [
+            'ids' => 'required|array',
+            'admin_id' => 'required',
+        ]);
+
+        $oceanAccountModel = new OceanAccountModel();
+        $builder = $oceanAccountModel->whereIn('id', $requestData['ids']);
+
+        if($builder->count() == 0){
+            throw new CustomException([
+                'code' => 'NOT_FOUND_ACCOUNT',
+                'message' => '找不到对应账户',
+            ]);
+        }
+
+        $builder->update(['admin_id' => $requestData['admin_id']]);
+
+        return $this->success();
     }
 }

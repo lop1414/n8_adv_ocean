@@ -118,6 +118,7 @@ $router->group([
             $router->post('delete', 'Admin\Ocean\AccountController@delete');
             $router->post('batch_enable', 'Admin\Ocean\AccountController@batchEnable');
             $router->post('batch_disable', 'Admin\Ocean\AccountController@batchDisable');
+            $router->post('batch_update_admin', 'Admin\Ocean\AccountController@batchUpdateAdmin');
         });
 
         // 视频
