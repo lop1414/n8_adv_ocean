@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Common\Helpers\Functions;
 use App\Common\Console\ConvertCallbackCommand;
+use App\Console\Commands\Ocean\OceanBatchSyncAccountCommand;
 use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanMaterialCreativeSyncCommand;
 use App\Console\Commands\Ocean\OceanRefreshAccessTokenCommand;
@@ -74,6 +75,7 @@ class Kernel extends ConsoleKernel
         OceanSyncMaterialReportCommand::class,
         OceanCreativeNoticeCommand::class,
         OceanMaterialCreativeSyncCommand::class,
+        OceanBatchSyncAccountCommand::class,
 
         // 巨量刷新access_token
         OceanRefreshAccessTokenCommand::class,
@@ -142,6 +144,9 @@ class Kernel extends ConsoleKernel
 
             // 巨量刷新 access_token
             $schedule->command('ocean:refresh_access_token')->cron('0 */8 * * *');
+
+            // 批量同步巨量账户
+            $schedule->command('ocean:batch_sync_account')->cron('5 * * * *');
 
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');

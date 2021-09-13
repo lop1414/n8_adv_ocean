@@ -95,6 +95,36 @@ class OceanAccountService extends OceanService
     }
 
     /**
+     * @return bool
+     * @throws CustomException
+     * 批量同步
+     */
+    public function batchSync(){
+        $oceanAccountModel = new OceanAccountModel();
+        $oceanAccounts = $oceanAccountModel->where('belong_platform', AdvAccountBelongTypeEnum::LOCAL)
+            ->where('parent_id', 0)
+            ->get();
+
+        // 创建任务
+        $taskOceanSyncService = new TaskOceanSyncService(OceanSyncTypeEnum::ACCOUNT);
+        $task = [
+            'name' => "巨量账户同步",
+            'admin_id' => 0,
+        ];
+        $subs = [];
+        foreach($oceanAccounts as $oceanAccount){
+            $subs[] = [
+                'app_id' => $oceanAccount->app_id,
+                'account_id' => $oceanAccount->account_id,
+                'admin_id' => $task['admin_id'],
+            ];
+        }
+        $taskOceanSyncService->create($task, $subs);
+
+        return true;
+    }
+
+    /**
      * @param $option
      * @return bool
      * @throws CustomException
