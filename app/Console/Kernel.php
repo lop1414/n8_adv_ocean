@@ -171,7 +171,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('ocean:sync_ad_convert')->cron('30-32 3 * * *');
 
             // 巨量账户报表同步
-            $schedule->command('ocean:sync_account_report --date=today --has_history_cost=1')->cron('*/2 * * * *');
+            $schedule->command('ocean:sync_account_report --date=today --has_history_cost=1 --key_suffix=has_history_cost')->cron('*/2 * * * *');
             $schedule->command('ocean:sync_account_report --date=today')->cron('15 * * * *');
             $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10 * * *');
 
