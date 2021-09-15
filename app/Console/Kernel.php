@@ -172,7 +172,7 @@ class Kernel extends ConsoleKernel
 
             // 巨量账户报表同步
             $schedule->command('ocean:sync_account_report --date=today --has_history_cost=1')->cron('*/2 * * * *');
-            $schedule->command('ocean:sync_account_report --date=today')->cron('*/30 * * * *');
+            $schedule->command('ocean:sync_account_report --date=today')->cron('15 * * * *');
             $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10 * * *');
 
             // 巨量创意报表同步
