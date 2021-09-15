@@ -4,6 +4,7 @@ namespace App\Services\Ocean\Report;
 
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Models\Ocean\Report\OceanAccountReportModel;
 use App\Services\Ocean\OceanService;
 use Illuminate\Support\Facades\DB;
 
@@ -78,8 +79,13 @@ class OceanReportService extends OceanService
         }
 
         if(!empty($option['run_by_account_cost'])){
-            // 处理广告账户id
+            // 账户消耗
             $accountIds = $this->runByAccountCost($accountIds);
+        }
+
+        if(!empty($option['has_history_cost'])){
+            // 历史消耗
+            $accountIds = $this->getHasHistoryCostAccount($accountIds);
         }
 
         // 获取子账户组
@@ -208,5 +214,29 @@ class OceanReportService extends OceanService
             ->get();
 
         return $report;
+    }
+
+    /**
+     * @param $accountIds
+     * @return mixed
+     * 获取存在历史消耗账户
+     */
+    public function getHasHistoryCostAccount($accountIds){
+        $today = date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime('-3 days', strtotime($today)));
+
+        $oceanAccountReportModel = new OceanAccountReportModel();
+        $builder = $oceanAccountReportModel->whereBetween('stat_datetime', ["{$startDate} 00:00:00", "{$today} 23:59:59"]);
+
+        if(!empty($accountIds)){
+            $builder->whereIn('account_id', $accountIds);
+        }
+
+        $report = $builder->groupBy('account_id')
+            ->orderBy('cost', 'DESC')
+            ->select(DB::raw("account_id, SUM(cost) cost"))
+            ->pluck('account_id');
+
+        return $report->toArray();
     }
 }
