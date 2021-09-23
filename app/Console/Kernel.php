@@ -8,6 +8,7 @@ use App\Console\Commands\Ocean\OceanBatchSyncAccountCommand;
 use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanMaterialCreativeSyncCommand;
 use App\Console\Commands\Ocean\OceanRefreshAccessTokenCommand;
+use App\Console\Commands\Ocean\OceanSyncAccountFundCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
 use App\Console\Commands\Ocean\OceanSyncImageCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
@@ -76,6 +77,7 @@ class Kernel extends ConsoleKernel
         OceanCreativeNoticeCommand::class,
         OceanMaterialCreativeSyncCommand::class,
         OceanBatchSyncAccountCommand::class,
+        OceanSyncAccountFundCommand::class,
 
         // 巨量刷新access_token
         OceanRefreshAccessTokenCommand::class,
@@ -147,6 +149,9 @@ class Kernel extends ConsoleKernel
 
             // 批量同步巨量账户
             $schedule->command('ocean:batch_sync_account')->cron('5 * * * *');
+
+            // 巨量账户余额
+            $schedule->command('ocean:sync_account_fund --has_history_cost=1 --key_suffix=has_history_cost')->cron('*/2 * * * *');
 
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');

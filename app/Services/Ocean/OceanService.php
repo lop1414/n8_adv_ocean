@@ -9,8 +9,10 @@ use App\Common\Services\BaseService;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanAdStatusEnum;
 use App\Models\Ocean\OceanAccountModel;
+use App\Models\Ocean\Report\OceanAccountReportModel;
 use App\Sdks\OceanEngine\OceanEngine;
 use App\Services\SecondVersionService;
+use Illuminate\Support\Facades\DB;
 
 class OceanService extends BaseService
 {
@@ -383,6 +385,32 @@ $dump && Functions::consoleDump('=============== end =================');
         ")->pluck('account_id');
 
         return $oceanAccountIds->toArray();
+    }
+
+
+
+    /**
+     * @param $accountIds
+     * @return mixed
+     * 获取存在历史消耗账户
+     */
+    public function getHasHistoryCostAccount($accountIds){
+        $today = date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime('-3 days', strtotime($today)));
+
+        $oceanAccountReportModel = new OceanAccountReportModel();
+        $builder = $oceanAccountReportModel->whereBetween('stat_datetime', ["{$startDate} 00:00:00", "{$today} 23:59:59"]);
+
+        if(!empty($accountIds)){
+            $builder->whereIn('account_id', $accountIds);
+        }
+
+        $report = $builder->groupBy('account_id')
+            ->orderBy('cost', 'DESC')
+            ->select(DB::raw("account_id, SUM(cost) cost"))
+            ->pluck('account_id');
+
+        return $report->toArray();
     }
 
     /**

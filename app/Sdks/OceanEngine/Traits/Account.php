@@ -81,4 +81,19 @@ trait Account
 
         return $this->authRequest($url, $param, 'GET');
     }
+
+    /**
+     * @param $accountId
+     * @return mixed
+     * 获取账户余额
+     */
+    public function getAccountFund($accountId){
+        $url = $this->getUrl('/2/advertiser/fund/get/');
+
+        $param = [
+            'advertiser_id' => $accountId
+        ];
+
+        return $this->authRequest($url, $param, 'GET');
+    }
 }
