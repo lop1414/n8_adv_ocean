@@ -36,6 +36,7 @@ class OceanAccountFundService extends OceanService
         }
 
         $builder = new OceanAccountModel();
+        $builder = $builder->enable();
 
         if(!empty($accountIds)){
             $builder = $builder->whereIn('account_id', $accountIds);
