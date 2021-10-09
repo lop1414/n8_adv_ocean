@@ -299,6 +299,7 @@ class ChannelAdService extends BaseService
             $oceanAdStatus = [
                 OceanAdStatusEnum::AD_STATUS_DELETE,
                 OceanAdStatusEnum::AD_STATUS_DISABLE,
+                OceanAdStatusEnum::AD_STATUS_CREATE,
             ];
 
             if(!in_array($oceanAd->status, $oceanAdStatus) && !$hasKeyword){
