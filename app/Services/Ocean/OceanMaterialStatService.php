@@ -196,6 +196,10 @@ class OceanMaterialStatService extends OceanService
         $sql = "SELECT *
             FROM ocean_material_creatives omc
             WHERE updated_at BETWEEN '{$param['start_time']}' AND '{$param['end_time']}'
+                OR creative_id IN (
+                    SELECT id FROM ocean_creatives
+                        WHERE creative_modify_time BETWEEN '{$param['start_time']}' AND '{$param['end_time']}'
+                )
             AND n8_material_id > 0
         ";
         $items = DB::select($sql);
