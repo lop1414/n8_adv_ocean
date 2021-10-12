@@ -33,6 +33,9 @@ class OceanMaterialStatService extends OceanService
             'n8_material_ids' => 'required|array',
         ]);
 
+        ini_set('max_execution_time', 300);
+        ini_set('memory_limit', '512M');
+
         $map = [];
         foreach($param['n8_material_ids'] as $n8MaterialId){
             $map[$n8MaterialId] =  $this->read($n8MaterialId, $param['material_type']);
