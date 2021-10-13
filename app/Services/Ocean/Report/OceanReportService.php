@@ -99,7 +99,7 @@ class OceanReportService extends OceanService
         $this->setFiltering($option);
 
         $filtering = $this->getFiltering();
-        dd($filtering);
+
         foreach($dateList as $date){
             $param = [
                 'start_date' => $date,
