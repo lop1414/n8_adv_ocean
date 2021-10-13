@@ -16,6 +16,12 @@ class OceanReportService extends OceanService
     public $modelClass;
 
     /**
+     * @var
+     * 过滤条件
+     */
+    protected $filtering = [];
+
+    /**
      * OceanAccountReportService constructor.
      * @param string $appId
      */
@@ -90,8 +96,10 @@ class OceanReportService extends OceanService
         // 获取子账户组
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
-        $filtering = $this->getFiltering();
+        $this->setFiltering($option);
 
+        $filtering = $this->getFiltering();
+        dd($filtering);
         foreach($dateList as $date){
             $param = [
                 'start_date' => $date,
@@ -168,11 +176,20 @@ class OceanReportService extends OceanService
     }
 
     /**
+     * @param $option
+     * @return bool
+     * 设置过滤条件
+     */
+    protected function setFiltering($option){
+        return true;
+    }
+
+    /**
      * @return array
      * 获取过滤条件
      */
     protected function getFiltering(){
-        return [];
+        return $this->filtering;
     }
 
     /**

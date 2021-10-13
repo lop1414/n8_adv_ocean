@@ -34,11 +34,17 @@ class OceanCreativeReportService extends OceanReportService
     }
 
     /**
-     * @return array
-     * 获取过滤条件
+     * @param $option
+     * @return bool
+     * 设置过滤条件
      */
-    protected function getFiltering(){
-        return ['status' => 'CREATIVE_STATUS_ALL'];
+    protected function setFiltering($option){
+        if(!empty($option['status'])){
+            $this->filtering['status'] = $option['status'];
+        }else{
+            $this->filtering['status'] = 'CREATIVE_STATUS_ALL';
+        }
+        return true;
     }
 
     /**
