@@ -48,9 +48,17 @@ class OceanMaterialStatService extends OceanService
      * @param $n8MaterialId
      * @param $materialType
      * @return array
+     * @throws CustomException
      * 单条
      */
     protected function read($n8MaterialId, $materialType){
+        if(empty($n8MaterialId)){
+            throw new CustomException([
+                'code' => 'N8_MATERIAL_ID_IS_EMPTY',
+                'message' => 'n8素材id不能为空',
+            ]);
+        }
+
         $sql = "SELECT omc.material_id,omc.creative_id,omc.n8_material_id,
                 oc.account_id,oc.ad_id,oc.status,oc.creative_create_time
             FROM ocean_material_creatives omc
