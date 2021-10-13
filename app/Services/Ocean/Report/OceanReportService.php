@@ -86,6 +86,7 @@ class OceanReportService extends OceanService
         if(!empty($option['run_by_account_cost'])){
             // 账户消耗
             $accountIds = $this->runByAccountCost($accountIds);
+            var_dump($accountIds);
         }
 
         if(!empty($option['has_history_cost'])){
