@@ -85,7 +85,7 @@ class OceanReportService extends OceanService
 
         if(!empty($option['run_by_account_cost'])){
             // 账户消耗
-            $accountIds = $this->runByAccountCost($accountIds);
+            $accountIds = $this->runByAccountCost($accountIds, $option['date']);
             var_dump($accountIds);
         }
 
@@ -195,10 +195,11 @@ class OceanReportService extends OceanService
 
     /**
      * @param $accountIds
+     * @param $date
      * @return mixed
      * 按账户消耗执行
      */
-    protected function runByAccountCost($accountIds){
+    protected function runByAccountCost($accountIds, $date){
         return $accountIds;
     }
 

@@ -49,15 +49,16 @@ class OceanCreativeReportService extends OceanReportService
 
     /**
      * @param $accountIds
+     * @param string $date
      * @return array|mixed
      * @throws CustomException
      * 按账户消耗执行
      */
-    protected function runByAccountCost($accountIds){
+    protected function runByAccountCost($accountIds, $date){
         $oceanAccountReportService = new OceanAccountReportService();
-        $accountReportMap = $oceanAccountReportService->getAccountReportByDate()->pluck('cost', 'account_id');
+        $accountReportMap = $oceanAccountReportService->getAccountReportByDate($date)->pluck('cost', 'account_id');
 
-        $creativeReportMap = $this->getAccountReportByDate()->pluck('cost', 'account_id');
+        $creativeReportMap = $this->getAccountReportByDate($date)->pluck('cost', 'account_id');
 
         $creativeAccountIds = ['xx'];
         foreach($accountReportMap as $accountId => $cost){
