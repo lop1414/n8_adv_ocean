@@ -234,7 +234,7 @@ class ChannelAdService extends BaseService
 
         $oceanAdModel = new OceanAdModel();
         $oceanAds = $oceanAdModel->whereBetween('ad_modify_time', [$startTime, $endTime])
-            ->where('ad_create_time', '>', '2021-07-15 00:00:00')
+            ->where('ad_create_time', '>', '2021-07-20 00:00:00')
             ->get();
 
         $keyword = 'sign='. Advs::getAdvClickSign(AdvAliasEnum::OCEAN);
