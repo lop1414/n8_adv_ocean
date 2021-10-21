@@ -27,6 +27,11 @@ $router->group([
     'prefix' => 'admin',
     'middleware' => ['center_menu_auth', 'admin_request_log', 'access_control_allow_origin']
 ], function () use ($router) {
+    $router->group(['prefix' => 'index'], function () use ($router) {
+        // 投放监控
+        $router->post('ad_dashboard', 'Admin\IndexController@adDashboard');
+    });
+
     // APP应用
     $router->group(['prefix' => 'app'], function () use ($router) {
         $router->post('select', 'Admin\AppController@select');
