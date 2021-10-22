@@ -35,8 +35,20 @@ class OceanMaterialCreativeService extends OceanService
         }
         $oceanCreatives = $oceanCreativeModel->get();
 
+
         foreach($oceanCreatives as $oceanCreative){
+            $videoId = null;
             if(!empty($oceanCreative->extends->video_id)){
+                $videoId = $oceanCreative->extends->video_id;
+            }elseif(!empty($oceanCreative->extends->metarials)){
+                foreach($oceanCreative->extends->metarials as $oceanMaterial){
+                    if(!empty($oceanMaterial->video_id)){
+                        $videoId = $oceanMaterial->video_id;
+                    }
+                }
+            }
+
+            if(!empty($videoId)){
                 $materialType = MaterialTypeEnums::VIDEO;
                 $fileId = $oceanCreative->extends->video_id;
             }elseif($oceanCreative->extends->image_ids){
