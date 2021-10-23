@@ -187,7 +187,7 @@ class IndexService extends BaseService
         // 映射
         $map = [];
         $total = $default;
-        $total['admin_id'] = '汇总';
+        $total['admin_name'] = '汇总';
         foreach($result as $k => $v){
             foreach($v as $kk => $vv){
                 if(!isset($map[$vv['admin_id']])){
