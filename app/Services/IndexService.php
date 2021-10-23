@@ -40,6 +40,26 @@ class IndexService extends BaseService
             WHERE
                 ocean_ads.`status` = '{$okStatus}'
                 AND ocean_accounts.admin_id > 0
+                AND (
+                    ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_funds
+                        WHERE
+                            valid_balance > 0
+                    )
+                    OR ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_reports
+                        WHERE
+                            stat_datetime BETWEEN '{$date} 00:00:00'
+                        AND '{$date} 23:59:59'
+                        AND cost > 0
+                    )
+                )
             GROUP BY
                 ocean_accounts.admin_id
             ORDER BY
@@ -58,6 +78,26 @@ class IndexService extends BaseService
             WHERE
                 ocean_ads.`status` = '{$okStatus}'
                 AND ocean_accounts.admin_id > 0
+                AND (
+                    ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_funds
+                        WHERE
+                            valid_balance > 0
+                    )
+                    OR ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_reports
+                        WHERE
+                            stat_datetime BETWEEN '{$date} 00:00:00'
+                        AND '{$date} 23:59:59'
+                        AND cost > 0
+                    )
+                )
             GROUP BY ocean_accounts.admin_id
             ORDER BY
                 run_accounts DESC
