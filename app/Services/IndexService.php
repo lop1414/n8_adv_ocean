@@ -186,6 +186,7 @@ class IndexService extends BaseService
 
         // 映射
         $map = [];
+        $total = $default;
         foreach($result as $k => $v){
             foreach($v as $kk => $vv){
                 if(!isset($map[$vv['admin_id']])){
@@ -196,11 +197,15 @@ class IndexService extends BaseService
                 $map[$vv['admin_id']]['admin_name'] = $adminUserMap[$vv['admin_id']]['name'] ?? '';
 
                 $map[$vv['admin_id']][$k] = $vv[$k];
+                $total[$k] += $vv[$k];
             }
         }
 
         $data = array_column($map, null);
 
-        return $data;
+        return [
+            'items' => $data,
+            'total' => $total,
+        ];
     }
 }
