@@ -164,7 +164,7 @@ class OceanAccountService extends OceanService
         }
 
         $oceanAccountModel = new OceanAccountModel();
-        $oceanAccountModel->batchInsertOrUpdate($data);
+        $oceanAccountModel->chunkInsertOrUpdate($data, 20);
 
         if(!Functions::isLocal()){
             $this->syncCompany();
