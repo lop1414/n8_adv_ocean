@@ -29,6 +29,7 @@ class AdExtendController extends OceanController
         $this->curdService->selectQueryAfter(function(){
             foreach($this->curdService->responseData['list'] as $v){
                 $v->convert_callback_strategy;
+                $v->convert_callback_strategy_group;
             }
         });
     }
