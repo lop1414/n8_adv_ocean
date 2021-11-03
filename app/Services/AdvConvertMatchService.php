@@ -8,7 +8,6 @@ use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Models\ClickModel;
 use App\Common\Models\ConvertCallbackModel;
 use App\Common\Services\ConvertMatchService;
-use App\Common\Services\SystemApi\AdvOceanApiService;
 use App\Models\Ocean\OceanAdExtendModel;
 
 class AdvConvertMatchService extends ConvertMatchService
@@ -17,6 +16,7 @@ class AdvConvertMatchService extends ConvertMatchService
      * @param $click
      * @param $convert
      * @return array|mixed|void
+     * @throws \App\Common\Tools\CustomException
      * 获取转化回传规则
      */
     protected function getConvertCallbackStrategy($click, $convert){
@@ -37,6 +37,12 @@ class AdvConvertMatchService extends ConvertMatchService
         $adExtend = OceanAdExtendModel::find($adId);
         if(!empty($adExtend) && !empty($adExtend->convert_callback_strategy()->enable()->first())){
             $strategy = $adExtend->convert_callback_strategy['extends'];
+        }
+
+        // 配置策略组
+        if(!empty($adExtend) && !empty($adExtend->convert_callback_strategy_group()->enable()->first())){
+            $strategy = $this->getStrategyByGroup($adExtend->convert_callback_strategy_group['extends']['config'], $convert) ?? $strategy;
+
         }
 
         $convertStrategy = $strategy[$convertType] ?? ['time_range' => ConvertCallbackTimeEnum::NEVER];
