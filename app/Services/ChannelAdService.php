@@ -6,6 +6,7 @@ use App\Common\Enums\AdvAliasEnum;
 use App\Common\Enums\PlatformEnum;
 use App\Common\Helpers\Advs;
 use App\Common\Helpers\Functions;
+use App\Common\Models\ConvertCallbackStrategyGroupModel;
 use App\Common\Models\ConvertCallbackStrategyModel;
 use App\Common\Services\BaseService;
 use App\Common\Services\SystemApi\NoticeApiService;
@@ -209,8 +210,10 @@ class ChannelAdService extends BaseService
         foreach($ads as $ad){
             if(!empty($ad->ocean_ad_extends)){
                 $ad->convert_callback_strategy = ConvertCallbackStrategyModel::find($ad->ocean_ad_extends->convert_callback_strategy_id);
+                $ad->convert_callback_strategy_group = ConvertCallbackStrategyGroupModel::find($ad->ocean_ad_extends->convert_callback_strategy_group_id);
             }else{
                 $ad->convert_callback_strategy = null;
+                $ad->convert_callback_strategy_group = null;
             }
         }
 
