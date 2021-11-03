@@ -40,6 +40,7 @@ class AdExtendController extends OceanController
     public function readPrepare(){
         $this->curdService->findAfter(function(){
             $this->curdService->findData->convert_callback_strategy;
+            $this->curdService->findData->convert_callback_strategy_group;
         });
     }
 
