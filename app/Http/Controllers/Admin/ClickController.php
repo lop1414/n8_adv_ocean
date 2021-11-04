@@ -93,9 +93,7 @@ class ClickController extends AdminController
             }
         }
 
-        $item->click = $click;
-        $item->convert_type = $eventType;
-        $ret = $advConvertCallbackService->runCallback($click);
+        $ret = $advConvertCallbackService->runCallback($click, $eventType);
 
         return $this->ret($ret);
     }

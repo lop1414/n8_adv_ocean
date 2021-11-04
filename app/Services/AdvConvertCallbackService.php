@@ -82,12 +82,12 @@ class AdvConvertCallbackService extends ConvertCallbackService
     /**
      * @param $click
      * @param $convertType
-     * @param $props
+     * @param array $props
      * @return bool
      * @throws CustomException
      * 事件管理回传
      */
-    public function runAssetCallback($click,$convertType,$props){
+    public function runAssetCallback($click, $convertType, array $props = []){
 
         if(!empty($click->link)){
             $tmp = parse_url($click->link);
@@ -125,15 +125,16 @@ class AdvConvertCallbackService extends ConvertCallbackService
     }
 
 
+
     /**
      * @param $click
      * @param $convertType
-     * @param $props
+     * @param array $props
      * @return bool
      * @throws CustomException
      * 转化跟踪回传
      */
-    public function runCallback($click,$convertType,$props){
+    public function runCallback($click, $convertType, array $props = []){
 
         $param = ['event_type' => $convertType];
         if(!empty($click->link)){
