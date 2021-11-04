@@ -127,6 +127,22 @@ class ClickController extends AdminController
                 'link' => 'required',
             ]);
             $link = trim($request->post('link'));
+
+            $tmp = parse_url($link);
+            if(empty($tmp['query'])){
+                throw new CustomException([
+                    'code' => 'INVALID_LINK',
+                    'message' => '无效链接',
+                ]);
+            }
+            parse_str($tmp['query'], $query);
+            if(empty($query['clickid'])){
+                throw new CustomException([
+                    'code' => 'INVALID_LINK',
+                    'message' => '无效链接',
+                ]);
+            }
+
             $click = new ClickModel();
             $click->link = $link;
         }else{
