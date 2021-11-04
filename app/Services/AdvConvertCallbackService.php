@@ -38,34 +38,57 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
         if(empty($adInfo->extends->asset_ids)){
             // 转化跟踪回传
-            $this->runCallback($item);
+            $eventTypeMap =  $this->getEventTypeMap();
+            if(!isset($eventTypeMap[$item->convert_type])){
+                throw new CustomException([
+                    'code' => 'UNDEFINED_EVENT_TYPE_MAP',
+                    'message' => '未定义的转化跟踪回传类型映射',
+                    'log' => true,
+                    'data' => ['item' => $item],
+                ]);
+            }
+
+
+            $props = [];
+            if(!empty($item->extends->convert->amount)){
+                // 付费金额
+                $props = ['pay_amount' => $item->extends->convert->amount * 100];
+            }
+            $this->runCallback($item->click,$eventTypeMap[$item->convert_type],$props);
         }else{
             // 事件管理回传
-            $this->runAssetCallback($item);
+            $eventTypeMap = $this->getAssetEventType();
+            if(!isset($eventTypeMap[$item->convert_type])){
+                throw new CustomException([
+                    'code' => 'UNDEFINED_EVENT_TYPE_MAP',
+                    'message' => '未定义的事件管理回传类型映射',
+                    'log' => true,
+                    'data' => ['item' => $item],
+                ]);
+            }
+
+            $props = [];
+            if(!empty($item->extends->convert->amount)){
+                // 付费金额
+                $props = ['pay_amount' => $item->extends->convert->amount];
+            }
+            $this->runAssetCallback($item->click,$eventTypeMap[$item->convert_type],$props);
         }
 
         return true;
     }
 
+
     /**
-     * @param $item
+     * @param $click
+     * @param $convertType
+     * @param $props
      * @return bool
      * @throws CustomException
      * 事件管理回传
      */
-    public function runAssetCallback($item){
-        $eventTypeMap = $this->getAssetEventType();
-        if(!isset($eventTypeMap[$item->convert_type])){
-            throw new CustomException([
-                'code' => 'UNDEFINED_EVENT_TYPE_MAP',
-                'message' => '未定义的事件管理回传类型映射',
-                'log' => true,
-                'data' => ['item' => $item],
-            ]);
-        }
+    public function runAssetCallback($click,$convertType,$props){
 
-
-        $click = $item->click;
         if(!empty($click->link)){
             $tmp = parse_url($click->link);
             parse_str($tmp['query'], $query);
@@ -75,16 +98,15 @@ class AdvConvertCallbackService extends ConvertCallbackService
         }
 
         $param = [
-            'event_type' => $eventTypeMap[$item->convert_type],
+            'event_type' => $convertType,
             'context'   => [
                 'ad' => ['callback' => $callback,'match_type' => 0]
             ],
             'timestamp' => strtotime($click->convert_at) * 1000
         ];
 
-        // 付费金额
-        if(!empty($item->extends->convert->amount)){
-            $param['properties'] = ['pay_amount' => $item->extends->convert->amount];
+        if(!empty($props)){
+            $param['properties'] = $props;
         }
 
         $ret = $this->postCallback($param);
@@ -102,34 +124,26 @@ class AdvConvertCallbackService extends ConvertCallbackService
         return true;
     }
 
+
     /**
-     * @param $item
+     * @param $click
+     * @param $convertType
+     * @param $props
      * @return bool
      * @throws CustomException
      * 转化跟踪回传
      */
-    public function runCallback($item){
-        $eventTypeMap =  $this->getEventTypeMap();
-        if(!isset($eventTypeMap[$item->convert_type])){
-            throw new CustomException([
-                'code' => 'UNDEFINED_EVENT_TYPE_MAP',
-                'message' => '未定义的转化跟踪回传类型映射',
-                'log' => true,
-                'data' => ['item' => $item],
-            ]);
-        }
+    public function runCallback($click,$convertType,$props){
 
-        $click = $item->click;
-        $param = ['event_type' => $eventTypeMap[$item->convert_type]];
+        $param = ['event_type' => $convertType];
         if(!empty($click->link)){
             $param['link'] = $click->link;
         }else{
             $param['callback'] = $click->callback_param;
         }
 
-        // 付费金额
-        if(!empty($item->extends->convert->amount)){
-            $param['props'] = json_encode(['pay_amount' => $item->extends->convert->amount * 100]);
+        if(!empty($props)){
+            $param['props'] = json_encode($props);
         }
 
         $url = 'https://ad.oceanengine.com/track/activate/';
