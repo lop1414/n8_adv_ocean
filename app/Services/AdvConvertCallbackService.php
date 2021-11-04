@@ -72,7 +72,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
                 // 付费金额
                 $props = ['pay_amount' => $item->extends->convert->amount];
             }
-            $this->runAssetCallback($item->click,$eventTypeMap[$item->convert_type],$props);
+            $this->runAssetEventCallback($item->click,$eventTypeMap[$item->convert_type],$props);
         }
 
         return true;
@@ -87,7 +87,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
      * @throws CustomException
      * 事件管理回传
      */
-    public function runAssetCallback($click, $convertType, array $props = []){
+    public function runAssetEventCallback($click, $convertType, array $props = []){
 
         if(!empty($click->link)){
             $tmp = parse_url($click->link);
@@ -120,7 +120,6 @@ class AdvConvertCallbackService extends ConvertCallbackService
                 'data' => ['param' => $param, 'result' => $result],
             ]);
         }
-        var_dump('runAssetCallback',$param,$result);
         return true;
     }
 
@@ -163,7 +162,6 @@ class AdvConvertCallbackService extends ConvertCallbackService
                 ],
             ]);
         }
-        var_dump('runCallback',$param,$result);
 
         return true;
     }
