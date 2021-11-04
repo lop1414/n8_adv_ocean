@@ -260,6 +260,7 @@ $router->get('front/ocean/grant', 'Front\Ocean\IndexController@grant');
 
 // 测试
 $router->post('front/ocean/lop', 'Front\Ocean\IndexController@test');
+$router->post('test', 'TestController@test');
 
 // 素材统计
 $router->post('front/ocean/material_stat/get', 'Front\Ocean\MaterialStatController@get');

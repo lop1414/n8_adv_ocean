@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Tools\CustomException;
 use App\Common\Services\ConvertCallbackService;
+use App\Models\Ocean\OceanAdModel;
 
 class AdvConvertCallbackService extends ConvertCallbackService
 {
@@ -15,19 +16,6 @@ class AdvConvertCallbackService extends ConvertCallbackService
      * 回传
      */
     protected function callback($item){
-        $eventTypeMap = $this->getEventTypeMap();
-
-        if(!isset($eventTypeMap[$item->convert_type])){
-            // 无映射
-            throw new CustomException([
-                'code' => 'UNDEFINED_EVENT_TYPE_MAP',
-                'message' => '未定义的事件类型映射',
-                'log' => true,
-                'data' => [
-                    'item' => $item,
-                ],
-            ]);
-        }
 
         // 关联点击
         if(empty($item->click)){
@@ -41,42 +29,110 @@ class AdvConvertCallbackService extends ConvertCallbackService
             ]);
         }
 
-        $eventType = $eventTypeMap[$item->convert_type];
-
-        $props = [];
-        if(!empty($item->extends->amount)){
-            // 付费金额
-            $props = ['pay_amount' => $item->extends->amount * 100];
+        $adInfo = (new OceanAdModel())->where('id',$item->click->ad_id)->first();
+        if(empty($adInfo)){
+            throw new CustomException([
+                'code' => 'NOT_AD_INFO', 'message' => '未找到计划信息', 'log' => true, 'data' => ['item' => $item],
+            ]);
         }
 
-        $this->runCallback($item->click, $eventType, $props);
+        if(empty($adInfo->extends->asset_ids)){
+            // 转化跟踪回传
+            $this->runCallback($item);
+        }else{
+            // 事件管理回传
+            $this->runAssetCallback($item);
+        }
 
         return true;
     }
 
     /**
-     * @param $click
-     * @param $eventType
-     * @param array $props
+     * @param $item
      * @return bool
      * @throws CustomException
-     * 执行回传
+     * 事件管理回传
      */
-    public function runCallback($click, $eventType, $props = []){
-        $url = 'https://ad.oceanengine.com/track/activate/';
+    public function runAssetCallback($item){
+        $eventTypeMap = $this->getAssetEventType();
+        if(!isset($eventTypeMap[$item->convert_type])){
+            throw new CustomException([
+                'code' => 'UNDEFINED_EVENT_TYPE_MAP',
+                'message' => '未定义的事件管理回传类型映射',
+                'log' => true,
+                'data' => ['item' => $item],
+            ]);
+        }
+
+
+        $click = $item->click;
+        if(!empty($click->link)){
+            $tmp = parse_url($click->link);
+            parse_str($tmp['query'], $query);
+            $callback = $query['clickid'];
+        }else{
+            $callback = $click->callback_param;
+        }
+
         $param = [
-            'event_type' => $eventType
+            'event_type' => $eventTypeMap[$item->convert_type],
+            'context'   => [
+                'ad' => ['callback' => $callback,'match_type' => 0]
+            ],
+            'timestamp' => strtotime($click->convert_at) * 1000
         ];
+
+        // 付费金额
+        if(!empty($item->extends->convert->amount)){
+            $param['properties'] = ['pay_amount' => $item->extends->convert->amount];
+        }
+
+        $ret = $this->postCallback($param);
+        $result = json_decode($ret, true);
+
+        if(!isset($result['code']) || $result['code'] != 0){
+            throw new CustomException([
+                'code' => 'OCEAN_CONVERT_CALLBACK_ERROR',
+                'message' => '巨量转化回传事件失败',
+                'log' => true,
+                'data' => ['param' => $param, 'result' => $result],
+            ]);
+        }
+        var_dump('runAssetCallback',$param,$result);
+        return true;
+    }
+
+    /**
+     * @param $item
+     * @return bool
+     * @throws CustomException
+     * 转化跟踪回传
+     */
+    public function runCallback($item){
+        $eventTypeMap =  $this->getEventTypeMap();
+        if(!isset($eventTypeMap[$item->convert_type])){
+            throw new CustomException([
+                'code' => 'UNDEFINED_EVENT_TYPE_MAP',
+                'message' => '未定义的转化跟踪回传类型映射',
+                'log' => true,
+                'data' => ['item' => $item],
+            ]);
+        }
+
+        $click = $item->click;
+        $param = ['event_type' => $eventTypeMap[$item->convert_type]];
         if(!empty($click->link)){
             $param['link'] = $click->link;
         }else{
             $param['callback'] = $click->callback_param;
         }
 
-        if(!empty($props)){
-            $param['props'] = json_encode($props);
+        // 付费金额
+        if(!empty($item->extends->convert->amount)){
+            $param['props'] = json_encode(['pay_amount' => $item->extends->convert->amount * 100]);
         }
 
+        $url = 'https://ad.oceanengine.com/track/activate/';
         $ret = file_get_contents($url .'?'. http_build_query($param));
         $result = json_decode($ret, true);
 
@@ -92,13 +148,14 @@ class AdvConvertCallbackService extends ConvertCallbackService
                 ],
             ]);
         }
+        var_dump('runCallback',$param,$result);
 
         return true;
     }
 
     /**
      * @return array
-     * 获取事件映射
+     * 获取转化跟踪回传映射
      */
     public function getEventTypeMap(){
         return [
@@ -106,6 +163,19 @@ class AdvConvertCallbackService extends ConvertCallbackService
             ConvertTypeEnum::REGISTER => 0,
             ConvertTypeEnum::ADD_DESKTOP => 1,
             ConvertTypeEnum::PAY => 2,
+        ];
+    }
+
+    /**
+     * @return string[]
+     * 获取事件管理回传映射
+     */
+    public function getAssetEventType(){
+        return  [
+            ConvertTypeEnum::ACTIVATION => 'active',
+            ConvertTypeEnum::REGISTER => 'active',
+            ConvertTypeEnum::ADD_DESKTOP => 'active_register',
+            ConvertTypeEnum::PAY => 'active_pay',
         ];
     }
 
@@ -124,5 +194,38 @@ class AdvConvertCallbackService extends ConvertCallbackService
             'creative_id' => $click['creative_id'],
             'click_at' => $click['click_at'],
         ];
+    }
+
+    /**
+     * @param $data
+     * @return bool|string
+     * 事件管理回传post请求
+     */
+    public function postCallback($data){
+        $curl = curl_init();
+        $data = json_encode($data);
+
+        $privateKey = "hOXfVYVcFAYrqTjNtWyEwsZsQSKhHFFK";
+        $hash = hash("sha256", $data . $privateKey);
+        curl_setopt_array($curl, [
+            CURLOPT_URL => 'https://analytics.oceanengine.com/api/v2/conversion',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => [
+                "content-type: application/json",
+//                "x-signature: " . $hash
+            ]
+        ]);
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return $response;
     }
 }
