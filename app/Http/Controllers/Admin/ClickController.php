@@ -122,36 +122,23 @@ class ClickController extends AdminController
             ]);
         }
 
+        $datetime = date('Y-m-d H:i:s', strtotime("-24 hours"));
         if($landingType == OceanLandingTypeEnum::LINK){
             $this->validRule($request->post(), [
                 'link' => 'required',
             ]);
             $link = trim($request->post('link'));
 
-            $tmp = parse_url($link);
-            if(empty($tmp['query'])){
-                throw new CustomException([
-                    'code' => 'INVALID_LINK',
-                    'message' => '无效链接',
-                ]);
-            }
-            parse_str($tmp['query'], $query);
-            if(empty($query['clickid'])){
-                throw new CustomException([
-                    'code' => 'INVALID_LINK',
-                    'message' => '无效链接',
-                ]);
-            }
-
-            $click = new ClickModel();
-            $click->link = $link;
+            $click = (new ClickModel())
+                ->where('click_at', '>', $datetime)
+                ->where('link', 'like',"{$link}%")
+                ->orderBy('click_at','desc')
+                ->first();;
         }else{
             $this->validRule($request->post(), [
                 'channel_id' => 'required',
             ]);
             $channelId = trim($request->post('channel_id'));
-
-            $datetime = date('Y-m-d H:i:s', strtotime("-24 hours"));
 
             $clickModel = new ClickModel();
             $click = $clickModel
