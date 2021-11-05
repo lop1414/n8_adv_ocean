@@ -104,6 +104,12 @@ class AdvClickService extends ClickService
             if($data['link'] == base64_encode(base64_decode($data['link']))){
                 $data['link'] = base64_decode($data['link']);
             }
+            $tmp = parse_url($data['link']);
+            if(!empty($tmp['query'])){
+                parse_str($tmp['query'], $query);
+                $data['ad_id'] = $query['adid'] ?? '';
+                $data['creative_id'] = $query['creativeid'] ?? '';
+            }
         }
 
         $data['click_at'] = $clickAt;
