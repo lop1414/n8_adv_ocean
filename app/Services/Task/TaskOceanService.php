@@ -61,7 +61,7 @@ class TaskOceanService extends TaskService
             $failResult = $failSubTask->fail_data['data']['result'] ?? [];
             if($this->oceanToolService->sdk->isNetworkError($failResult)){
                 // 网络错误
-                //$this->updateReWaitingStatus($failSubTask);
+                $this->updateReWaitingStatus($failSubTask);
             }elseif($this->oceanToolService->sdk->isVideoNotExist($failResult)){
                 // 视频不存在
                 $param = json_decode($failSubTask->fail_data['data']['param'], true);
