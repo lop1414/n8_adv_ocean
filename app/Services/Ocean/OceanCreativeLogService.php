@@ -60,6 +60,7 @@ class OceanCreativeLogService extends OceanService
                 OceanCreativeStatusEnum::CREATIVE_STATUS_ADVERTISER_BUDGET_EXCEED,
                 OceanCreativeStatusEnum::CREATIVE_STATUS_AUDIT_DENY,
                 OceanCreativeStatusEnum::CREATIVE_STATUS_AD_AUDIT_DENY,
+                OceanCreativeStatusEnum::CREATIVE_STATUS_DELETE,
             ];
 
             if(in_array($oceanCreativeLog->after_status, $noticeCreativeStatus)){
