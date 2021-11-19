@@ -130,7 +130,7 @@ class AdvClickService extends ClickService
         $clickModel->ad_id = $data['ad_id'] ?? '';
         $clickModel->creative_id = $data['creative_id'] ?? '';
         $clickModel->request_id = $data['request_id'] ?? '';
-        $clickModel->click_id = $data['click_id'] ?? '';
+//        $clickModel->adv_click_id = $data['adv_click_id'] ?? '';
         $clickModel->channel_id = $data['channel_id'] ?? 0;
         $clickModel->creative_type = $data['creative_type'] ?? '';
         $clickModel->creative_site = $data['creative_site'] ?? '';
