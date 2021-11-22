@@ -68,9 +68,6 @@ class OceanMaterialStatService extends OceanService
         ";
         $items = DB::select($sql);
 
-        $day1 = date('Y-m-d 00:00:00', strtotime('-1 days'));
-        $day2 = date('Y-m-d 00:00:00', strtotime('-2 days'));
-        $day3 = date('Y-m-d 00:00:00', strtotime('-3 days'));
         $day7 = date('Y-m-d 00:00:00', strtotime('-7 days'));
         $day30 = date('Y-m-d 00:00:00', strtotime('-30 days'));
         $today = date('Y-m-d 00:00:00', strtotime('today'));
@@ -128,9 +125,6 @@ class OceanMaterialStatService extends OceanService
             'creative_day_7' => $creativeDay7,
             'creative_day_30' => $creativeDay30,
             'creative_running_today' => $creativeRunningToday,
-            'report_day_1' => $this->getMaterialReport($materialId, $day1),
-            'report_day_2' => $this->getMaterialReport($materialId, $day2),
-            'report_day_3' => $this->getMaterialReport($materialId, $day3),
             'report_day_7' => $this->getMaterialReport($materialId, $day7),
             'report_day_30' => $this->getMaterialReport($materialId, $day30),
         ];
