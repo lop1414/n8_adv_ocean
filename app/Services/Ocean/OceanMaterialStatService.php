@@ -220,4 +220,92 @@ class OceanMaterialStatService extends OceanService
 
         return $n8MaterialIds;
     }
+
+    /**
+     * @param $param
+     * @return array
+     * @throws CustomException
+     * 保护素材
+     */
+    public function protect($param){
+        $this->validRule($param, [
+            'material_type' => 'required',
+            'protect_cost_day_1' => 'required|integer',
+            'protect_cost_day_2' => 'required|integer',
+        ]);
+
+        Functions::hasEnum(MaterialTypeEnums::class, $param['material_type']);
+
+        $day1 = date('Y-m-d', strtotime('-1 days'));
+        $day2 = date('Y-m-d', strtotime('-2 days'));
+        $day3 = date('Y-m-d', strtotime('-3 days'));
+
+        $hour = date('H');
+
+        if($hour >= 10){
+            $timeRangeDay1 = [
+                "{$day1} 00:00:00",
+                "{$day1} 23:59:59",
+            ];
+
+            $timeRangeDay2 = [
+                "{$day2} 00:00:00",
+                "{$day1} 23:59:59",
+            ];
+        }else{
+            $timeRangeDay1 = [
+                "{$day2} 00:00:00",
+                "{$day2} 23:59:59",
+            ];
+
+            $timeRangeDay2 = [
+                "{$day3} 00:00:00",
+                "{$day2} 23:59:59",
+            ];
+        }
+
+
+        $protectDay1 = $this->getProtectMaterialIds($param['material_type'], $param['protect_cost_day_1'], $timeRangeDay1);
+
+        $protectDay2 = $this->getProtectMaterialIds($param['material_type'], $param['protect_cost_day_2'], $timeRangeDay2);
+
+        $data = array_unique(array_merge($protectDay1, $protectDay2));
+
+        return $data;
+    }
+
+    /**
+     * @param $materialType
+     * @param $protectCost
+     * @param $timeRange
+     * @return array
+     * 获取保护素材ids
+     */
+    public function getProtectMaterialIds($materialType, $protectCost, $timeRange){
+        // 元转分
+        $protectCost *= 100;
+
+        $sql = "SELECT
+                ocean_material_creatives.n8_material_id,
+                SUM(ocean_material_reports.cost) cost
+            FROM
+                ocean_material_reports
+            LEFT JOIN ocean_material_creatives ON ocean_material_reports.material_id = ocean_material_creatives.material_id
+            WHERE
+                ocean_material_reports.stat_datetime BETWEEN '{$timeRange[0]}' AND '{$timeRange[1]}'
+            AND ocean_material_creatives.material_type = '{$materialType}'
+            AND ocean_material_creatives.n8_material_id > 0
+            GROUP BY
+                ocean_material_creatives.n8_material_id
+            HAVING
+                cost > {$protectCost}";
+        $items = DB::select($sql);
+
+        $n8MaterialIds = [];
+        foreach($items as $item){
+            $n8MaterialIds[] = $item->n8_material_id;
+        }
+
+        return $n8MaterialIds;
+    }
 }

@@ -45,4 +45,19 @@ class MaterialStatController extends FrontController
 
         return $this->success($data);
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \App\Common\Tools\CustomException
+     * 保护素材
+     */
+    public function protect(Request $request){
+        $requestData = $request->post();
+
+        $oceanMaterialStatService = new OceanMaterialStatService();
+        $data = $oceanMaterialStatService->protect($requestData);
+
+        return $this->success($data);
+    }
 }

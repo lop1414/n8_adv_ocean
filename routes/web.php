@@ -266,3 +266,4 @@ $router->post('test', 'TestController@test');
 // 素材统计
 $router->post('front/ocean/material_stat/get', 'Front\Ocean\MaterialStatController@get');
 $router->post('front/ocean/material_stat/newest', 'Front\Ocean\MaterialStatController@newest');
+$router->post('front/ocean/material_stat/protect', 'Front\Ocean\MaterialStatController@protect');
