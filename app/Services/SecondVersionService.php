@@ -308,16 +308,18 @@ class SecondVersionService extends BaseService
             ->table('ad_stats')
             ->leftJoin('ad_infos As i','i.ad_id','=','ad_stats.ad_id')
             ->select(DB::raw('ad_stats.*'),'i.account_id')
-            ->where('ad_stats.date','>= ',$startDate)
+            ->where('ad_stats.date','>=',$startDate)
             ->where('ad_stats.date','<',$endDate)
             ->where('ad_stats.date','!=','0000-00-00')
             ->where('ad_stats.adv_alias','JRTT');
+
+        echo "共".$db->count()."\n";
 
         $lastId = 0;
         do{
             $list = $db
                 ->where('ad_stats.id','>',$lastId)
-                ->limit(10)
+                ->limit(1000)
                 ->get();
 
             $data = [];
@@ -335,7 +337,6 @@ class SecondVersionService extends BaseService
                     'convert'       => $item->convert,
                     'extends'       => json_encode(['source' => 'second_version'])
                 ];
-                echo "\r".$lastId;
             }
 
             (new OceanCreativeReportModel())->chunkInsertOrUpdate($data);
@@ -354,15 +355,16 @@ class SecondVersionService extends BaseService
             ->table('material_stats')
             ->leftJoin('ad_infos As i','i.ad_id','=','material_stats.ad_id')
             ->select(DB::raw('material_stats.*'),'i.account_id')
-            ->where('material_stats.date','>= ',$startDate)
+            ->where('material_stats.date','>=',$startDate)
             ->where('material_stats.date','<',$endDate)
             ->where('material_stats.adv_alias','JRTT');
+        echo "共".$db->count()."\n";
 
         $lastId = 0;
         do{
             $list = $db
                 ->where('material_stats.id','>',$lastId)
-                ->limit(10)
+                ->limit(1000)
                 ->get();
 
             $data = [];
@@ -380,7 +382,6 @@ class SecondVersionService extends BaseService
                     'convert'       => $item->convert,
                     'extends'       => json_encode(['source' => 'second_version'])
                 ];
-                echo "\r".$lastId;
             }
 
             (new OceanMaterialReportModel())->chunkInsertOrUpdate($data);
