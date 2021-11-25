@@ -24,6 +24,7 @@ use App\Console\Commands\Ocean\Report\OceanSyncMaterialReportCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\SyncChannelAdCommand;
+use App\Console\Commands\SyncSecondVersionCostCommand;
 use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
 use App\Console\Commands\Task\TaskOceanAdUpdateCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
@@ -93,6 +94,8 @@ class Kernel extends ConsoleKernel
 
         // 测试
         TestCommand::class,
+        //同步二版消耗
+        SyncSecondVersionCostCommand::class
     ];
 
     /**
