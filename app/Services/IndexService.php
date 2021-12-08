@@ -272,11 +272,13 @@ class IndexService extends BaseService
             'run_accounts' => 0,
             'run_ads' => 0,
             'run_creatives' => 0,
+            'run_materials' => 0,
             'created_ads' => 0,
             'created_creatives' => 0,
             'has_cost_accounts' => 0,
             'has_cost_ads' => 0,
             'has_cost_creatives' => 0,
+            'has_cost_materials' => 0,
         ];
 
         // 映射
