@@ -43,6 +43,7 @@ class IndexService extends BaseService
             LEFT JOIN ocean_accounts ON ocean_ads.account_id = ocean_accounts.account_id
             WHERE
                 ocean_ads.`status` = '{$okStatus}'
+                AND ocean_ads.ad_modify_time >= '{$monthAgo}'
                 AND ocean_accounts.admin_id > 0
                 AND (
                     ocean_accounts.account_id IN (
@@ -79,6 +80,7 @@ class IndexService extends BaseService
             LEFT JOIN ocean_accounts ON ocean_ads.account_id = ocean_accounts.account_id
             WHERE
                 ocean_ads.`status` = '{$okStatus}'
+                AND ocean_ads.ad_modify_time >= '{$monthAgo}'
                 AND ocean_accounts.admin_id > 0
                 AND (
                     ocean_accounts.account_id IN (
@@ -120,7 +122,7 @@ class IndexService extends BaseService
             WHERE
                 ocean_creatives.`status` = '{$creativeOkStatus}'
                 AND ocean_ads.`status` = '{$okStatus}'
-                AND ocean_creatives.creative_modify_time > '{$monthAgo}'
+                AND (ocean_ads.ad_modify_time >= '{$monthAgo}' OR ocean_creatives.creative_modify_time >= '{$monthAgo}')
                 AND ocean_accounts.admin_id > 0
                 AND (
                     ocean_accounts.account_id IN (
