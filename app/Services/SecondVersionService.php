@@ -9,7 +9,10 @@ use App\Common\Services\ErrorLogService;
 use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountModel;
+use App\Models\Ocean\Report\OceanCreativeReportModel;
+use App\Models\Ocean\Report\OceanMaterialReportModel;
 use App\Services\Ocean\OceanService;
+use Illuminate\Support\Facades\DB;
 
 class SecondVersionService extends BaseService
 {
@@ -293,5 +296,95 @@ class SecondVersionService extends BaseService
         }
 
         return true;
+    }
+
+
+    /**
+     * 同步创意消耗
+     */
+    public function syncJrttCreativeCost($startDate,$endDate){
+        echo "同步创意消耗 ($startDate ~ $endDate)\n";
+        $db = DB::connection('second_version_mysql')
+            ->table('ad_stats')
+            ->leftJoin('ad_infos As i','i.ad_id','=','ad_stats.ad_id')
+            ->select(DB::raw('ad_stats.*'),'i.account_id')
+            ->where('ad_stats.date','>=',$startDate)
+            ->where('ad_stats.date','<',$endDate)
+            ->where('ad_stats.date','!=','0000-00-00')
+            ->where('ad_stats.adv_alias','JRTT');
+
+        echo "共".$db->count()."\n";
+
+        $lastId = 0;
+        do{
+            $list = $db
+                ->where('ad_stats.id','>',$lastId)
+                ->limit(1000)
+                ->get();
+
+            $data = [];
+            foreach ($list as $item){
+                $lastId = $item->id;
+                $data[] = [
+                    'account_id'    => $item->account_id,
+                    'campaign_id'   => '',
+                    'ad_id'         => $item->ad_id,
+                    'creative_id'   => $item->creative_id,
+                    'stat_datetime' => date('Y-m-d H:i:s',strtotime("+{$item->hour} hours",strtotime($item->date))),
+                    'cost'          => $item->cost,
+                    'show'          => $item->show_count,
+                    'click'         => $item->click_count,
+                    'convert'       => $item->convert,
+                    'extends'       => json_encode(['source' => 'second_version'])
+                ];
+            }
+
+            (new OceanCreativeReportModel())->chunkInsertOrUpdate($data);
+        }while(!$list->isEmpty());
+
+    }
+
+
+    /**
+     * 同步素材消耗
+     */
+    public function syncJrttMaterialCost($startDate,$endDate){
+        echo "同步素材消耗 ($startDate ~ $endDate)\n";
+
+        $db = DB::connection('second_version_mysql')
+            ->table('material_stats')
+            ->leftJoin('ad_infos As i','i.ad_id','=','material_stats.ad_id')
+            ->select(DB::raw('material_stats.*'),'i.account_id')
+            ->where('material_stats.date','>=',$startDate)
+            ->where('material_stats.date','<',$endDate)
+            ->where('material_stats.adv_alias','JRTT');
+        echo "共".$db->count()."\n";
+
+        $lastId = 0;
+        do{
+            $list = $db
+                ->where('material_stats.id','>',$lastId)
+                ->limit(1000)
+                ->get();
+
+            $data = [];
+            foreach ($list as $item){
+                $lastId = $item->id;
+                $data[] = [
+                    'account_id'    => $item->account_id,
+                    'campaign_id'   => '',
+                    'ad_id'         => $item->ad_id,
+                    'material_id'   => $item->material_id,
+                    'stat_datetime' => date('Y-m-d H:i:s',strtotime($item->date)),
+                    'cost'          => $item->cost,
+                    'show'          => $item->show_count,
+                    'click'         => $item->click_count,
+                    'convert'       => $item->convert,
+                    'extends'       => json_encode(['source' => 'second_version'])
+                ];
+            }
+
+            (new OceanMaterialReportModel())->chunkInsertOrUpdate($data);
+        }while(!$list->isEmpty());
     }
 }
