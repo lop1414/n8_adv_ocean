@@ -30,6 +30,6 @@ class IndexController extends AdminController
         $indexService = new IndexService();
         $data = $indexService->getAdDashboard($requestData);
 
-        return $this->success($data);
+        return $this->successWithFix($data);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Common\Helpers\Functions;
 use App\Common\Services\BaseService;
 use App\Common\Services\SystemApi\CenterApiService;
 use App\Enums\Ocean\OceanAdStatusEnum;
@@ -35,6 +36,14 @@ class IndexService extends BaseService
         $okStatus = OceanAdStatusEnum::AD_STATUS_DELIVERY_OK;
         $deleteStatus = OceanAdStatusEnum::AD_STATUS_DELETE;
 
+        $adminUserInfo = Functions::getGlobalData('admin_user_info');
+
+        $where = ' 1 ';
+        if(!$adminUserInfo['is_admin']){
+            $childrenAdminIdsStr = implode(",", $adminUserInfo['children_admin_ids']);
+            $where .= " AND ocean_accounts.admin_id IN ({$childrenAdminIdsStr})";
+        }
+
         $result = [];
 
         // 在跑账户
@@ -46,7 +55,8 @@ class IndexService extends BaseService
                 ocean_ads
             LEFT JOIN ocean_accounts ON ocean_ads.account_id = ocean_accounts.account_id
             WHERE
-                ocean_ads.`status` = '{$okStatus}'
+                {$where}
+                AND ocean_ads.`status` = '{$okStatus}'
                 AND ocean_ads.ad_modify_time >= '{$monthAgo}'
                 AND ocean_accounts.admin_id > 0
                 AND (
@@ -84,7 +94,8 @@ class IndexService extends BaseService
                 ocean_ads
             LEFT JOIN ocean_accounts ON ocean_ads.account_id = ocean_accounts.account_id
             WHERE
-                ocean_ads.`status` = '{$okStatus}'
+                {$where}
+                AND ocean_ads.`status` = '{$okStatus}'
                 AND ocean_ads.ad_modify_time >= '{$monthAgo}'
                 AND ocean_accounts.admin_id > 0
                 AND (
@@ -125,7 +136,8 @@ class IndexService extends BaseService
             LEFT JOIN ocean_ads ON ocean_creatives.ad_id = ocean_ads.id
             LEFT JOIN ocean_accounts ON ocean_creatives.account_id = ocean_accounts.account_id
             WHERE
-                ocean_creatives.`status` = '{$creativeOkStatus}'
+                {$where}
+                AND ocean_creatives.`status` = '{$creativeOkStatus}'
                 AND ocean_ads.`status` = '{$okStatus}'
                 AND (ocean_ads.ad_modify_time >= '{$monthAgo}' OR ocean_creatives.creative_modify_time >= '{$monthAgo}')
                 AND ocean_accounts.admin_id > 0
@@ -168,7 +180,8 @@ class IndexService extends BaseService
             LEFT JOIN ocean_accounts ON ocean_creatives.account_id = ocean_accounts.account_id
             LEFT JOIN ocean_material_creatives ON ocean_creatives.id = ocean_material_creatives.creative_id
             WHERE
-                ocean_creatives.`status` = '{$creativeOkStatus}'
+                {$where}
+                AND ocean_creatives.`status` = '{$creativeOkStatus}'
                 AND ocean_ads.`status` = '{$okStatus}'
                 AND (ocean_ads.ad_modify_time >= '{$monthAgo}' OR ocean_creatives.creative_modify_time >= '{$monthAgo}')
                 AND ocean_material_creatives.n8_material_id > 0
@@ -209,8 +222,8 @@ class IndexService extends BaseService
                 ocean_ads
             LEFT JOIN ocean_accounts ON ocean_ads.account_id = ocean_accounts.account_id
             WHERE
-                ocean_ads.ad_create_time BETWEEN '{$date} 00:00:00'
-            AND '{$date} 23:59:59'
+                {$where}
+                AND ocean_ads.ad_create_time BETWEEN '{$date} 00:00:00' AND '{$date} 23:59:59'
             /*AND ocean_ads.`status` != '{$deleteStatus}'*/
             GROUP BY
                 ocean_accounts.admin_id
@@ -229,8 +242,8 @@ class IndexService extends BaseService
                 ocean_creatives
             LEFT JOIN ocean_accounts ON ocean_creatives.account_id = ocean_accounts.account_id
             WHERE
-                ocean_creatives.creative_create_time BETWEEN '{$date} 00:00:00'
-            AND '{$date} 23:59:59'
+                {$where}
+                AND ocean_creatives.creative_create_time BETWEEN '{$date} 00:00:00' AND '{$date} 23:59:59'
             /*AND ocean_creatives.`status` != '{$creativeDeleteStatus}'*/
             GROUP BY
                 ocean_accounts.admin_id
@@ -258,6 +271,8 @@ class IndexService extends BaseService
                         account_id
                 ) report
             LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
+            WHERE 
+                {$where}
             GROUP BY
                 ocean_accounts.admin_id
         ";
@@ -284,6 +299,8 @@ class IndexService extends BaseService
                         ad_id
                 ) report
             LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
+            WHERE
+                {$where}
             GROUP BY
                 ocean_accounts.admin_id
         ";
@@ -310,6 +327,8 @@ class IndexService extends BaseService
                         creative_id
                 ) report
             LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
+            WHERE
+                {$where}
             GROUP BY
                 ocean_accounts.admin_id
         ";
@@ -337,7 +356,9 @@ class IndexService extends BaseService
                 ) report
             LEFT JOIN ocean_material_creatives ON report.creative_id = ocean_material_creatives.creative_id
             LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
-            WHERE ocean_material_creatives.n8_material_id > 0
+            WHERE 
+                {$where}
+                AND ocean_material_creatives.n8_material_id > 0
             GROUP BY
                 ocean_accounts.admin_id
         ";
@@ -363,6 +384,8 @@ class IndexService extends BaseService
                         account_id
                 ) report
             LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
+            WHERE 
+                {$where}
             GROUP BY
                 ocean_accounts.admin_id
         ";
