@@ -34,6 +34,7 @@ class IndexService extends BaseService
 
         $result = [];
 
+        // 在跑账户
         $sql = "
             SELECT
                 ocean_accounts.admin_id,
@@ -71,6 +72,7 @@ class IndexService extends BaseService
         ";
         $result['run_accounts'] = array_map('get_object_vars', DB::select($sql));
 
+        // 在跑计划
         $sql = "
             SELECT
                 ocean_accounts.admin_id,
@@ -107,9 +109,9 @@ class IndexService extends BaseService
             ORDER BY
                 run_ads DESC
         ";
-
         $result['run_ads'] = array_map('get_object_vars', DB::select($sql));
 
+        // 在跑创意
         $creativeOkStatus = OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK;
         $sql = "
             SELECT
@@ -149,9 +151,53 @@ class IndexService extends BaseService
             ORDER BY
                 run_creatives DESC
         ";
-
         $result['run_creatives'] = array_map('get_object_vars', DB::select($sql));
 
+        // 在跑素材
+        $creativeOkStatus = OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK;
+        $sql = "
+            SELECT
+                ocean_accounts.admin_id,
+                count(DISTINCT ocean_material_creatives.n8_material_id) run_materials
+            FROM
+                ocean_creatives
+            LEFT JOIN ocean_ads ON ocean_creatives.ad_id = ocean_ads.id
+            LEFT JOIN ocean_accounts ON ocean_creatives.account_id = ocean_accounts.account_id
+            LEFT JOIN ocean_material_creatives ON ocean_creatives.id = ocean_material_creatives.creative_id
+            WHERE
+                ocean_creatives.`status` = '{$creativeOkStatus}'
+                AND ocean_ads.`status` = '{$okStatus}'
+                AND (ocean_ads.ad_modify_time >= '{$monthAgo}' OR ocean_creatives.creative_modify_time >= '{$monthAgo}')
+                AND ocean_material_creatives.n8_material_id > 0
+                AND ocean_accounts.admin_id > 0
+                AND (
+                    ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_funds
+                        WHERE
+                            valid_balance > 0
+                    )
+                    OR ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_reports
+                        WHERE
+                            stat_datetime BETWEEN '{$date} 00:00:00'
+                        AND '{$date} 23:59:59'
+                        AND cost > 0
+                    )
+                )
+            GROUP BY
+                ocean_accounts.admin_id
+            ORDER BY
+                run_materials DESC
+        ";
+        $result['run_materials'] = array_map('get_object_vars', DB::select($sql));
+
+        // 新建计划
         $sql = "
             SELECT
                 ocean_accounts.admin_id,
@@ -170,6 +216,7 @@ class IndexService extends BaseService
         ";
         $result['created_ads'] = array_map('get_object_vars', DB::select($sql));
 
+        // 新建创意
         $creativeDeleteStatus = OceanCreativeStatusEnum::CREATIVE_STATUS_DELETE;
         $sql = "
             SELECT
@@ -189,6 +236,7 @@ class IndexService extends BaseService
         ";
         $result['created_creatives'] = array_map('get_object_vars', DB::select($sql));
 
+        // 有消耗账户
         $sql = "
             SELECT
                 ocean_accounts.admin_id,
@@ -212,6 +260,7 @@ class IndexService extends BaseService
         ";
         $result['has_cost_accounts'] = array_map('get_object_vars', DB::select($sql));
 
+        // 有消耗计划
         $sql = "
             SELECT
                 ocean_accounts.admin_id,
@@ -237,6 +286,7 @@ class IndexService extends BaseService
         ";
         $result['has_cost_ads'] = array_map('get_object_vars', DB::select($sql));
 
+        // 有消耗创意
         $sql = "
             SELECT
                 ocean_accounts.admin_id,
@@ -261,6 +311,34 @@ class IndexService extends BaseService
                 ocean_accounts.admin_id
         ";
         $result['has_cost_creatives'] = array_map('get_object_vars', DB::select($sql));
+
+        // 有消耗素材
+        $sql = "
+            SELECT
+                ocean_accounts.admin_id,
+                COUNT(DISTINCT ocean_material_creatives.n8_material_id) has_cost_materials
+            FROM
+                (
+                    SELECT
+                        account_id,
+                        creative_id
+                    FROM
+                        ocean_creative_reports
+                    WHERE
+                        stat_datetime BETWEEN '{$date} 00:00:00'
+                    AND '{$date} 23:59:59'
+                    AND cost > 0
+                    GROUP BY
+                        account_id,
+                        creative_id
+                ) report
+            LEFT JOIN ocean_material_creatives ON report.creative_id = ocean_material_creatives.creative_id
+            LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
+            WHERE ocean_material_creatives.n8_material_id > 0
+            GROUP BY
+                ocean_accounts.admin_id
+        ";
+        $result['has_cost_materials'] = array_map('get_object_vars', DB::select($sql));
 
         // 管理员映射
         $centerApiService = new CenterApiService();
