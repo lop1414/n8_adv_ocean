@@ -29,6 +29,9 @@ class IndexService extends BaseService
 
         $monthAgo = date('Y-m-d 00:00:00', strtotime("-1 months"));
 
+        $orderBy = $param['order_by'] ?? 'cost';
+        $orderType = $param['order_type'] ?? 'desc';
+
         $okStatus = OceanAdStatusEnum::AD_STATUS_DELIVERY_OK;
         $deleteStatus = OceanAdStatusEnum::AD_STATUS_DELETE;
 
@@ -404,6 +407,18 @@ class IndexService extends BaseService
         }
 
         $data = array_column($map, null);
+
+        // 集合
+        $collect = collect($data);
+
+        // 排序
+        if(strtoupper($orderType) == 'ASC'){
+            $collect = $collect->sortBy($orderBy);
+        }else{
+            $collect = $collect->sortByDesc($orderBy);
+        }
+
+        $data = $collect->values()->toArray();
 
         return [
             'items' => $data,
