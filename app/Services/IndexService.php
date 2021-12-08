@@ -340,6 +340,31 @@ class IndexService extends BaseService
         ";
         $result['has_cost_materials'] = array_map('get_object_vars', DB::select($sql));
 
+        // 消耗
+        $sql = "
+            SELECT
+                ocean_accounts.admin_id,
+                SUM(report.cost) cost
+            FROM
+                (
+                    SELECT
+                        account_id,
+                        SUM(ROUND(cost / 100, 2)) cost
+                    FROM
+                        ocean_creative_reports
+                    WHERE
+                        stat_datetime BETWEEN '{$date} 00:00:00'
+                    AND '{$date} 23:59:59'
+                    AND cost > 0
+                    GROUP BY
+                        account_id
+                ) report
+            LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
+            GROUP BY
+                ocean_accounts.admin_id
+        ";
+        $result['cost'] = array_map('get_object_vars', DB::select($sql));
+
         // 管理员映射
         $centerApiService = new CenterApiService();
         $adminUsers = $centerApiService->apiGetAdminUsers();
@@ -357,6 +382,7 @@ class IndexService extends BaseService
             'has_cost_ads' => 0,
             'has_cost_creatives' => 0,
             'has_cost_materials' => 0,
+            'cost' => 0,
         ];
 
         // 映射
