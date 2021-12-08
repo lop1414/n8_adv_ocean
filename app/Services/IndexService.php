@@ -373,7 +373,7 @@ class IndexService extends BaseService
                 (
                     SELECT
                         account_id,
-                        SUM(ROUND(cost / 100, 2)) cost
+                        SUM(cost) cost
                     FROM
                         ocean_creative_reports
                     WHERE
@@ -417,6 +417,11 @@ class IndexService extends BaseService
         $total['admin_name'] = '汇总';
         foreach($result as $k => $v){
             foreach($v as $kk => $vv){
+                // 单位
+                if($k == 'cost'){
+                    $vv[$k] = round($vv[$k] / 100, 2);
+                }
+
                 if(!isset($map[$vv['admin_id']])){
                     $map[$vv['admin_id']] = $default;
                 }
