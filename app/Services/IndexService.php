@@ -26,6 +26,9 @@ class IndexService extends BaseService
      */
     public function getAdDashboard($param){
         $date = $param['date'] ?? date('Y-m-d');
+
+        $monthAgo = date('Y-m-d 00:00:00', strtotime("-1 months"));
+
         $okStatus = OceanAdStatusEnum::AD_STATUS_DELIVERY_OK;
         $deleteStatus = OceanAdStatusEnum::AD_STATUS_DELETE;
 
@@ -112,9 +115,12 @@ class IndexService extends BaseService
                 count(DISTINCT ocean_creatives.id) run_creatives
             FROM
                 ocean_creatives
+            LEFT JOIN ocean_ads ON ocean_creatives.ad_id = ocean_ads.id
             LEFT JOIN ocean_accounts ON ocean_creatives.account_id = ocean_accounts.account_id
             WHERE
                 ocean_creatives.`status` = '{$creativeOkStatus}'
+                AND ocean_ads.`status` = '{$okStatus}'
+                AND ocean_creatives.creative_modify_time > '{$monthAgo}'
                 AND ocean_accounts.admin_id > 0
                 AND (
                     ocean_accounts.account_id IN (
