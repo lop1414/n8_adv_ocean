@@ -434,6 +434,75 @@ class IndexService extends BaseService
             }
         }
 
+        // 有消耗素材汇总
+        $sql = "
+            SELECT
+                COUNT(DISTINCT ocean_material_creatives.n8_material_id) has_cost_materials
+            FROM
+                (
+                    SELECT
+                        account_id,
+                        creative_id
+                    FROM
+                        ocean_creative_reports
+                    WHERE
+                        stat_datetime BETWEEN '{$date} 00:00:00'
+                    AND '{$date} 23:59:59'
+                    AND cost > 0
+                    GROUP BY
+                        account_id,
+                        creative_id
+                ) report
+            LEFT JOIN ocean_material_creatives ON report.creative_id = ocean_material_creatives.creative_id
+            LEFT JOIN ocean_accounts ON report.account_id = ocean_accounts.account_id
+            WHERE 
+                {$where}
+                AND ocean_material_creatives.n8_material_id > 0
+        ";
+        $ret = current(array_map('get_object_vars', DB::select($sql)));
+        $total['has_cost_materials'] = $ret['has_cost_materials'];
+
+        // 在跑素材汇总
+        $creativeOkStatus = OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK;
+        $sql = "
+            SELECT
+                count(DISTINCT ocean_material_creatives.n8_material_id) run_materials
+            FROM
+                ocean_creatives
+            LEFT JOIN ocean_ads ON ocean_creatives.ad_id = ocean_ads.id
+            LEFT JOIN ocean_accounts ON ocean_creatives.account_id = ocean_accounts.account_id
+            LEFT JOIN ocean_material_creatives ON ocean_creatives.id = ocean_material_creatives.creative_id
+            WHERE
+                {$where}
+                AND ocean_creatives.`status` = '{$creativeOkStatus}'
+                AND ocean_ads.`status` = '{$okStatus}'
+                AND (ocean_ads.ad_modify_time >= '{$monthAgo}' OR ocean_creatives.creative_modify_time >= '{$monthAgo}')
+                AND ocean_material_creatives.n8_material_id > 0
+                AND ocean_accounts.admin_id > 0
+                AND (
+                    ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_funds
+                        WHERE
+                            valid_balance > 0
+                    )
+                    OR ocean_accounts.account_id IN (
+                        SELECT
+                            account_id
+                        FROM
+                            ocean_account_reports
+                        WHERE
+                            stat_datetime BETWEEN '{$date} 00:00:00'
+                        AND '{$date} 23:59:59'
+                        AND cost > 0
+                    )
+                )
+        ";
+        $ret = current(array_map('get_object_vars', DB::select($sql)));
+        $total['run_materials'] = $ret['run_materials'];
+
         $data = array_column($map, null);
 
         // 集合
