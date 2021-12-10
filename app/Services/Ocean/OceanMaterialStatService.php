@@ -60,7 +60,7 @@ class OceanMaterialStatService extends OceanService
         }
 
         $sql = "SELECT omc.material_id,omc.creative_id,omc.n8_material_id,
-                oc.account_id,oc.ad_id,oc.status,oc.creative_create_time,
+                oc.account_id,oc.ad_id,oc.status,oc.creative_create_time,oc.creative_modify_time,
                 oa.admin_id
             FROM ocean_material_creatives omc
             LEFT JOIN ocean_creatives oc ON omc.creative_id = oc.id
@@ -102,7 +102,7 @@ class OceanMaterialStatService extends OceanService
                 $creativeDay30 += 1;
             }
 
-            if(/*$item->creative_create_time > $today &&*/ $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
+            if($item->creative_modify_time > $day7 && $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
                 $creativeRunningToday += 1;
 
                 if(!empty($item->admin_id) && !in_array($item->admin_id, $runningTodayAdminIds)){
