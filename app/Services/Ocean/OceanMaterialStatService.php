@@ -5,6 +5,7 @@ namespace App\Services\Ocean;
 use App\Common\Enums\MaterialTypeEnums;
 use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
+use App\Enums\Ocean\OceanAdStatusEnum;
 use App\Enums\Ocean\OceanCreativeStatusEnum;
 use App\Models\Ocean\OceanCreativeLogModel;
 use App\Models\Ocean\OceanMaterialCreativeModel;
@@ -61,9 +62,10 @@ class OceanMaterialStatService extends OceanService
 
         $sql = "SELECT omc.material_id,omc.creative_id,omc.n8_material_id,
                 oc.account_id,oc.ad_id,oc.status,oc.creative_create_time,oc.creative_modify_time,
-                oa.admin_id
+                oa.admin_id,ocean_ads.status ad_status
             FROM ocean_material_creatives omc
             LEFT JOIN ocean_creatives oc ON omc.creative_id = oc.id
+            LEFT JOIN ocean_ads ON oc.ad_id = ocean_ads.id
             LEFT JOIN ocean_accounts oa ON oa.account_id = oc.account_id
             WHERE omc.n8_material_id = {$n8MaterialId}
                  AND omc.material_type = '{$materialType}'
@@ -102,7 +104,11 @@ class OceanMaterialStatService extends OceanService
                 $creativeDay30 += 1;
             }
 
-            if($item->creative_modify_time > $day3 && $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
+            if(
+                $item->creative_modify_time > $day3 &&
+                $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK &&
+                $item->ad_status == OceanAdStatusEnum::AD_STATUS_DELIVERY_OK
+            ){
                 $creativeRunningToday += 1;
 
                 if(!empty($item->admin_id) && !in_array($item->admin_id, $runningTodayAdminIds)){
