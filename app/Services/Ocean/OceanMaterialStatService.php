@@ -60,9 +60,11 @@ class OceanMaterialStatService extends OceanService
         }
 
         $sql = "SELECT omc.material_id,omc.creative_id,omc.n8_material_id,
-                oc.account_id,oc.ad_id,oc.status,oc.creative_create_time
+                oc.account_id,oc.ad_id,oc.status,oc.creative_create_time,
+                oa.admin_id
             FROM ocean_material_creatives omc
             LEFT JOIN ocean_creatives oc ON omc.creative_id = oc.id
+            LEFT JOIN ocean_accounts oa ON oa.account_id = oc.account_id
             WHERE omc.n8_material_id = {$n8MaterialId}
                  AND omc.material_type = '{$materialType}'
         ";
@@ -74,6 +76,7 @@ class OceanMaterialStatService extends OceanService
 
         $materialId = '';
         $audit = $ok = $deny = $total = $creativeDay7 = $creativeDay30 = $creativeRunningToday = 0;
+        $runningTodayAdminIds = [];
         foreach($items as $item){
             $materialId = $item->material_id;
 
@@ -101,6 +104,10 @@ class OceanMaterialStatService extends OceanService
 
             if($item->creative_create_time > $today && $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
                 $creativeRunningToday += 1;
+
+                if(!empty($item->admin_id) && !in_array($item->admin_id, $runningTodayAdminIds)){
+                    $runningTodayAdminIds[] = $item->admin_id;
+                }
             }
 
             if($status == OceanCreativeStatusEnum::CREATIVE_STATUS_AUDIT){
@@ -127,6 +134,8 @@ class OceanMaterialStatService extends OceanService
             'creative_running_today' => $creativeRunningToday,
             'report_day_7' => $this->getMaterialReport($materialId, $day7),
             'report_day_30' => $this->getMaterialReport($materialId, $day30),
+            'running_today_admin_ids' => $runningTodayAdminIds,
+            'running_today_admin' => count($runningTodayAdminIds),
         ];
     }
 
