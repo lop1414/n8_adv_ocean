@@ -102,7 +102,7 @@ class OceanMaterialStatService extends OceanService
                 $creativeDay30 += 1;
             }
 
-            if($item->creative_create_time > $today && $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
+            if(/*$item->creative_create_time > $today &&*/ $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
                 $creativeRunningToday += 1;
 
                 if(!empty($item->admin_id) && !in_array($item->admin_id, $runningTodayAdminIds)){
