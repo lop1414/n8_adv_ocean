@@ -70,9 +70,9 @@ class OceanMaterialStatService extends OceanService
         ";
         $items = DB::select($sql);
 
+        $day3 = date('Y-m-d 00:00:00', strtotime('-3 days'));
         $day7 = date('Y-m-d 00:00:00', strtotime('-7 days'));
         $day30 = date('Y-m-d 00:00:00', strtotime('-30 days'));
-        $today = date('Y-m-d 00:00:00', strtotime('today'));
 
         $materialId = '';
         $audit = $ok = $deny = $total = $creativeDay7 = $creativeDay30 = $creativeRunningToday = 0;
@@ -102,7 +102,7 @@ class OceanMaterialStatService extends OceanService
                 $creativeDay30 += 1;
             }
 
-            if($item->creative_modify_time > $day7 && $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
+            if($item->creative_modify_time > $day3 && $originStatus == OceanCreativeStatusEnum::CREATIVE_STATUS_DELIVERY_OK){
                 $creativeRunningToday += 1;
 
                 if(!empty($item->admin_id) && !in_array($item->admin_id, $runningTodayAdminIds)){
