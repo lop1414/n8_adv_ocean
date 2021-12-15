@@ -301,17 +301,21 @@ class OceanMaterialStatService extends OceanService
         $protectCost *= 100;
 
         $sql = "SELECT
-                ocean_material_creatives.n8_material_id,
+                mc.n8_material_id,
                 SUM(ocean_material_reports.cost) cost
             FROM
                 ocean_material_reports
-            LEFT JOIN ocean_material_creatives ON ocean_material_reports.material_id = ocean_material_creatives.material_id
+            LEFT JOIN (
+                SELECT n8_material_id,material_id
+                FROM ocean_material_creatives 
+                WHERE material_type = '{$materialType}'
+                GROUP BY n8_material_id,material_id
+            ) mc ON ocean_material_reports.material_id = mc.material_id
             WHERE
                 ocean_material_reports.stat_datetime BETWEEN '{$timeRange[0]}' AND '{$timeRange[1]}'
-            AND ocean_material_creatives.material_type = '{$materialType}'
-            AND ocean_material_creatives.n8_material_id > 0
+            AND mc.n8_material_id > 0
             GROUP BY
-                ocean_material_creatives.n8_material_id
+                mc.n8_material_id
             HAVING
                 cost > {$protectCost}";
         $items = DB::select($sql);
