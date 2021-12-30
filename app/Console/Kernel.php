@@ -43,9 +43,6 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        // 二版
-        SyncJrttAccountCommand::class,
-
         // 任务重执行
         TaskReWaitingCommand::class,
 
@@ -94,8 +91,6 @@ class Kernel extends ConsoleKernel
 
         // 测试
         TestCommand::class,
-        //同步二版消耗
-        SyncSecondVersionCostCommand::class
     ];
 
     /**
@@ -106,9 +101,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // 二版
-        //$schedule->command('second_version:sync_jrtt_account')->cron('5 * * * *');
-
         // 任务重执行
         $schedule->command('task:re_waiting')->cron('* * * * *');
 
