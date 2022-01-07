@@ -91,7 +91,7 @@ class OceanCreativeService extends OceanService
         // 获取子账户组
         $accountGroup = $this->getSubAccountGroup($accountIds);
 
-        $pageSize = 500;
+        $pageSize = 100;
         foreach($accountGroup as $g){
             $items = $this->multiGetPageList($g, $filtering, $pageSize);
             Functions::consoleDump('count:'. count($items));
