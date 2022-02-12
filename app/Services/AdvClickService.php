@@ -125,6 +125,9 @@ class AdvClickService extends ClickService
     protected function create($data){
         $clickModel = new ClickModel();
 
+        $ua = $data['ua'] ?? '';
+        mb_strlen($ua) > 1000 && $ua = mb_substr($ua, 0, 1000);
+
         $clickModel->click_source = $data['click_source'] ?? '';
         $clickModel->campaign_id = $data['campaign_id'] ?? '';
         $clickModel->ad_id = $data['ad_id'] ?? '';
@@ -141,7 +144,7 @@ class AdvClickService extends ClickService
         $clickModel->oaid_md5 = $data['oaid_md5'] ?? '';
         $clickModel->os = $data['os'] ?? '';
         $clickModel->ip = $data['ip'] ?? '';
-        $clickModel->ua = $data['ua'] ?? '';
+        $clickModel->ua = $ua;
         $clickModel->click_at = $data['click_at'] ?? null;
         $clickModel->callback_param = $data['callback_param'] ?? '';
         $clickModel->model = $data['model'] ?? '';
