@@ -92,7 +92,8 @@ class AdvConvertMatchService extends ConvertMatchService
     protected function getMatchByBuilder($data){
         $builder = new ClickModel();
 
-        if(in_array( AdvClickSourceEnum::N8_TRANSFER, $this->clickSource) && count($this->clickSource) == 1){
+        $isTransfer = in_array( AdvClickSourceEnum::N8_TRANSFER, $this->clickSource) && count($this->clickSource) == 1;
+        if(!$isTransfer){
             $channelId = $data['n8_union_user']['channel_id'] ?? 0;
             if(!empty($channelId)){
                 $builder = $builder->whereRaw("
