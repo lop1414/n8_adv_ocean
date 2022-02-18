@@ -90,8 +90,15 @@ class ClickController extends AdminController
                 ]);
             }
         }
-
-        $ret = $advConvertCallbackService->runCallback($click, $eventType);
+        try{
+            $ret = $advConvertCallbackService->runCallback($click, $eventType);
+        }catch(\Exception $e){
+            if($e->getMessage() == 'Undefined index: clickid' && $landingType == OceanLandingTypeEnum::LINK){
+                return $this->fail('0','如果联调的是第三方落地页，需进入落地页点击下载按钮！！！');
+            }else{
+                throw $e;
+            }
+        }
 
         return $this->ret($ret);
     }
