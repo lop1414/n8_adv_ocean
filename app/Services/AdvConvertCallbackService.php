@@ -15,7 +15,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
      * @throws CustomException
      * 回传
      */
-    protected function callback($item){
+    public function callback($item){
 
         // 关联点击
         if(empty($item->click)){

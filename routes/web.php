@@ -113,6 +113,11 @@ $router->group([
         $router->post('callback', '\\App\Common\Controllers\Admin\ConvertCallbackController@callback');
     });
 
+    // 自定义转化回传
+    $router->group(['prefix' => 'custom_convert_callback'], function () use ($router) {
+        $router->post('create', '\\App\Common\Controllers\Admin\CustomConvertCallbackController@create');
+    });
+
     // 点击
     $router->group(['prefix' => 'click'], function () use ($router) {
         $router->post('select', 'Admin\ClickController@select');
