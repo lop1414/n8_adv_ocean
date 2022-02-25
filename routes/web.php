@@ -248,6 +248,11 @@ $router->group([
         $router->post('get', '\\App\Common\Controllers\Front\ConvertCallbackController@get');
     });
 
+    // 自定义转化回传
+    $router->group(['prefix' => 'custom_convert_callback'], function () use ($router) {
+        $router->post('get', '\\App\Common\Controllers\Front\CustomConvertCallbackController@get');
+    });
+
     // 渠道-计划
     $router->group(['prefix' => 'channel_ad'], function () use ($router) {
         $router->post('select', 'Front\ChannelAdController@select');
