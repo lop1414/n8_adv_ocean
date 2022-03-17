@@ -76,6 +76,7 @@ class AccountController extends OceanController
 
             foreach($this->curdService->responseData['list'] as $k => $v){
                 $this->curdService->responseData['list'][$k]['admin_name'] = isset($adminUserMap[$v->admin_id]) ? $adminUserMap[$v->admin_id]['name'] : '';
+                $this->curdService->responseData['list'][$k]['roi_callback_status'] = $v->extend->roi_callback_status ?? StatusEnum::DISABLE;
             }
         });
     }
@@ -162,5 +163,53 @@ class AccountController extends OceanController
         $builder->update(['admin_id' => $requestData['admin_id']]);
 
         return $this->success();
+    }
+
+
+
+
+
+    /**
+     * @param Request $request
+     * @return mixed
+     *  启用 roi回传
+     */
+    public function roiCallbackEnable(Request $request){
+        return $this->updateRoiCallbackStatus($request,StatusEnum::ENABLE);
+    }
+
+
+    /**
+     * @param Request $request
+     * @return mixed
+     *  启用 roi回传
+     */
+    public function roiCallbackDisable(Request $request){
+        return $this->updateRoiCallbackStatus($request,StatusEnum::DISABLE);
+    }
+
+
+    /**
+     * @param Request $request
+     * @param $status
+     * @return mixed
+     * 更新 roi回传状态
+     */
+    public function updateRoiCallbackStatus(Request $request,$status){
+        $requestData = $request->all();
+        // 查找
+        $model = $this->model->find($requestData['id']);
+
+
+        $extend = $model->extend;
+        $extend->roi_callback_status = $status;
+        $model->extend = $extend;
+
+        $ret = $model->save();
+
+        // 清除 model data
+        $ret && $this->clearModelData($requestData);
+
+        return $this->ret($ret);
     }
 }
