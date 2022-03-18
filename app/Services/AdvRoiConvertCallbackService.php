@@ -5,10 +5,12 @@ namespace App\Services;
 use App\Common\Enums\ConvertCallbackStatusEnum;
 use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Enums\ExecStatusEnum;
+use App\Common\Enums\StatusEnum;
 use App\Common\Models\ConvertCallbackModel;
 use App\Common\Services\ErrorLogService;
 use App\Common\Tools\CustomException;
 use App\Models\RoiConvertCallbackModel;
+use Illuminate\Support\Facades\DB;
 
 class AdvRoiConvertCallbackService extends AdvConvertCallbackService
 {
@@ -33,11 +35,17 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ConvertCallbackStatusEnum::CALLBACK_FAIL,
         ]);
 
+        $status = StatusEnum::ENABLE;
         $convertCallbacks = $convertCallbackModel
-            ->where('created_at', '>', $datetime)
-            ->where('exec_status', ExecStatusEnum::SUCCESS)
-            ->whereIn('convert_callback_status', $convertCallbackStatus)
-            ->whereIn('convert_type',['add_desktop','pay'])
+            ->select(DB::raw('convert_callbacks.*'))
+            ->leftJoin('clicks','convert_callbacks.click_id','=','clicks.id')
+            ->leftJoin('ocean_ads AS ad','clicks.ad_id','=','ad.id')
+            ->leftJoin('ocean_accounts','ad.account_id','=','ocean_accounts.account_id')
+            ->where('convert_callbacks.created_at', '>', $datetime)
+            ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
+            ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
+            ->whereIn('convert_callbacks.convert_type',['add_desktop','pay'])
+            ->whereRaw(DB::raw("JSON_EXTRACT(`ocean_accounts`.`extend`,'$.roi_callback_status') = '{$status}'"))
             ->get();
 
         return $convertCallbacks;
