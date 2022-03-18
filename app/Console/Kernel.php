@@ -22,6 +22,7 @@ use App\Console\Commands\Ocean\OceanSyncVideoCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncCreativeReportCommand;
 use App\Common\Console\Queue\QueueClickCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncMaterialReportCommand;
+use App\Console\Commands\RoiConvertCallbackCommand;
 use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\SyncChannelAdCommand;
@@ -83,6 +84,7 @@ class Kernel extends ConsoleKernel
 
         // 转化回传
         ConvertCallbackCommand::class,
+        RoiConvertCallbackCommand::class,
 
         // 自定义转化回传
         CustomConvertCallbackCommand::class,
@@ -131,6 +133,7 @@ class Kernel extends ConsoleKernel
 
         // 转化上报
         $schedule->command('convert_callback')->cron('* * * * *');
+        $schedule->command('roi_convert_callback')->cron('* * * * *');
 
         // 自定义转化上报
         $schedule->command('custom_convert_callback')->cron('* * * * *');

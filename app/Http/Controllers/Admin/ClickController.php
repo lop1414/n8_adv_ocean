@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Common\Controllers\Admin\AdminController;
 use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Models\ClickModel;
+use App\Common\Models\ConvertCallbackModel;
 use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanLandingTypeEnum;
 use App\Services\AdvConvertCallbackService;
@@ -18,6 +19,8 @@ class ClickController extends AdminController
      */
     protected $defaultOrderBy = 'click_at';
 
+
+
     /**
      * constructor.
      */
@@ -27,6 +30,8 @@ class ClickController extends AdminController
 
         parent::__construct();
     }
+
+
 
     /**
      * 列表预处理
@@ -40,6 +45,8 @@ class ClickController extends AdminController
             });
         });
     }
+
+
 
     /**
      * @param Request $request
@@ -82,7 +89,10 @@ class ClickController extends AdminController
             $datetime = date('Y-m-d H:i:s', strtotime("-24 hours"));
 
             $clickModel = new ClickModel();
-            $click = $clickModel->where('click_at', '>', $datetime)->where('convert_id', $convertId)->first();
+            $click = $clickModel
+                ->where('click_at', '>', $datetime)
+                ->where('convert_id', $convertId)
+                ->first();
             if(empty($click)){
                 throw new CustomException([
                     'code' => 'NOT_FOUND_CLICK',
@@ -90,8 +100,17 @@ class ClickController extends AdminController
                 ]);
             }
         }
+
+
         try{
-            $ret = $advConvertCallbackService->runCallback($click, $eventType);
+            $item  = new ConvertCallbackModel();
+            $item->click = $click;
+            $item->convert_at = date('Y-m-d H:i:s');
+            if($eventType == $eventTypeMap[ConvertTypeEnum::PAY]){
+                $item->extends =  ['convert' => ['amount' => 1.00]];
+            }
+            $ret = $advConvertCallbackService->runCallback($item,$eventType);
+
         }catch(\Exception $e){
             if($e->getMessage() == 'Undefined index: clickid' && $landingType == OceanLandingTypeEnum::LINK){
                 return $this->fail('0','如果联调的是第三方落地页，需进入落地页点击下载按钮！！！');
@@ -102,6 +121,7 @@ class ClickController extends AdminController
 
         return $this->ret($ret);
     }
+
 
 
     /**
@@ -130,6 +150,7 @@ class ClickController extends AdminController
         }
 
         $datetime = date('Y-m-d H:i:s', strtotime("-24 hours"));
+
         if($landingType == OceanLandingTypeEnum::LINK){
             $this->validRule($request->post(), [
                 'link' => 'required',
@@ -140,7 +161,7 @@ class ClickController extends AdminController
                 ->where('click_at', '>', $datetime)
                 ->where('link', 'like',"{$link}%")
                 ->orderBy('click_at','desc')
-                ->first();;
+                ->first();
         }else{
             $this->validRule($request->post(), [
                 'channel_id' => 'required',
@@ -162,12 +183,16 @@ class ClickController extends AdminController
             }
         }
 
-        $props = [];
+
+
+        $item  = new ConvertCallbackModel();
+        $item->click = $click;
+        $item->convert_at = date('Y-m-d H:i:s');
         if($eventType == $eventTypeMap[ConvertTypeEnum::PAY]){
-            $props = ['pay_amount' => 1.00];
+            $item->extends =  ['convert' => ['amount' => 1.00]];
         }
 
-        $ret = $advConvertCallbackService->runAssetEventCallback($click, $eventType,$props);
+        $ret = $advConvertCallbackService->runAssetEventCallback($item, $eventType);
 
         return $this->ret($ret);
     }
