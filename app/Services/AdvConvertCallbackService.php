@@ -9,9 +9,10 @@ use App\Models\Ocean\OceanAdModel;
 
 class AdvConvertCallbackService extends ConvertCallbackService
 {
+
     /**
      * @param $item
-     * @return bool
+     * @return array
      * @throws CustomException
      * 回传
      */
@@ -38,13 +39,11 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
         if(empty($adInfo->extends->asset_ids)){
             // 转化跟踪回传
-            $this->runCallback($item);
+            return $this->runCallback($item);
         }else{
             // 事件管理回传
-            $this->runAssetEventCallback($item);
+            return $this->runAssetEventCallback($item);
         }
-
-        return true;
     }
 
 
@@ -87,8 +86,6 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
 
         $ret = $this->postCallback($param);
-
-
         $result = json_decode($ret, true);
 
         $retData = ['param' => $param, 'result' => $result];
@@ -138,9 +135,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
         $url = 'https://ad.oceanengine.com/track/activate/'.'?'. http_build_query($param);
         $ret = file_get_contents($url);
-
         $result = json_decode($ret, true);
-
         $retData = ['param' => $param, 'result' => $result];
         if(!isset($result['code']) || $result['code'] != 0){
             throw new CustomException([

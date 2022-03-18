@@ -41,6 +41,8 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ->leftJoin('clicks','convert_callbacks.click_id','=','clicks.id')
             ->leftJoin('ocean_ads AS ad','clicks.ad_id','=','ad.id')
             ->leftJoin('ocean_accounts','ad.account_id','=','ocean_accounts.account_id')
+            ->leftJoin('roi_convert_callbacks AS  roi','convert_callbacks.id','=','roi.convert_callback_id')
+            ->whereNull('roi.convert_callback_id')
             ->where('convert_callbacks.created_at', '>', $datetime)
             ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
             ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
@@ -60,21 +62,19 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
     public function run(){
         $items = $this->getWaitingCallbacks();
 
-        $roiConvertCallbackModel = new RoiConvertCallbackModel();
         foreach($items as $item){
+            $roiItem = new RoiConvertCallbackModel();
+            $roiItem->convert_callback_id = $item->id;
+
             try{
-                $roiItem = $roiConvertCallbackModel;
-                $roiItem->convert_callback_id = $item->id;
-
-
                 $res = $this->callback($item);
 
-                $item->extends = $res[''];
-                $item->convert_callback_status = ConvertCallbackStatusEnum::MACHINE_CALLBACK;
-                $item->save();
 
+                $roiItem->extends = $res;
                 $roiItem->callback_at = date('Y-m-d H:i:s');
                 $roiItem->save();
+
+                $item->convert_callback_status = ConvertCallbackStatusEnum::MACHINE_CALLBACK;
 
 
             }catch(CustomException $e){
@@ -83,12 +83,15 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
 
                 // 失败结果
                 $errorInfo = $e->getErrorInfo(true);
+
                 $roiItem->fail_data = $errorInfo;
 
             }catch(\Exception $e){
                 $errorLogService = new ErrorLogService();
                 $errorLogService->catch($e);
             }
+
+            $roiItem->save();
             $item->save();
         }
 
