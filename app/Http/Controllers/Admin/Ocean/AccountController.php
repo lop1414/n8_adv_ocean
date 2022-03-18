@@ -202,7 +202,7 @@ class AccountController extends OceanController
 
 
         $extend = $model->extend;
-        $extend->roi_callback_status = $status;
+        $extend['roi_callback_status'] = $status;
         $model->extend = $extend;
 
         $ret = $model->save();
