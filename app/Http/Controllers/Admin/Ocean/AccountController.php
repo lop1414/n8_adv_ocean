@@ -201,14 +201,14 @@ class AccountController extends OceanController
         $model = $this->model->find($requestData['id']);
 
 
-        $extend = $model->extend;
+        $extend = json_decode(json_encode($model->extend),true);
         $extend['roi_callback_status'] = $status;
         $model->extend = $extend;
 
         $ret = $model->save();
 
         // 清除 model data
-        $ret && $model->clearModelData($requestData);
+        $ret && $this->clearModelData($requestData);
 
         return $this->ret($ret);
     }
