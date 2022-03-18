@@ -208,7 +208,7 @@ class AccountController extends OceanController
         $ret = $model->save();
 
         // 清除 model data
-        $ret && $this->clearModelData($requestData);
+        $ret && $model->clearModelData($requestData);
 
         return $this->ret($ret);
     }
