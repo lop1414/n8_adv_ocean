@@ -31,6 +31,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ConvertCallbackStatusEnum::WAITING_CALLBACK,
             ConvertCallbackStatusEnum::DOT_CAN_CALLBACK_BY_TRANSFER,
             ConvertCallbackStatusEnum::MACHINE_CALLBACK,
+            ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK,
             ConvertCallbackStatusEnum::MANUAL_CALLBACK,
             ConvertCallbackStatusEnum::CALLBACK_FAIL,
         ]);
@@ -74,7 +75,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 $roiItem->callback_at = date('Y-m-d H:i:s');
                 $roiItem->save();
 
-                $item->convert_callback_status = ConvertCallbackStatusEnum::MACHINE_CALLBACK;
+                $item->convert_callback_status = ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK;
 
 
             }catch(CustomException $e){
