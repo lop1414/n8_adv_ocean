@@ -48,7 +48,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
             ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
             ->whereIn('convert_callbacks.convert_type',['add_desktop','pay'])
-            ->whereRaw(DB::raw("JSON_EXTRACT(`ocean_accounts`.`extend`,'$.roi_callback_status') = '{$status}'"))
+            ->where('ocean_accounts.roi_callback_status',$status)
             ->get();
 
         return $convertCallbacks;
