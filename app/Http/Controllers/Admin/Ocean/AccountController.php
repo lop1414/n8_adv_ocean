@@ -76,7 +76,6 @@ class AccountController extends OceanController
 
             foreach($this->curdService->responseData['list'] as $k => $v){
                 $this->curdService->responseData['list'][$k]['admin_name'] = isset($adminUserMap[$v->admin_id]) ? $adminUserMap[$v->admin_id]['name'] : '';
-                $this->curdService->responseData['list'][$k]['roi_callback_status'] = $v->extend->roi_callback_status ?? StatusEnum::DISABLE;
             }
         });
     }
