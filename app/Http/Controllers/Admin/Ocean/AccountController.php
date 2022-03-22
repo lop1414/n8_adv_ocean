@@ -103,7 +103,8 @@ class AccountController extends OceanController
             }
 
 
-            $builder->when($this->curdService->requestData['roi_callback_status'],function ($query,$roiCallbackStatus){
+            $roiCallbackStatus = $this->curdService->requestData['roi_callback_status'] ?? '';
+            $builder->when($roiCallbackStatus,function ($query,$roiCallbackStatus){
                 return $query->where('roi_callback_status',$roiCallbackStatus);
             });
 
