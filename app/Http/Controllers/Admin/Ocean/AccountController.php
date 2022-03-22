@@ -103,10 +103,11 @@ class AccountController extends OceanController
                 $builder->whereRaw("(account_id LIKE '%{$keyword}%' OR name LIKE '%{$keyword}%')");
             }
 
-            $roiCallbackStatus = $this->curdService->requestData['roi_callback_status'] ?? '';
-            if(!empty($roiCallbackStatus)){
-                $builder->whereRaw(DB::raw("JSON_EXTRACT(`extend`,'$.roi_callback_status') = '{$roiCallbackStatus}'"));
-            }
+
+            $builder->when($this->curdService->requestData['roi_callback_status'],function ($query,$roiCallbackStatus){
+                return $query->where('roi_callback_status',$roiCallbackStatus);
+            });
+
 
             $builder->where('parent_id', '<>', 0);
         });

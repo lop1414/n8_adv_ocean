@@ -22,7 +22,7 @@ class OceanAccountModel extends OceanModel
      * @var array
      * 批量更新忽略字段
      */
-    protected $updateIgnoreFields = ['company', 'account_role', 'created_at', 'status', 'admin_id'];
+    protected $updateIgnoreFields = ['company', 'account_role', 'created_at', 'status', 'roi_callback_status','admin_id'];
 
     /**
      * 属性访问器

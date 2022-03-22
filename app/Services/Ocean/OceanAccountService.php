@@ -154,6 +154,7 @@ class OceanAccountService extends OceanService
                 'extend' => json_encode([]),
                 'parent_id' => $parentAccount->account_id,
                 'status' => StatusEnum::ENABLE,
+                'roi_callback_status' => StatusEnum::DISABLE,
                 'admin_id' => 0,
                 'access_token' => $parentAccount->access_token,
                 'refresh_token' => '',
