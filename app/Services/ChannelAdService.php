@@ -254,8 +254,13 @@ class ChannelAdService extends BaseService
                     continue;
                 }
 
+Functions::isLocal() && $actionTrackUrl .= '&support_admin_id=1';
+
                 $ret = parse_url($actionTrackUrl);
                 parse_str($ret['query'], $param);
+
+                // 助理管理员id
+                $supportAdminId = $param['support_admin_id'] ?? 0;
 
                 $unionApiService = new UnionApiService();
 
@@ -273,6 +278,7 @@ class ChannelAdService extends BaseService
                         'extends' => [
                             'action_track_url' => $actionTrackUrl,
                             'channel' => $channel,
+                            'support_admin_id' => $supportAdminId,
                         ],
                     ]);
                 }
@@ -291,6 +297,7 @@ class ChannelAdService extends BaseService
                         'extends' => [
                             'action_track_url' => $actionTrackUrl,
                             'channel' => $channel,
+                            'support_admin_id' => $supportAdminId,
                         ],
                     ]);
                 }
