@@ -76,7 +76,6 @@ class AccountController extends OceanController
 
             foreach($this->curdService->responseData['list'] as $k => $v){
                 $this->curdService->responseData['list'][$k]['admin_name'] = isset($adminUserMap[$v->admin_id]) ? $adminUserMap[$v->admin_id]['name'] : '';
-                $this->curdService->responseData['list'][$k]['roi_callback_status'] = $v->extend->roi_callback_status ?? StatusEnum::DISABLE;
             }
         });
     }
@@ -102,6 +101,13 @@ class AccountController extends OceanController
             if(!empty($keyword)){
                 $builder->whereRaw("(account_id LIKE '%{$keyword}%' OR name LIKE '%{$keyword}%')");
             }
+
+
+            $roiCallbackStatus = $this->curdService->requestData['roi_callback_status'] ?? '';
+            $builder->when($roiCallbackStatus,function ($query,$roiCallbackStatus){
+                return $query->where('roi_callback_status',$roiCallbackStatus);
+            });
+
 
             $builder->where('parent_id', '<>', 0);
         });
@@ -200,10 +206,7 @@ class AccountController extends OceanController
         // 查找
         $model = $this->model->find($requestData['id']);
 
-
-        $extend = $model->extend;
-        $extend->roi_callback_status = $status;
-        $model->extend = $extend;
+        $model->roi_callback_status = $status;
 
         $ret = $model->save();
 

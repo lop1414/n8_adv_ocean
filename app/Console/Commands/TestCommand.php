@@ -4,9 +4,11 @@ namespace App\Console\Commands;
 
 use App\Common\Console\BaseCommand;
 use App\Common\Enums\PlatformEnum;
+use App\Common\Enums\StatusEnum;
 use App\Common\Models\ConvertCallbackModel;
 use App\Common\Services\SystemApi\UnionApiService;
 use App\Models\Ocean\ChannelAdLogModel;
+use App\Models\Ocean\OceanAccountModel;
 
 class TestCommand extends BaseCommand
 {
@@ -37,9 +39,25 @@ class TestCommand extends BaseCommand
      * 处理
      */
     public function handle(){
-        $this->reflashChannelAdLog();
-        dd('done');
+        $this->demo();
     }
+
+
+    public function demo(){
+        $list = (new OceanAccountModel())->get();
+        foreach ($list as $item){
+            if(!empty($item->extend->roi_callback_status)){
+                $item->roi_callback_status = $item->extend->roi_callback_status;
+            }else{
+                $item->roi_callback_status = StatusEnum::DISABLE;
+            }
+            $item->extend = [];
+            $item->save();
+        }
+    }
+
+
+
 
     /**
      * @throws \App\Common\Tools\CustomException

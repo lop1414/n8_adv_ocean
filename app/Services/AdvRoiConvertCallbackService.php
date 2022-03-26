@@ -31,6 +31,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ConvertCallbackStatusEnum::WAITING_CALLBACK,
             ConvertCallbackStatusEnum::DOT_CAN_CALLBACK_BY_TRANSFER,
             ConvertCallbackStatusEnum::MACHINE_CALLBACK,
+            ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK,
             ConvertCallbackStatusEnum::MANUAL_CALLBACK,
             ConvertCallbackStatusEnum::CALLBACK_FAIL,
         ]);
@@ -47,7 +48,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
             ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
             ->whereIn('convert_callbacks.convert_type',['add_desktop','pay'])
-            ->whereRaw(DB::raw("JSON_EXTRACT(`ocean_accounts`.`extend`,'$.roi_callback_status') = '{$status}'"))
+            ->where('ocean_accounts.roi_callback_status',$status)
             ->get();
 
         return $convertCallbacks;
@@ -74,7 +75,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 $roiItem->callback_at = date('Y-m-d H:i:s');
                 $roiItem->save();
 
-                $item->convert_callback_status = ConvertCallbackStatusEnum::MACHINE_CALLBACK;
+                $item->convert_callback_status = ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK;
 
 
             }catch(CustomException $e){
