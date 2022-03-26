@@ -135,7 +135,7 @@ class VideoController extends OceanController
 
         // 非管理员
         if(!$adminUserInfo['is_admin']){
-            $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
+            //$builder->where('admin_id', $adminUserInfo['admin_user']['id']);
         }
 
         $accounts = $builder->get();
