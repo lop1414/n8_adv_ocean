@@ -131,11 +131,11 @@ class VideoController extends OceanController
 
         // 获取账户
         $oceanAccountModel = new OceanAccountModel();
-        $builder = $oceanAccountModel->whereIn('account_id', $accountIds);
+        $builder = $oceanAccountModel->withPermission()->whereIn('account_id', $accountIds);
 
         // 非管理员
         if(!$adminUserInfo['is_admin']){
-            $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
+            //$builder->where('admin_id', $adminUserInfo['admin_user']['id']);
         }
 
         $accounts = $builder->get();
