@@ -105,6 +105,7 @@ class ChannelAdService extends BaseService
      */
     protected function buildFlag($channelAd){
         $adminId = !empty($channelAd->extends->channel->admin_id) ? $channelAd->extends->channel->admin_id : 0;
+        $supportAdminId = !empty($channelAd->extends->support_admin_id) ? $channelAd->extends->support_admin_id : 0;
         if(empty($channelAd)){
             $flag = '';
         }else{
@@ -112,7 +113,8 @@ class ChannelAdService extends BaseService
                 $channelAd->ad_id,
                 $channelAd->channel_id,
                 $channelAd->platform,
-                $adminId
+                $adminId,
+                $supportAdminId,
             ]);
         }
         return $flag;
