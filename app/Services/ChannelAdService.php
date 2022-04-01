@@ -9,6 +9,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Models\ConvertCallbackStrategyGroupModel;
 use App\Common\Models\ConvertCallbackStrategyModel;
 use App\Common\Services\BaseService;
+use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Services\SystemApi\NoticeApiService;
 use App\Common\Services\SystemApi\UnionApiService;
 use App\Common\Tools\CustomException;
@@ -28,6 +29,11 @@ class ChannelAdService extends BaseService
      * 批量更新
      */
     public function batchUpdate($data){
+        throw new CustomException([
+            'code' => 'REFUSE',
+            'message' => '禁止访问',
+        ]);
+
         $this->validRule($data, [
             'channel_id' => 'required|integer',
             'ad_ids' => 'required|array',
@@ -261,9 +267,6 @@ Functions::isLocal() && $actionTrackUrl .= '&support_admin_id=1';
                 $ret = parse_url($actionTrackUrl);
                 parse_str($ret['query'], $param);
 
-                // 助理管理员id
-                $supportAdminId = $param['support_admin_id'] ?? 0;
-
                 $unionApiService = new UnionApiService();
 
                 if(!empty($param['android_channel_id'])){
@@ -272,6 +275,21 @@ Functions::isLocal() && $actionTrackUrl .= '&support_admin_id=1';
                     $channel['admin_id'] = $chanenlExtends['admin_id'] ?? 0;
                     unset($channel['extends']);
                     unset($channel['channel_extends']);
+
+                    // 助理管理员id
+                    $supportAdminId = 0;
+
+                    $centerApiService = new CenterApiService();
+                    $channelAdminUser = $centerApiService->apiReadAdminUser($channel['admin_id']);
+
+                    // 助理
+                    $hasParent = !empty($chanenlExtends['parent_id']);
+                    $isSupport = !empty($channelAdminUser['is_support']);
+                    if($hasParent && $isSupport){
+                        $parentChannel = $unionApiService->apiReadChannel(['id' => $chanenlExtends['parent_id']]);
+                        $supportAdminId = $channel['admin_id'];
+                        $channel['admin_id'] = $parentChannel['channel_extends']['admin_id'];
+                    }
 
                     $this->update([
                         'ad_id' => $oceanAd->id,
@@ -291,6 +309,21 @@ Functions::isLocal() && $actionTrackUrl .= '&support_admin_id=1';
                     $channel['admin_id'] = $chanenlExtends['admin_id'] ?? 0;
                     unset($channel['extends']);
                     unset($channel['channel_extends']);
+
+                    // 助理管理员id
+                    $supportAdminId = 0;
+
+                    $centerApiService = new CenterApiService();
+                    $channelAdminUser = $centerApiService->apiReadAdminUser($channel['admin_id']);
+
+                    // 助理
+                    $hasParent = !empty($chanenlExtends['parent_id']);
+                    $isSupport = !empty($channelAdminUser['is_support']);
+                    if($hasParent && $isSupport){
+                        $parentChannel = $unionApiService->apiReadChannel(['id' => $chanenlExtends['parent_id']]);
+                        $supportAdminId = $channel['admin_id'];
+                        $channel['admin_id'] = $parentChannel['channel_extends']['admin_id'];
+                    }
 
                     $this->update([
                         'ad_id' => $oceanAd->id,
