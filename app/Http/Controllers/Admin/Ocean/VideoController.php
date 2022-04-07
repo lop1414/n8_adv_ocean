@@ -77,7 +77,7 @@ class VideoController extends OceanController
         $accountIds = $request->post('account_ids');
         $videoIds = $request->post('video_ids');
 
-        $maxAccount = 40;
+        $maxAccount = 10;
         if(count($accountIds) > $maxAccount){
             throw new CustomException([
                 'code' => 'MORE_THAN_MAX_ACCOUNT',
