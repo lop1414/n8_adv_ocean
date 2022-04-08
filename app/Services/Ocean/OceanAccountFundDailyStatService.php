@@ -40,44 +40,30 @@ class OceanAccountFundDailyStatService extends OceanService
     public function sync($option = []){
         $accountIds = [];
 
-        // 账户id过滤
-        if(!empty($option['account_ids'])){
-            $accountIds = $option['account_ids'];
-        }
-
-        if(!empty($option['has_history_cost'])){
-            // 历史消耗
-            $accountIds = $this->getHasHistoryCostAccount($accountIds);
-        }
-
         // 并发分片大小
         if(!empty($option['multi_chunk_size'])){
             $this->sdk->setMultiChunkSize(2);
         }
 
-        $builder = new OceanAccountModel();
-        $builder = $builder->enable();
-
-        if(!empty($accountIds)){
-            $builder = $builder->whereIn('account_id', $accountIds);
-        }
-
         $datetime = date('Y-m-d H:i:s');
-
-        // 未过期账户
-        if(!Functions::isLocal()){
-            $builder = $builder->where('fail_at', '>=', $datetime);
-        }
-        $oceanAccounts = $builder->get();
-
-
-        // 获取子账户组
-        $accountGroup = $this->getSubAccountGroup($accountIds);
 
         $dateRange = Functions::getDateRange($option['date']);
         $dateList = Functions::getDateListByRange($dateRange);
 
         foreach($dateList as $date){
+            // 账户id过滤
+            if(!empty($option['account_ids'])){
+                $accountIds = $option['account_ids'];
+            }
+
+            if(!empty($option['has_history_cost'])){
+                // 历史消耗
+                $accountIds = $this->getHasHistoryCostAccount($accountIds, $date);
+            }
+
+            // 获取子账户组
+            $accountGroup = $this->getSubAccountGroup($accountIds);
+
             $param = [
                 'start_date' => $date,
                 'end_date' => $date,
