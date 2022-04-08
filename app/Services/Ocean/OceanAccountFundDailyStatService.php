@@ -43,9 +43,13 @@ class OceanAccountFundDailyStatService extends OceanService
             $builder = $builder->whereIn('account_id', $accountIds);
         }
 
-        $oceanAccounts = $builder->get();
-
         $datetime = date('Y-m-d H:i:s');
+
+        // 未过期账户
+        if(!Functions::isLocal()){
+            $builder = $builder->where('fail_at', '>=', $datetime);
+        }
+        $oceanAccounts = $builder->get();
 
         $dateRange = Functions::getDateRange($option['date']);
         $dateList = Functions::getDateListByRange($dateRange);

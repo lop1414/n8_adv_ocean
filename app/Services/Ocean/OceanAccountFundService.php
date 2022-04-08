@@ -2,6 +2,7 @@
 
 namespace App\Services\Ocean;
 
+use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountFundModel;
 use App\Models\Ocean\OceanAccountModel;
@@ -42,9 +43,13 @@ class OceanAccountFundService extends OceanService
             $builder = $builder->whereIn('account_id', $accountIds);
         }
 
-        $oceanAccounts = $builder->get();
-
         $datetime = date('Y-m-d H:i:s');
+
+        // 未过期账户
+        if(!Functions::isLocal()){
+            $builder = $builder->where('fail_at', '>=', $datetime);
+        }
+        $oceanAccounts = $builder->get();
 
         $data = [];
         foreach($oceanAccounts as $oceanAccount){
