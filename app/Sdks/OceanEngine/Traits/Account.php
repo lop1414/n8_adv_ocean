@@ -96,4 +96,23 @@ trait Account
 
         return $this->authRequest($url, $param, 'GET');
     }
+
+    /**
+     * @param $accountId
+     * @param $startDate
+     * @param $endDate
+     * @return mixed
+     * 获取账户日流水
+     */
+    public function getAccountFundDailyStat($accountId, $startDate, $endDate){
+        $url = $this->getUrl('/2/advertiser/fund/daily_stat/');
+
+        $param = [
+            'advertiser_id' => $accountId,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ];
+
+        return $this->authRequest($url, $param, 'GET');
+    }
 }

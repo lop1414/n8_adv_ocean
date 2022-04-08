@@ -45,10 +45,9 @@ class OceanAccountFundService extends OceanService
         $oceanAccounts = $builder->get();
 
         $datetime = date('Y-m-d H:i:s');
-$i = 1;
+
         $data = [];
         foreach($oceanAccounts as $oceanAccount){
-            var_dump($i);
             $this->setAppId($oceanAccount->app_id);
             $this->setAccountId($oceanAccount->account_id);
             $this->setAccessToken();
@@ -68,7 +67,6 @@ $i = 1;
                 'updated_at' => $datetime,
             ];
             sleep(1);
-            $i++;
         }
 
         $this->batchSave($data);
