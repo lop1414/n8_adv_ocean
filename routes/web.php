@@ -125,6 +125,13 @@ $router->group([
         $router->post('asset_event_callback', 'Admin\ClickController@assetEventCallback');
     });
 
+    // 联调点击
+    $router->group(['prefix' => 'track_click'], function () use ($router) {
+        $router->post('select', '\\App\Common\Controllers\Admin\TrackClickController@select');
+        $router->post('get_track_info', '\\App\Common\Controllers\Admin\TrackClickController@getTrackInfo');
+        $router->post('callback', '\\App\Common\Controllers\Admin\TrackClickController@callback');
+    });
+
     // 巨量
     $router->group(['prefix' => 'ocean'], function () use ($router) {
         // 账户
@@ -266,6 +273,8 @@ $router->group([
 $router->group(['middleware' => ['access_control_allow_origin']], function () use ($router) {
     // 点击
     $router->get('front/click', 'Front\AdvClickController@index');
+    // 联调点击
+    $router->get('front/track_click', '\\App\Common\Controllers\Front\TrackClickController@index');
 });
 
 // 巨量
