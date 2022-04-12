@@ -15,11 +15,11 @@ class AdvTrackClickService extends TrackClickService
     }
 
 
-    public function callback($trackCode, $param){
+    public function callback($trackClick, $param){
         $convertType = $param['convert_type'];
         $item  = new ConvertCallbackModel();
         $item->convert_type = $convertType;
-        $item->click = $trackCode->extends;
+        $item->click = $trackClick->extends;
         $item->convert_at = date('Y-m-d H:i:s');
         if($convertType == ConvertTypeEnum::PAY){
             $item->extends =  ['convert' => ['amount' => 1.00]];
