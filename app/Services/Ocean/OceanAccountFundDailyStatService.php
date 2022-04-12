@@ -38,7 +38,6 @@ class OceanAccountFundDailyStatService extends OceanService
      * 同步
      */
     public function sync($option = []){
-        $accountIds = [];
 
         // 并发分片大小
         if(!empty($option['multi_chunk_size'])){
@@ -51,6 +50,8 @@ class OceanAccountFundDailyStatService extends OceanService
         $dateList = Functions::getDateListByRange($dateRange);
 
         foreach($dateList as $date){
+            $accountIds = [];
+
             // 账户id过滤
             if(!empty($option['account_ids'])){
                 $accountIds = $option['account_ids'];
