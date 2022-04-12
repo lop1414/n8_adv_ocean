@@ -82,12 +82,7 @@ class OceanController extends AdminController
         $oceanAccountModel = new OceanAccountModel();
         $builder = $oceanAccountModel->whereIn('account_id', $accountIds);
 
-        // 非管理员
-        if(!$adminUserInfo['is_admin']){
-            $builder->where('admin_id', $adminUserInfo['admin_user']['id']);
-        }
-
-        $accounts = $builder->get();
+        $accounts = $builder->withPermission()->get();
         if(!$accounts->count()){
             throw new CustomException([
                 'code' => 'NOT_FOUND_ACCOUNT',

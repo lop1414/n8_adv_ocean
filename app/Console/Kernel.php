@@ -10,6 +10,7 @@ use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanMaterialCreativeSyncCommand;
 use App\Console\Commands\Ocean\OceanRefreshAccessTokenCommand;
 use App\Console\Commands\Ocean\OceanSyncAccountFundCommand;
+use App\Console\Commands\Ocean\OceanSyncAccountFundDailyStatCommand;
 use App\Console\Commands\Ocean\OceanSyncCreativeCommand;
 use App\Console\Commands\Ocean\OceanSyncImageCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncAccountReportCommand;
@@ -23,10 +24,8 @@ use App\Console\Commands\Ocean\Report\OceanSyncCreativeReportCommand;
 use App\Common\Console\Queue\QueueClickCommand;
 use App\Console\Commands\Ocean\Report\OceanSyncMaterialReportCommand;
 use App\Console\Commands\RoiConvertCallbackCommand;
-use App\Console\Commands\SecondVersion\SyncJrttAccountCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\SyncChannelAdCommand;
-use App\Console\Commands\SyncSecondVersionCostCommand;
 use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
 use App\Console\Commands\Task\TaskOceanAdUpdateCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
@@ -78,6 +77,7 @@ class Kernel extends ConsoleKernel
         OceanMaterialCreativeSyncCommand::class,
         OceanBatchSyncAccountCommand::class,
         OceanSyncAccountFundCommand::class,
+        OceanSyncAccountFundDailyStatCommand::class,
 
         // 巨量刷新access_token
         OceanRefreshAccessTokenCommand::class,
@@ -157,6 +157,9 @@ class Kernel extends ConsoleKernel
 
             // 巨量账户余额
             $schedule->command('ocean:sync_account_fund --has_history_cost=1 --key_suffix=has_history_cost')->cron('*/2 * * * *');
+
+            // 巨量账户日流水
+            $schedule->command('ocean:sync_account_fund_daily_stat --date=yesterday --has_history_cost=1 --key_suffix=yesterday_has_history_cost')->cron('20-22 3,9 * * *');
 
             // 巨量广告组同步
             $schedule->command('ocean:sync_campaign --create_date=today --multi_chunk_size=1')->cron('*/30 * * * *');

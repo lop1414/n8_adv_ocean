@@ -25,10 +25,11 @@ class OceanModel extends BaseModel
                     )
                 ");
             }else{
+                $childrenAdminIdsStr = implode(",", $adminUserInfo['children_admin_ids']);
                 $query->whereRaw("
                     {$table}.account_id IN (
                         SELECT account_id FROM ocean_accounts
-                            WHERE admin_id = {$adminUserInfo['admin_user']['id']}
+                            WHERE admin_id IN ($childrenAdminIdsStr)
                     )
                 ");
             }

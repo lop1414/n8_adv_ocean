@@ -316,18 +316,23 @@ class OceanService extends BaseService
     }
 
 
-
     /**
      * @param $accountIds
+     * @param null $date
      * @return mixed
+     * @throws CustomException
      * 获取存在历史消耗账户
      */
-    public function getHasHistoryCostAccount($accountIds){
-        $today = date('Y-m-d');
-        $startDate = date('Y-m-d', strtotime('-3 days', strtotime($today)));
+    public function getHasHistoryCostAccount($accountIds, $date = null){
+        if(empty($date)){
+            $date = date('Y-m-d');
+        }else{
+            Functions::dateCheck($date);
+        }
+        $startDate = date('Y-m-d', strtotime('-3 days', strtotime($date)));
 
         $oceanAccountReportModel = new OceanAccountReportModel();
-        $builder = $oceanAccountReportModel->whereBetween('stat_datetime', ["{$startDate} 00:00:00", "{$today} 23:59:59"]);
+        $builder = $oceanAccountReportModel->whereBetween('stat_datetime', ["{$startDate} 00:00:00", "{$date} 23:59:59"]);
 
         if(!empty($accountIds)){
             $builder->whereIn('account_id', $accountIds);
