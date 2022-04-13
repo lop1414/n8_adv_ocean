@@ -17,6 +17,11 @@ class AdvTrackClickService extends TrackClickService
 
     public function callback($trackClick, $param){
         $convertType = $param['convert_type'];
+        // 联调页面上报
+        if(empty($trackClick->extends->link) && !empty($trackClick->extends->clickid)){
+            $trackClick->extends->callback_param = $trackClick->extends->clickid;
+        }
+
         $item  = new ConvertCallbackModel();
         $item->convert_type = $convertType;
         $item->click = $trackClick->extends;
