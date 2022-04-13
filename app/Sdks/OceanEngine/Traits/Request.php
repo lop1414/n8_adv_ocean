@@ -207,13 +207,13 @@ trait Request
         $chunkSize = $this->getMultiChunkSize();
         $chunks = array_chunk($curlOptions, $chunkSize);
 
-        Functions::consoleDump("ocean multi public chuck size({$chunkSize})");
+        //Functions::consoleDump("ocean multi public chuck size({$chunkSize})");
         $i = 1;
 
         $response = [];
         foreach($chunks as $chunk){
             $chunkCount = count($chunk);
-            Functions::consoleDump("chunk block({$i}), count({$chunkCount})");
+            //Functions::consoleDump("chunk block({$i}), count({$chunkCount})");
 
             $response = array_merge($response, $this->multiCurlRequest($chunk));
 
