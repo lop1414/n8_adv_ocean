@@ -129,6 +129,7 @@ $router->group([
     $router->group(['prefix' => 'track_click'], function () use ($router) {
         $router->post('select', '\\App\Common\Controllers\Admin\TrackClickController@select');
         $router->post('get_track_info', '\\App\Common\Controllers\Admin\TrackClickController@getTrackInfo');
+        $router->post('get_track_page', '\\App\Common\Controllers\Admin\TrackClickController@getTrackPageUrl');
         $router->post('callback', '\\App\Common\Controllers\Admin\TrackClickController@callback');
     });
 
