@@ -17,27 +17,34 @@ class AdvTrackClickService extends TrackClickService
 
     public function callback($trackClick, $param){
         $convertType = $param['convert_type'];
-        // 联调页面上报
-        if(empty($trackClick->extends->link) && !empty($trackClick->extends->clickid)){
-            $extends = $trackClick->extends;
-            $extends->callback_param = $extends->clickid;
-            $trackClick->extends = $extends;
-        }
+
 
         $item  = new ConvertCallbackModel();
         $item->convert_type = $convertType;
-        $item->click = $trackClick->extends;
         $item->convert_at = date('Y-m-d H:i:s');
         if($convertType == ConvertTypeEnum::PAY){
             $item->extends =  ['convert' => ['amount' => 1.00]];
         }
+        $trackClickExtends = $trackClick->extends;
 
         // 转化跟踪回传
         if(isset($param['type']) && $param['type'] == 'adv_convert'){
+            if(!empty($param['link'])){
+                $trackClickExtends->link = $param['link'];
+                $trackClick->extends = $trackClickExtends;
+            }
+            $item->click = $trackClick->extends;
             return (new AdvConvertCallbackService())->runCallback($item);
         }
 
         // 事件管理回传 event
+        if(empty($trackClick->extends->link) && !empty($trackClick->extends->clickid)){
+            // 联调落地页上报
+            $trackClickExtends->callback_param = $trackClickExtends->clickid;
+            $trackClick->extends = $trackClickExtends;
+        }
+
+        $item->click = $trackClick->extends;
         return (new AdvConvertCallbackService())->runAssetEventCallback($item);
     }
 }
