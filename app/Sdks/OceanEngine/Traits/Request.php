@@ -61,7 +61,7 @@ trait Request
             'Access-Token:'. $this->getAccessToken()
         ], $header);
 
-        $option['timeout'] = $option['timeout'] ?? 60;
+        $option['timeout'] = $option['timeout'] ?? 180;
 
         $ret = $this->publicRequest($url, $param, $method, $header, $option);
 
