@@ -347,6 +347,27 @@ class OceanService extends BaseService
     }
 
     /**
+     * @param $accountIds
+     * @param $day
+     * @return mixed
+     * 获取新账户
+     */
+    public function getNewAccount($accountIds, $day){
+        $datetime = date('Y-m-d 00:00:00', strtotime("-{$day} days"));
+
+        $oceanAccountModel = new OceanAccountModel();
+        $builder = $oceanAccountModel->where('created_at', '>', $datetime);
+
+        if(!empty($accountIds)){
+            $builder->whereIn('account_id', $accountIds);
+        }
+
+        $items = $builder->select('account_id')->pluck('account_id');
+
+        return $items->toArray();
+    }
+
+    /**
      * @param $uri
      * @param array $param
      * @param string $method

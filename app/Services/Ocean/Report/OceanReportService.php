@@ -89,6 +89,12 @@ class OceanReportService extends OceanService
             var_dump($accountIds);
         }
 
+        if(!empty($option['run_by_new_account'])){
+            // 新账户
+            $accountIds = $this->getNewAccount($accountIds, 14);
+            var_dump($accountIds);
+        }
+
         if(!empty($option['has_history_cost'])){
             // 历史消耗
             $accountIds = $this->getHasHistoryCostAccount($accountIds);

@@ -12,7 +12,7 @@ class OceanSyncAccountReportCommand extends BaseCommand
      * 命令行执行命令
      * @var string
      */
-    protected $signature = 'ocean:sync_account_report  {--date=} {--account_ids=} {--delete=} {--running=} {--has_history_cost=} {--key_suffix=}';
+    protected $signature = 'ocean:sync_account_report  {--date=} {--account_ids=} {--delete=} {--running=} {--has_history_cost=} {--run_by_new_account=} {--key_suffix=}';
 
     /**
      * 命令描述
