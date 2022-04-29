@@ -155,9 +155,11 @@ class VideoController extends OceanController
         foreach($accounts as $account){
             foreach($videos as $video){
                 if(!empty($video['source_path'])){
+                    $videoPath = $video['path'];
+                    $videoSignature = $video['signature'];
                     // 源视频
-                    $videoPath = $video['source_path'];
-                    $videoSignature = $video['source_signature'];
+                    //$videoPath = $video['source_path'];
+                    //$videoSignature = $video['source_signature'];
                 }else{
                     $videoPath = $video['path'];
                     $videoSignature = $video['signature'];
