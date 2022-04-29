@@ -79,7 +79,7 @@ class TaskOceanSyncService extends TaskOceanService
 
         if($this->syncType == OceanSyncTypeEnum::VIDEO){
             // 延迟获取创建的任务
-            $time = time() - 2 * 60;
+            $time = time() - 3 * 60;
             $datetime = date('Y-m-d H:i:s', $time);
             $builder->where('created_at', '<', $datetime);
         }
