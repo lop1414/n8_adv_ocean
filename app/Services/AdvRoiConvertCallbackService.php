@@ -61,8 +61,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
     {
         $items = $this->getWaitingCallbacks();
         //回传比例
-        $callbackRatio = 25;
-
+        $callbackRatio = env('ROI_CALLBACK_RATIO');
 
         foreach($items as $item){
             try{
