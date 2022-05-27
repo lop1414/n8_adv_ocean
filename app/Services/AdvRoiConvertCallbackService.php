@@ -26,15 +26,12 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
 
         $convertCallbackModel = new ConvertCallbackModel();
 
-        // 剔除
-        $convertCallbackStatus = array_diff(array_column(ConvertCallbackStatusEnum::$list,'id'),[
-            ConvertCallbackStatusEnum::WAITING_CALLBACK,
-            ConvertCallbackStatusEnum::DOT_CAN_CALLBACK_BY_TRANSFER,
-            ConvertCallbackStatusEnum::MACHINE_CALLBACK,
-            ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK,
-            ConvertCallbackStatusEnum::MANUAL_CALLBACK,
-            ConvertCallbackStatusEnum::CALLBACK_FAIL,
-        ]);
+        // 可回传类型
+        $convertCallbackStatus =[
+            ConvertCallbackStatusEnum::DOT_NEED_CALLBACK,
+            ConvertCallbackStatusEnum::DOT_NEED_CALLBACK_BY_CALLBACK_TIME,
+            ConvertCallbackStatusEnum::DOT_NEED_CALLBACK_BY_CONVERT_TIMES,
+        ];
 
         $status = StatusEnum::ENABLE;
         $convertCallbacks = $convertCallbackModel
@@ -47,7 +44,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ->where('convert_callbacks.created_at', '>', $datetime)
             ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
             ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
-            ->whereIn('convert_callbacks.convert_type',['add_desktop','pay'])
+            ->whereIn('convert_callbacks.convert_type',['register','pay'])
             ->where('ocean_accounts.roi_callback_status',$status)
             ->get();
 
@@ -60,23 +57,34 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
      * @return bool
      * 执行
      */
-    public function run(){
+    public function run(): bool
+    {
         $items = $this->getWaitingCallbacks();
+        //回传比例
+        $callbackRatio = 25;
+
 
         foreach($items as $item){
-            $roiItem = new RoiConvertCallbackModel();
-            $roiItem->convert_callback_id = $item->id;
-
             try{
+                $rand = mt_rand(0,100);
+
+                //比例扣除
+                if($item->convert_type == ConvertTypeEnum::PAY && $rand > $callbackRatio){
+                    $item->convert_callback_status = ConvertCallbackStatusEnum::DOT_NEED_CALLBACK_BY_ROI;
+                    $item->save();
+                    continue;
+                }
+
                 $res = $this->callback($item);
+                $item->convert_callback_status = ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK;
+                $item->save();
 
-
+                //日志
+                $roiItem = new RoiConvertCallbackModel();
+                $roiItem->convert_callback_id = $item->id;
                 $roiItem->extends = $res;
                 $roiItem->callback_at = date('Y-m-d H:i:s');
                 $roiItem->save();
-
-                $item->convert_callback_status = ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK;
-
 
             }catch(CustomException $e){
                 $errorLogService = new ErrorLogService();
@@ -91,9 +99,6 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 $errorLogService = new ErrorLogService();
                 $errorLogService->catch($e);
             }
-
-            $roiItem->save();
-            $item->save();
         }
 
         return true;
@@ -107,9 +112,10 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
      * @return array
      * 获取转化跟踪回传映射
      */
-    public function getEventTypeMap(){
+    public function getEventTypeMap(): array
+    {
         return [
-            ConvertTypeEnum::ADD_DESKTOP => 0,
+            ConvertTypeEnum::REGISTER => 0,
             ConvertTypeEnum::PAY => 392,
         ];
     }
@@ -119,9 +125,10 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
      * @return string[]
      * 获取事件管理回传映射
      */
-    public function getAssetEventType(){
+    public function getAssetEventType(): array
+    {
         return  [
-            ConvertTypeEnum::ADD_DESKTOP => 'active',
+            ConvertTypeEnum::REGISTER => 'active',
             ConvertTypeEnum::PAY => 'supply_active_pay',
         ];
     }
