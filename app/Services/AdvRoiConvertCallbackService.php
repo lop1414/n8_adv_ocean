@@ -74,6 +74,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                     if($diff > $roiCallbackDotNeedByDay*24*24*60){
                         $item->convert_callback_status = ConvertCallbackStatusEnum::DOT_NEED_ROI_CALLBACK_BY_TIME;
                         $item->save();
+                        continue;
                     }
 
                     //比例扣除
