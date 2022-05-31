@@ -9,6 +9,11 @@ use App\Models\Ocean\OceanAdModel;
 
 class AdvConvertCallbackService extends ConvertCallbackService
 {
+    /**
+     * 回传金额
+     * @var bool
+     */
+    protected $callbackAmount = false;
 
     /**
      * @param $item
@@ -86,10 +91,10 @@ class AdvConvertCallbackService extends ConvertCallbackService
             'timestamp' => strtotime($item->convert_at) * 1000
         ];
 
-//        if(!empty($item->extends->convert->amount)){
-//            // 付费金额
-//            $param['properties'] = ['pay_amount' => $item->extends->convert->amount];
-//        }
+        if(!empty($item->extends->convert->amount) && $this->callbackAmount){
+            // 付费金额
+            $param['properties'] = ['pay_amount' => $item->extends->convert->amount];
+        }
 
         $ret = $this->postCallback($param);
         $result = json_decode($ret, true);
@@ -119,10 +124,10 @@ class AdvConvertCallbackService extends ConvertCallbackService
     public function runCallback($item,$eventType = null){
 
         $props = [];
-//        if(!empty($item->extends->convert->amount)){
-//            // 付费金额
-//            $props = ['pay_amount' => $item->extends->convert->amount * 100];
-//        }
+        if(!empty($item->extends->convert->amount) && $this->callbackAmount){
+            // 付费金额
+            $props = ['pay_amount' => $item->extends->convert->amount * 100];
+        }
 
         $eventTypeMap =  $this->getEventTypeMap();
 

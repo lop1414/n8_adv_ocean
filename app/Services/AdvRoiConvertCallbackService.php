@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\DB;
 
 class AdvRoiConvertCallbackService extends AdvConvertCallbackService
 {
+    /**
+     * 回传金额
+     * @var bool
+     */
+    protected $callbackAmount = true;
 
     /**
      * @return mixed
