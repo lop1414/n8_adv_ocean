@@ -112,7 +112,8 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                     $roiItem->fail_data = $e->getErrorInfo(true);
                     $roiItem->save();
                 }
-
+                $item->exec_status = ExecStatusEnum::FAIL;
+                $item->save();
             }catch(\Exception $e){
                 $errorLogService = new ErrorLogService();
                 $errorLogService->catch($e);
@@ -124,6 +125,8 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                     ];
                     $roiItem->save();
                 }
+                $item->exec_status = ExecStatusEnum::FAIL;
+                $item->save();
             }
 
 
