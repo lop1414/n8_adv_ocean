@@ -65,6 +65,9 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
         $roiCallbackDotNeedByDay = env('ROI_CALLBACK_DOT_NEED_BY_DAY');
 
         foreach($items as $item){
+            //日志
+            $roiItem = (new RoiConvertCallbackModel())->where('convert_callback_id',$item->id)->first();
+
             try{
                 if($item->convert_type == ConvertTypeEnum::PAY){
                     //超时
@@ -87,12 +90,14 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 $item->convert_callback_status = ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK;
                 $item->save();
 
-                //日志
-                $roiItem = new RoiConvertCallbackModel();
+
+                if(empty($roiItem)){
+                    $roiItem = new RoiConvertCallbackModel();
+                    $roiItem->convert_callback_id = $item->id;
+                }
                 $roiItem->convert_callback_id = $item->id;
                 $roiItem->extends = $res;
                 $roiItem->callback_at = date('Y-m-d H:i:s');
-                $roiItem->save();
 
             }catch(CustomException $e){
                 $errorLogService = new ErrorLogService();
@@ -107,6 +112,8 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 $errorLogService = new ErrorLogService();
                 $errorLogService->catch($e);
             }
+
+            $roiItem->save();
         }
 
         return true;
