@@ -41,11 +41,11 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ->leftJoin('ocean_accounts','ad.account_id','=','ocean_accounts.account_id')
             ->leftJoin('roi_convert_callbacks AS  roi','convert_callbacks.id','=','roi.convert_callback_id')
             ->whereNull('roi.convert_callback_id')
-            ->where('convert_callbacks.convert_at', '>', $datetime)
-            ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
-            ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
-            ->whereIn('convert_callbacks.convert_type',['register','pay'])
-            ->where('ocean_accounts.roi_callback_status',$status)
+//            ->where('convert_callbacks.convert_at', '>', $datetime)
+//            ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
+//            ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
+//            ->whereIn('convert_callbacks.convert_type',['register','pay'])
+//            ->where('ocean_accounts.roi_callback_status',$status)
             ->get();
 
         return $convertCallbacks;
@@ -87,7 +87,10 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 }
 
                 $res = $this->callback($item);
+                $callback_at = date('Y-m-d H:i:s');
+
                 $item->convert_callback_status = ConvertCallbackStatusEnum::ROI_MACHINE_CALLBACK;
+                $item->callback_at = $callback_at;
                 $item->save();
 
 
@@ -97,7 +100,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 }
                 $roiItem->convert_callback_id = $item->id;
                 $roiItem->extends = $res;
-                $roiItem->callback_at = date('Y-m-d H:i:s');
+                $roiItem->callback_at = $callback_at;
 
             }catch(CustomException $e){
                 $errorLogService = new ErrorLogService();
