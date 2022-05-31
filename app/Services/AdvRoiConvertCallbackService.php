@@ -60,18 +60,27 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
     public function run(): bool
     {
         $items = $this->getWaitingCallbacks();
-        //回传比例
         $callbackRatio = env('ROI_CALLBACK_RATIO');
+        $roiCallbackDotNeedByDay = env('ROI_CALLBACK_DOT_NEED_BY_DAY');
 
         foreach($items as $item){
             try{
-                $rand = mt_rand(0,100);
+                if($item->convert_type == ConvertTypeEnum::PAY){
+                    //超时
+                    $extends = json_decode($item->extends,true);
+                    $diff = time() - strtotime($extends['convert']['n8_union_user']['created_at']);
+                    if($diff > $roiCallbackDotNeedByDay*24*24*60){
+                        $item->convert_callback_status = ConvertCallbackStatusEnum::DOT_NEED_ROI_CALLBACK_BY_TIME;
+                        $item->save();
+                    }
 
-                //比例扣除
-                if($item->convert_type == ConvertTypeEnum::PAY && $rand > $callbackRatio){
-                    $item->convert_callback_status = ConvertCallbackStatusEnum::DOT_NEED_CALLBACK_BY_ROI;
-                    $item->save();
-                    continue;
+                    //比例扣除
+                    $rand = mt_rand(0,100);
+                    if($rand > $callbackRatio){
+                        $item->convert_callback_status = ConvertCallbackStatusEnum::DOT_NEED_CALLBACK_BY_ROI;
+                        $item->save();
+                        continue;
+                    }
                 }
 
                 $res = $this->callback($item);
