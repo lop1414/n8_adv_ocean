@@ -116,6 +116,14 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             }catch(\Exception $e){
                 $errorLogService = new ErrorLogService();
                 $errorLogService->catch($e);
+                if(!empty($roiItem)){
+                    // 失败结果
+                    $roiItem->fail_data = [
+                        'msg'   => $e->getMessage(),
+                        'code'  => $e->getCode()
+                    ];
+                    $roiItem->save();
+                }
             }
 
 
