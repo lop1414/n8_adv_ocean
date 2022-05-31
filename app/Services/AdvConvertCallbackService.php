@@ -61,7 +61,18 @@ class AdvConvertCallbackService extends ConvertCallbackService
         if(!empty($item->click->link)){
             $tmp = parse_url($item->click->link);
             parse_str($tmp['query'], $query);
+
+
+            if(!isset($query['clickid'])){
+                throw new CustomException([
+                    'code' => 'NOT_CLICK_ID_ERROR',
+                    'message' => '缺少clickid参数',
+                    'log' => true,
+                    'data' => $item,
+                ]);
+            }
             $callback = $query['clickid'];
+
         }else{
             $callback = $item->click->callback_param;
         }
