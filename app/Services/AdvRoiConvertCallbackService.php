@@ -65,8 +65,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
         $roiCallbackDotNeedByDay = env('ROI_CALLBACK_DOT_NEED_BY_DAY');
 
         foreach($items as $item){
-            //日志
-            $roiItem = (new RoiConvertCallbackModel())->where('convert_callback_id',$item->id)->first();
+
 
             try{
                 if($item->convert_type == ConvertTypeEnum::PAY){
@@ -93,7 +92,8 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 $item->callback_at = $callback_at;
                 $item->save();
 
-
+                //日志
+                $roiItem = (new RoiConvertCallbackModel())->where('convert_callback_id',$item->id)->first();
                 if(empty($roiItem)){
                     $roiItem = new RoiConvertCallbackModel();
                     $roiItem->convert_callback_id = $item->id;
@@ -101,22 +101,23 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
                 $roiItem->convert_callback_id = $item->id;
                 $roiItem->extends = $res;
                 $roiItem->callback_at = $callback_at;
-
+                $roiItem->save();
             }catch(CustomException $e){
                 $errorLogService = new ErrorLogService();
                 $errorLogService->catch($e);
 
-                // 失败结果
-                $errorInfo = $e->getErrorInfo(true);
-
-                $roiItem->fail_data = $errorInfo;
+                if(!empty($roiItem)){
+                    // 失败结果
+                    $roiItem->fail_data = $e->getErrorInfo(true);
+                    $roiItem->save();
+                }
 
             }catch(\Exception $e){
                 $errorLogService = new ErrorLogService();
                 $errorLogService->catch($e);
             }
 
-            $roiItem->save();
+
         }
 
         return true;
