@@ -41,11 +41,11 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ->leftJoin('ocean_accounts','ad.account_id','=','ocean_accounts.account_id')
             ->leftJoin('roi_convert_callbacks AS  roi','convert_callbacks.id','=','roi.convert_callback_id')
             ->whereNull('roi.convert_callback_id')
-            ->where('convert_callbacks.convert_at', '>', $datetime)
-            ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
-            ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
-            ->whereIn('convert_callbacks.convert_type',['register','pay'])
-            ->where('ocean_accounts.roi_callback_status',$status)
+//            ->where('convert_callbacks.convert_at', '>', $datetime)
+//            ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
+//            ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
+//            ->whereIn('convert_callbacks.convert_type',['register','pay'])
+//            ->where('ocean_accounts.roi_callback_status',$status)
             ->get();
 
         return $convertCallbacks;
@@ -60,6 +60,7 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
     public function run(): bool
     {
         $items = $this->getWaitingCallbacks();
+
         $callbackRatio = env('ROI_CALLBACK_RATIO');
         $roiCallbackDotNeedByDay = env('ROI_CALLBACK_DOT_NEED_BY_DAY');
 
@@ -67,12 +68,11 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             try{
                 if($item->convert_type == ConvertTypeEnum::PAY){
                     //超时
-//                    $extends = json_decode($item->extends,true);
-//                    $diff = time() - strtotime($extends['convert']['n8_union_user']['created_at']);
-//                    if($diff > $roiCallbackDotNeedByDay*24*24*60){
-//                        $item->convert_callback_status = ConvertCallbackStatusEnum::DOT_NEED_ROI_CALLBACK_BY_TIME;
-//                        $item->save();
-//                    }
+                    $diff = time() - strtotime($item->extends->convert->n8_union_user->created_at);
+                    if($diff > $roiCallbackDotNeedByDay*24*24*60){
+                        $item->convert_callback_status = ConvertCallbackStatusEnum::DOT_NEED_ROI_CALLBACK_BY_TIME;
+                        $item->save();
+                    }
 
                     //比例扣除
                     $rand = mt_rand(0,100);
