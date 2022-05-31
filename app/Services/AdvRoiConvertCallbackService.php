@@ -41,11 +41,11 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
             ->leftJoin('ocean_accounts','ad.account_id','=','ocean_accounts.account_id')
             ->leftJoin('roi_convert_callbacks AS  roi','convert_callbacks.id','=','roi.convert_callback_id')
             ->whereNull('roi.convert_callback_id')
-//            ->where('convert_callbacks.convert_at', '>', $datetime)
-//            ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
-//            ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
-//            ->whereIn('convert_callbacks.convert_type',['register','pay'])
-//            ->where('ocean_accounts.roi_callback_status',$status)
+            ->where('convert_callbacks.convert_at', '>', $datetime)
+            ->where('convert_callbacks.exec_status', ExecStatusEnum::SUCCESS)
+            ->whereIn('convert_callbacks.convert_callback_status', $convertCallbackStatus)
+            ->whereIn('convert_callbacks.convert_type',['register','pay'])
+            ->where('ocean_accounts.roi_callback_status',$status)
             ->get();
 
         return $convertCallbacks;
