@@ -13,7 +13,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
      * 回传金额
      * @var bool
      */
-    protected $callbackAmount = false;
+    protected $callbackAmount = true;
 
     /**
      * @param $item
