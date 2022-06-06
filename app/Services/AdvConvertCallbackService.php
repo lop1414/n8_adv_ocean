@@ -93,7 +93,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
         if(!empty($item->extends->convert->amount) && $this->callbackAmount){
             // 付费金额
-            $param['properties'] = ['pay_amount' => $item->extends->convert->amount];
+            $param['properties'] = ['pay_amount' => $item->extends->convert->amount * 100];
         }
 
         $ret = $this->postCallback($param);
