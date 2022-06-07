@@ -102,16 +102,18 @@ class AdvConvertCallbackService extends ConvertCallbackService
         $ret = $this->postCallback($param);
         $result = json_decode($ret, true);
 
-        $retData = ['param' => $param, 'result' => $result];
         if(!isset($result['code']) || $result['code'] != 0){
             throw new CustomException([
                 'code' => 'OCEAN_CONVERT_CALLBACK_ERROR',
                 'message' => '巨量转化回传事件失败',
                 'log' => true,
-                'data' => $retData,
+                'data' => [
+                    'param' => $param,
+                    'result' => $result,
+                ],
             ]);
         }
-        return $retData;
+        return ['param' => $param, 'result' => $result];
     }
 
 
@@ -151,7 +153,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
         $url = 'https://ad.oceanengine.com/track/activate/'.'?'. http_build_query($param);
         $ret = file_get_contents($url);
         $result = json_decode($ret, true);
-        $retData = ['param' => $param, 'result' => $result];
+
         if(!isset($result['code']) || $result['code'] != 0){
             throw new CustomException([
                 'code' => 'OCEAN_CONVERT_CALLBACK_ERROR',
@@ -165,7 +167,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
             ]);
         }
 
-        return $retData;
+        return ['param' => $param, 'result' => $result];
     }
 
 
