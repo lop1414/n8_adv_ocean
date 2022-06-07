@@ -42,12 +42,14 @@ class AdvConvertCallbackService extends ConvertCallbackService
             ]);
         }
 
+        $convertType = $adInfo->extends->external_action ?? null;
+
         if(empty($adInfo->extends->asset_ids)){
             // 转化跟踪回传
-            return $this->runCallback($item);
+            return $this->runCallback($item,null,$convertType);
         }else{
             // 事件管理回传
-            return $this->runAssetEventCallback($item);
+            return $this->runAssetEventCallback($item,null,$convertType);
         }
     }
 
@@ -55,13 +57,14 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
 
     /**
+     * 事件管理回传
      * @param $item
      * @param null $eventType
+     * @param null $convertType
      * @return array
      * @throws CustomException
-     * 事件管理回传
      */
-    public function runAssetEventCallback($item,$eventType = null){
+    public function runAssetEventCallback($item,$eventType = null,$convertType = null){
 
         if(!empty($item->click->link)){
             $tmp = parse_url($item->click->link);
@@ -82,7 +85,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
             $callback = $item->click->callback_param;
         }
 
-        $eventTypeMap = $this->getAssetEventType();
+        $eventTypeMap = $this->getAssetEventType($convertType);
         $param = [
             'event_type' => $eventType ?: $eventTypeMap[$item->convert_type],
             'context'   => [
@@ -115,13 +118,14 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
 
     /**
+     * 转化跟踪回传
      * @param $item
      * @param null $eventType
+     * @param null $convertType
      * @return array
      * @throws CustomException
-     * 转化跟踪回传
      */
-    public function runCallback($item,$eventType = null){
+    public function runCallback($item,$eventType = null,$convertType = null){
 
         $props = [];
         if(!empty($item->extends->convert->amount) && $this->callbackAmount){
@@ -129,7 +133,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
             $props = ['pay_amount' => $item->extends->convert->amount * 100];
         }
 
-        $eventTypeMap =  $this->getEventTypeMap();
+        $eventTypeMap =  $this->getEventTypeMap($convertType);
 
         $param = [
             'event_type' => $eventType ?: $eventTypeMap[$item->convert_type],
@@ -167,31 +171,53 @@ class AdvConvertCallbackService extends ConvertCallbackService
 
 
     /**
-     * @return array
      * 获取转化跟踪回传映射
+     * @param null $convertType 转化类型
+     * @return int[]
      */
-    public function getEventTypeMap(){
-        return [
+    public function getEventTypeMap($convertType = null): array
+    {
+        // 默认
+        $arr = [
             ConvertTypeEnum::ACTIVATION => 0,
             ConvertTypeEnum::REGISTER => 0,
             ConvertTypeEnum::ADD_DESKTOP => 1,
             ConvertTypeEnum::PAY => 2,
         ];
+
+        if($convertType == 'AD_CONVERT_TYPE_WECHAT_PAY'){
+            // 微信内付费
+            $arr[ConvertTypeEnum::REGISTER] = 0;
+            $arr[ConvertTypeEnum::PAY] = 2;
+        }
+
+        return $arr;
     }
 
 
 
     /**
-     * @return string[]
      * 获取事件管理回传映射
+     * @param null $convertType 转化类型
+     * @return string[]
      */
-    public function getAssetEventType(){
-        return  [
+    public function getAssetEventType($convertType = null): array
+    {
+        // 默认
+        $arr =  [
             ConvertTypeEnum::ACTIVATION => 'active',
             ConvertTypeEnum::REGISTER => 'active',
             ConvertTypeEnum::ADD_DESKTOP => 'active_register',
             ConvertTypeEnum::PAY => 'active_pay',
         ];
+
+        if($convertType == 'AD_CONVERT_TYPE_WECHAT_PAY'){
+            // 微信内付费
+            $arr[ConvertTypeEnum::REGISTER] = 'in_wechat_login' ;
+            $arr[ConvertTypeEnum::PAY] = 'in_wechat_pay' ;
+        }
+
+        return $arr;
     }
 
 

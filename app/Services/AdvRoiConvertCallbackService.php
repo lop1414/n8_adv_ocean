@@ -145,10 +145,11 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
 
 
     /**
-     * @return array
+     * @param null $convertType
+     * @return int[]
      * 获取转化跟踪回传映射
      */
-    public function getEventTypeMap(): array
+    public function getEventTypeMap($convertType = null): array
     {
         return [
             ConvertTypeEnum::REGISTER => 0,
@@ -158,10 +159,11 @@ class AdvRoiConvertCallbackService extends AdvConvertCallbackService
 
 
     /**
-     * @return string[]
      * 获取事件管理回传映射
+     * @param null $convertType
+     * @return string[]
      */
-    public function getAssetEventType(): array
+    public function getAssetEventType($convertType = null): array
     {
         return  [
             ConvertTypeEnum::REGISTER => 'active',
