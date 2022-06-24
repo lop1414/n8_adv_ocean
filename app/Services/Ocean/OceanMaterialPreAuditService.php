@@ -69,18 +69,21 @@ class OceanMaterialPreAuditService extends OceanService
                     sleep(2);
                 }while($getPreAuditResult['status'] == 'AUDITING');
 
-                // 记录
-                $oceanMaterialPreAuditModel = new OceanMaterialPreAuditModel();
-                $oceanMaterialPreAuditModel->material_type = MaterialTypeEnums::VIDEO;
-                $oceanMaterialPreAuditModel->n8_material_id = $video->id;
-                $oceanMaterialPreAuditModel->company = $oceanCompanyAccount->company;
-                $oceanMaterialPreAuditModel->account_id = $oceanCompanyAccount->account_id;
-                $oceanMaterialPreAuditModel->pre_audit_material_type = 'VIDEO';
-                $oceanMaterialPreAuditModel->pre_audit_content = $uploadResult['video_id'];
-                $oceanMaterialPreAuditModel->pre_audit_id = $sendPreAuditResult['pre_audit_id'];
-                $oceanMaterialPreAuditModel->pre_audit_status = $getPreAuditResult['status'];
-                $oceanMaterialPreAuditModel->reject_reason = $getPreAuditResult['reject_reason'];
-                $oceanMaterialPreAuditModel->save();
+                // 预审成功
+                if($getPreAuditResult['status'] != 'AUDIT_FAILED'){
+                    // 记录
+                    $oceanMaterialPreAuditModel = new OceanMaterialPreAuditModel();
+                    $oceanMaterialPreAuditModel->material_type = MaterialTypeEnums::VIDEO;
+                    $oceanMaterialPreAuditModel->n8_material_id = $video->id;
+                    $oceanMaterialPreAuditModel->company = $oceanCompanyAccount->company;
+                    $oceanMaterialPreAuditModel->account_id = $oceanCompanyAccount->account_id;
+                    $oceanMaterialPreAuditModel->pre_audit_material_type = 'VIDEO';
+                    $oceanMaterialPreAuditModel->pre_audit_content = $uploadResult['video_id'];
+                    $oceanMaterialPreAuditModel->pre_audit_id = $sendPreAuditResult['pre_audit_id'];
+                    $oceanMaterialPreAuditModel->pre_audit_status = $getPreAuditResult['status'];
+                    $oceanMaterialPreAuditModel->reject_reason = $getPreAuditResult['reject_reason'];
+                    $oceanMaterialPreAuditModel->save();
+                }
 
                 // 删除临时文件
                 unlink($file['path']);
