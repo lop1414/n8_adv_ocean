@@ -90,6 +90,10 @@ class OceanMaterialPreAuditService extends OceanService
                         sleep(2);
                     }while($getPreAuditResult['status'] == 'AUDITING');
 
+                    if($getPreAuditResult['status'] == 'AUDIT_FAILED'){
+                        var_dump($getPreAuditResult);
+                    }
+
                     // 预审成功
                     //if($getPreAuditResult['status'] != 'AUDIT_FAILED'){
                         // 记录
