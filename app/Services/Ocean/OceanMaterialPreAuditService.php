@@ -77,8 +77,7 @@ class OceanMaterialPreAuditService extends OceanService
                     // 上传
                     $oceanVideoService = new OceanVideoService($oceanCompanyAccount->app_id);
                     $oceanVideoService->setAccountId($oceanCompanyAccount->account_id);
-                    $uploadResult = $oceanVideoService->uploadVideo($oceanCompanyAccount->account_id, $file['signature'], $file['curl_file'], $video->name);
-                    $oceanVideoId = $uploadResult['video_id'];
+                    $oceanVideoService->uploadVideo($oceanCompanyAccount->account_id, $file['signature'], $file['curl_file'], $video->name);
                 }else{
                     // 发送预审
                     $this->setAppId($oceanCompanyAccount->app_id);
@@ -107,8 +106,6 @@ class OceanMaterialPreAuditService extends OceanService
                         $oceanMaterialPreAuditModel->save();
                     //}
                 }
-
-
 
                 // 删除临时文件
                 $down && unlink($file['path']);
