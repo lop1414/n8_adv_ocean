@@ -8,6 +8,7 @@ use App\Common\Console\ConvertCallbackCommand;
 use App\Console\Commands\Ocean\OceanBatchSyncAccountCommand;
 use App\Console\Commands\Ocean\OceanCreativeNoticeCommand;
 use App\Console\Commands\Ocean\OceanMaterialCreativeSyncCommand;
+use App\Console\Commands\Ocean\OceanMaterialPreAuditCommand;
 use App\Console\Commands\Ocean\OceanRefreshAccessTokenCommand;
 use App\Console\Commands\Ocean\OceanSyncAccountFundCommand;
 use App\Console\Commands\Ocean\OceanSyncAccountFundDailyStatCommand;
@@ -78,6 +79,7 @@ class Kernel extends ConsoleKernel
         OceanBatchSyncAccountCommand::class,
         OceanSyncAccountFundCommand::class,
         OceanSyncAccountFundDailyStatCommand::class,
+        OceanMaterialPreAuditCommand::class,
 
         // 巨量刷新access_token
         OceanRefreshAccessTokenCommand::class,
@@ -145,6 +147,9 @@ class Kernel extends ConsoleKernel
         if(Functions::isProduction()){
             // 巨量创意通知
             $schedule->command('ocean:creative_notice')->cron('* * * * *');
+
+            // 巨量素材预审
+            $schedule->command('ocean:material_pre_audit --date=today')->cron('50 * * * *');
 
             // 同步素材-创意关联
             $schedule->command('ocean:material_creative_sync --date=today')->cron('*/20 * * * *');

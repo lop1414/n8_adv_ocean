@@ -45,4 +45,38 @@ trait Material
 
         return $this->authRequest($url, $param, 'POST', [], $option);
     }
+
+    /**
+     * @param $accountId
+     * @param $preAuditMaterials
+     * @return mixed
+     * 发送预审
+     */
+    public function sendPreAudit($accountId, $preAuditMaterials){
+        $url = $this->getUrl('2/tools/pre_audit/send/');
+
+        $param = [
+            'advertiser_id' => $accountId * 1,
+            'pre_audit_materials' => $preAuditMaterials,
+        ];
+
+        return $this->authRequest($url, $param, 'POST');
+    }
+
+    /**
+     * @param $accountId
+     * @param $filter
+     * @return mixed
+     * 获取预审
+     */
+    public function getPreAudit($accountId, $filter){
+        $url = $this->getUrl('2/tools/pre_audit/get/');
+
+        $param = [
+            'advertiser_id' => $accountId * 1,
+            'filter' => $filter,
+        ];
+
+        return $this->authRequest($url, $param, 'GET');
+    }
 }

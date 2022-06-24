@@ -135,7 +135,7 @@ class TaskOceanVideoUploadService extends TaskOceanService
      * @return array
      * 下载
      */
-    private function download($fileUrl){
+    public function download($fileUrl){
         $content = file_get_contents($fileUrl);
 
         $fileName = basename($fileUrl);
