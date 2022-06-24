@@ -5,8 +5,10 @@ namespace App\Services\Ocean;
 use App\Common\Enums\MaterialTypeEnums;
 use App\Common\Tools\CustomException;
 use App\Models\Material\VideoModel;
+use App\Models\Ocean\OceanAccountVideoModel;
 use App\Models\Ocean\OceanCompanyAccountModel;
 use App\Models\Ocean\OceanMaterialPreAuditModel;
+use App\Models\Ocean\OceanVideoModel;
 use App\Services\Task\TaskOceanVideoUploadService;
 
 class OceanMaterialPreAuditService extends OceanService
@@ -49,44 +51,67 @@ class OceanMaterialPreAuditService extends OceanService
                     continue;
                 }
 
-                // 下载
-                $taskOceanVideoUploadService = new TaskOceanVideoUploadService();
-                $file = $taskOceanVideoUploadService->download($video->path);
+                $oceanVideoId = null;
 
-                // 上传
-                $oceanVideoService = new OceanVideoService($oceanCompanyAccount->app_id);
-                $oceanVideoService->setAccountId($oceanCompanyAccount->account_id);
-                $uploadResult = $oceanVideoService->uploadVideo($oceanCompanyAccount->account_id, $file['signature'], $file['curl_file'], $video->name);
+                $oceanVideoModel = new OceanVideoModel();
+                $oceanVideo = $oceanVideoModel->where('signature', $video->signature)->first();
 
-                // 发送预审
-                $this->setAppId($oceanCompanyAccount->app_id);
-                $this->setAccountId($oceanCompanyAccount->account_id);
-                $sendPreAuditResult = $this->sendPreAudit($oceanCompanyAccount->account_id, 'VIDEO', $uploadResult['video_id']);
+                if(!empty($oceanVideo)){
+                    $oceanAccountVideoModel = new OceanAccountVideoModel();
+                    $oceanAccountVideo = $oceanAccountVideoModel->where('account_id', $oceanCompanyAccount->account_id)
+                        ->where('video_id', $oceanVideo->id)
+                        ->first();
 
-                // 获取预审
-                do{
-                    $getPreAuditResult = $this->getPreAudit($oceanCompanyAccount->account_id, $sendPreAuditResult['pre_audit_id']);
-                    sleep(2);
-                }while($getPreAuditResult['status'] == 'AUDITING');
-
-                // 预审成功
-                if($getPreAuditResult['status'] != 'AUDIT_FAILED'){
-                    // 记录
-                    $oceanMaterialPreAuditModel = new OceanMaterialPreAuditModel();
-                    $oceanMaterialPreAuditModel->material_type = MaterialTypeEnums::VIDEO;
-                    $oceanMaterialPreAuditModel->n8_material_id = $video->id;
-                    $oceanMaterialPreAuditModel->company = $oceanCompanyAccount->company;
-                    $oceanMaterialPreAuditModel->account_id = $oceanCompanyAccount->account_id;
-                    $oceanMaterialPreAuditModel->pre_audit_material_type = 'VIDEO';
-                    $oceanMaterialPreAuditModel->pre_audit_content = $uploadResult['video_id'];
-                    $oceanMaterialPreAuditModel->pre_audit_id = $sendPreAuditResult['pre_audit_id'];
-                    $oceanMaterialPreAuditModel->pre_audit_status = $getPreAuditResult['status'];
-                    $oceanMaterialPreAuditModel->reject_reason = $getPreAuditResult['reject_reason'];
-                    $oceanMaterialPreAuditModel->save();
+                    if(!empty($oceanAccountVideo)){
+                        $oceanVideoId = $oceanVideo->id;
+                    }
                 }
 
+                $down = 0;
+                if(empty($oceanVideoId)){
+                    // 下载
+                    $down = 1;
+                    $taskOceanVideoUploadService = new TaskOceanVideoUploadService();
+                    $file = $taskOceanVideoUploadService->download($video->path);
+
+                    // 上传
+                    $oceanVideoService = new OceanVideoService($oceanCompanyAccount->app_id);
+                    $oceanVideoService->setAccountId($oceanCompanyAccount->account_id);
+                    $uploadResult = $oceanVideoService->uploadVideo($oceanCompanyAccount->account_id, $file['signature'], $file['curl_file'], $video->name);
+                    $oceanVideoId = $uploadResult['video_id'];
+                }else{
+                    // 发送预审
+                    $this->setAppId($oceanCompanyAccount->app_id);
+                    $this->setAccountId($oceanCompanyAccount->account_id);
+                    $sendPreAuditResult = $this->sendPreAudit($oceanCompanyAccount->account_id, 'VIDEO', $oceanVideoId);
+
+                    // 获取预审
+                    do{
+                        $getPreAuditResult = $this->getPreAudit($oceanCompanyAccount->account_id, $sendPreAuditResult['pre_audit_id']);
+                        sleep(2);
+                    }while($getPreAuditResult['status'] == 'AUDITING');
+
+                    // 预审成功
+                    //if($getPreAuditResult['status'] != 'AUDIT_FAILED'){
+                        // 记录
+                        $oceanMaterialPreAuditModel = new OceanMaterialPreAuditModel();
+                        $oceanMaterialPreAuditModel->material_type = MaterialTypeEnums::VIDEO;
+                        $oceanMaterialPreAuditModel->n8_material_id = $video->id;
+                        $oceanMaterialPreAuditModel->company = $oceanCompanyAccount->company;
+                        $oceanMaterialPreAuditModel->account_id = $oceanCompanyAccount->account_id;
+                        $oceanMaterialPreAuditModel->pre_audit_material_type = 'VIDEO';
+                        $oceanMaterialPreAuditModel->pre_audit_content = $oceanVideoId;
+                        $oceanMaterialPreAuditModel->pre_audit_id = $sendPreAuditResult['pre_audit_id'];
+                        $oceanMaterialPreAuditModel->pre_audit_status = $getPreAuditResult['status'];
+                        $oceanMaterialPreAuditModel->reject_reason = $getPreAuditResult['reject_reason'];
+                        $oceanMaterialPreAuditModel->save();
+                    //}
+                }
+
+
+
                 // 删除临时文件
-                unlink($file['path']);
+                $down && unlink($file['path']);
             }
         }
 
