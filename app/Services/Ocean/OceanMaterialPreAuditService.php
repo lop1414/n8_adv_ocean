@@ -91,7 +91,7 @@ class OceanMaterialPreAuditService extends OceanService
                     }while($getPreAuditResult['status'] == 'AUDITING');
 
                     if($getPreAuditResult['status'] == 'AUDIT_FAILED'){
-                        var_dump($getPreAuditResult);
+                        var_dump($video->toArray());
                     }
 
                     // 预审成功
