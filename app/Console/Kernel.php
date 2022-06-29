@@ -149,7 +149,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('ocean:creative_notice')->cron('* * * * *');
 
             // 巨量素材预审
-            $schedule->command('ocean:material_pre_audit --date=today')->cron('50 * * * *');
+            //$schedule->command('ocean:material_pre_audit --date=today')->cron('50 * * * *');
 
             // 同步素材-创意关联
             $schedule->command('ocean:material_creative_sync --date=today')->cron('*/20 * * * *');
