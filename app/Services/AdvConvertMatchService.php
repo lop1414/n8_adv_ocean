@@ -97,11 +97,8 @@ class AdvConvertMatchService extends ConvertMatchService
             $channelId = $data['n8_union_user']['channel_id'] ?? 0;
             if(!empty($channelId)){
                 $builder = $builder->whereRaw("
-                ad_id IN (
-                    SELECT ad_id FROM channel_ads
-                        WHERE channel_id = {$channelId}
-                )
-            ");
+                    channel_id = {$channelId}
+                ");
             }
         }
 
