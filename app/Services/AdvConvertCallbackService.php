@@ -209,7 +209,7 @@ class AdvConvertCallbackService extends ConvertCallbackService
         $arr =  [
             ConvertTypeEnum::ACTIVATION => 'active',
             ConvertTypeEnum::REGISTER => 'active',
-            ConvertTypeEnum::ADD_DESKTOP => 'active_register',
+            ConvertTypeEnum::ADD_DESKTOP => 'active',
             ConvertTypeEnum::PAY => 'active_pay',
         ];
 
