@@ -146,6 +146,8 @@ class VideoController extends OceanController
             ]);
         }
 
+        $waitingTaskCount = $taskOceanVideoUploadService->getWaitingTaskCount();
+
         // 创建任务
         $task = [
             'name' => '批量上传巨量视频',
@@ -182,6 +184,6 @@ class VideoController extends OceanController
             'task_id' => $taskOceanVideoUploadService->taskId,
             'account_count' => $accounts->count(),
             'video_count' => count($videos),
-        ], [], '批量上传任务已提交【任务id:'. $taskOceanVideoUploadService->taskId .'】，执行结果后续同步到飞书，请注意查收！');
+        ], [], '批量上传任务已提交【任务id:'. $taskOceanVideoUploadService->taskId .'】，前方还有'. $waitingTaskCount .'个任务待执行，执行结果后续同步到飞书，请注意查收！');
     }
 }
