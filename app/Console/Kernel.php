@@ -27,6 +27,7 @@ use App\Console\Commands\Ocean\Report\OceanSyncMaterialReportCommand;
 use App\Console\Commands\RoiConvertCallbackCommand;
 use App\Console\Commands\Ocean\OceanSyncCampaignCommand;
 use App\Console\Commands\SyncChannelAdCommand;
+use App\Console\Commands\SyncDatabaseCommand;
 use App\Console\Commands\Task\TaskOceanAdCreativeCreateCommand;
 use App\Console\Commands\Task\TaskOceanAdUpdateCommand;
 use App\Console\Commands\Task\TaskOceanImageUploadCommand;
@@ -99,6 +100,9 @@ class Kernel extends ConsoleKernel
 
         // 测试
         TestCommand::class,
+
+        // 同步数据表
+        SyncDatabaseCommand::class,
     ];
 
     /**
