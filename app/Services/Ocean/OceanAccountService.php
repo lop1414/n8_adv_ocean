@@ -10,6 +10,7 @@ use App\Common\Tools\CustomException;
 use App\Enums\Ocean\OceanSyncTypeEnum;
 use App\Models\AppModel;
 use App\Models\Ocean\OceanAccountModel;
+use App\Services\SyncDatabaseService;
 use App\Services\Task\TaskOceanSyncService;
 
 class OceanAccountService extends OceanService
@@ -171,6 +172,10 @@ class OceanAccountService extends OceanService
             $this->syncCompany();
         }
 
+        // 同步数据表
+        $syncDatabaseService = new SyncDatabaseService();
+        $syncDatabaseService->run(['table' => 'ocean_accounts']);
+
         return true;
     }
 
@@ -213,6 +218,7 @@ class OceanAccountService extends OceanService
 
     /**
      * @return bool
+     * @throws CustomException
      * 刷新 access token
      */
     public function refreshAccessToken(){
@@ -248,6 +254,10 @@ class OceanAccountService extends OceanService
                 'fail_at' => $oceanAccount->fail_at,
             ]);
         }
+
+        // 同步数据表
+        $syncDatabaseService = new SyncDatabaseService();
+        $syncDatabaseService->run(['table' => 'ocean_accounts']);
 
         return true;
     }
