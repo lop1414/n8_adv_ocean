@@ -199,7 +199,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('ocean:sync_account_report --date=yesterday --key_suffix=yesterday')->cron('25-30 10 * * *');
 
             // 巨量创意报表同步
-            $schedule->command('ocean:sync_creative_report --date=today --run_by_account_cost=1 --multi_chunk_size=5')->cron('*/2 * * * *');
+            $schedule->command('ocean:sync_creative_report --date=today --run_by_account_cost=1 --multi_chunk_size=3')->cron('*/2 * * * *');
             $schedule->command('ocean:sync_creative_report --date=yesterday --key_suffix=yesterday')->cron('10-15 9,14 * * *');
 
             // 巨量素材报表同步

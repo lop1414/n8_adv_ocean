@@ -13,7 +13,8 @@ class SyncDatabaseService extends BaseService
      * 授权表
      */
     protected $accessTables = [
-        'ocean_accounts'
+        'ocean_accounts',
+        'ocean_account_funds',
     ];
 
     /**

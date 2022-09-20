@@ -8,6 +8,7 @@ use App\Common\Enums\ConvertTypeEnum;
 use App\Common\Enums\ExceptionTypeEnum;
 use App\Common\Enums\MaterialTypeEnums;
 use App\Common\Enums\PlatformEnum;
+use App\Common\Enums\ProductTypeEnums;
 use App\Common\Services\ErrorLogService;
 use App\Common\Services\SystemApi\AdvOceanApiService;
 use App\Common\Tools\CustomException;
@@ -79,6 +80,7 @@ class IndexController extends FrontController
 //        $this->testModelData();
         $this->testConvertMatch();
 //        $this->testConvertCallbackGet();
+//        $this->testCustomConvertCallbackGet();
 //        $this->testCreateClick();
 //        $this->testUpdateChannelAd();
 //        $this->redisSelect();
@@ -124,7 +126,9 @@ class IndexController extends FrontController
             'click_at' => '1612583307000',
             'ad_id' => '123123123123',
             'ip' => '6.6.6.9',
-            'ua' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.',
+            'ua' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 
+aweme_19.4.0 JsSdk/2.0 NetType/2G Channel/App Store ByteLocale/zh Region/CN AppTheme/light aweme_19.4.0 JsSdk/2.0 NetType/2G Channel/App Store ByteLocale/zh Region/CN AppTheme/dark aweme_19.4.0 JsSdk/2.0 NetType/4G Channel/App Store ByteLocale/zh Region/CN AppTheme/light aweme_19.4.0 JsSdk/2.0 NetType/4G Channel/App Store ByteLocale/zh Region/CN AppTheme/dark aweme_19.4.0 JsSdk/2.0 NetType/2G Channel/App Store ByteLocale/zh Region/CN AppTheme/light RevealType/Dialog 
+aweme_19.4.2 JsSdk/2.0 NetType/4G Channel/App Store ByteLocale/zh Region/CN AppTheme/dark aweme_19.4.2 JsSdk/2.0 NetType/2G Channel/App Store ByteLocale/zh Region/CN AppTheme/light aweme_19.4.2 JsSdk/2.0 NetType/2G Channel/App Store ByteLocale/zh Region/CN AppTheme/light RevealType/Dialog aweme_19.4.2 JsSdk/2.0 NetType/4G Channel/App Store ByteLocale/zh Region/CN AppTheme/light aweme_19.4.2 JsSdk/2.0 NetType/2G Channel/App Store ByteLocale/zh Region/CN AppTheme/dark aweme_19.4.2 JsSdk/2.0 NetType/4G Channel/App Store ByteLocale/zh Region/CN AppTheme/light RevealType/Dialog',
         ];
         $a = new AdvOceanApiService();
         $ret = $a->apiCreateClick($data, AdvClickSourceEnum::N8_TRANSFER);
@@ -139,18 +143,20 @@ class IndexController extends FrontController
                 'convert_at' => '2021-07-15 12:05:00', // 转化时间
                 'convert_times' => 1, // 转化次数(包含当前转化)
                 "amount" => 28,
-                'request_id' => 'request_id',
+                'request_id' => 'request_id#',
                 'muid' => '',
                 'oaid' => '',
                 'oaid_md5' => '',
                 'ip' => '127.0.0.1',
-                'ua' => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36',
+                //'ua' => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36',
+                'ua' => '',
                 // 联运用户信息
                 'n8_union_user' => [
                     'guid' => 1,
                     'channel_id' => 228,
                     'created_at' => '2021-07-15 12:00:00',
                     'click_source' => AdvClickSourceEnum::ADV_CLICK_API,
+                    'product_type' => ProductTypeEnums::APP,
                 ],
             ],
         ];
@@ -163,11 +169,25 @@ class IndexController extends FrontController
         $a = new AdvOceanApiService();
         $ret = $a->apiGetConvertCallbacks([
             [
-                'convert_type' => ConvertTypeEnum::PAY, // 转化类型
-                'convert_id' => 5555, // 转化id
+                'convert_type' => ConvertTypeEnum::ADD_DESKTOP, // 转化类型
+                'convert_id' => 555, // 转化id
             ],[
-                'convert_type' => ConvertTypeEnum::PAY, // 转化类型
-                'convert_id' => 6666, // 转化id
+                'convert_type' => ConvertTypeEnum::ADD_DESKTOP, // 转化类型
+                'convert_id' => 666, // 转化id
+            ],
+        ]);
+        dd($ret, 'testCustomConvertCallbackGet');
+    }
+
+    private function testCustomConvertCallbackGet(){
+        $a = new AdvOceanApiService();
+        $ret = $a->apiGetCustomConvertCallbacks([
+            [
+                'convert_type' => ConvertTypeEnum::ADD_DESKTOP, // 转化类型
+                'convert_id' => 555, // 转化id
+            ],[
+                'convert_type' => ConvertTypeEnum::ADD_DESKTOP, // 转化类型
+                'convert_id' => 666, // 转化id
             ],
         ]);
         dd($ret, 'testConvertCallbackGet');

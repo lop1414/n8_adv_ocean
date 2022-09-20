@@ -6,6 +6,7 @@ use App\Common\Helpers\Functions;
 use App\Common\Tools\CustomException;
 use App\Models\Ocean\OceanAccountFundModel;
 use App\Models\Ocean\OceanAccountModel;
+use App\Services\SyncDatabaseService;
 
 class OceanAccountFundService extends OceanService
 {
@@ -82,11 +83,16 @@ class OceanAccountFundService extends OceanService
     /**
      * @param $data
      * @return bool
+     * @throws CustomException
      * 批量保存
      */
     public function batchSave($data){
         $oceanAccountFundModel = new OceanAccountFundModel();
         $oceanAccountFundModel->chunkInsertOrUpdate($data, 50, $oceanAccountFundModel->getTable(), $oceanAccountFundModel->getTableColumnsWithPrimaryKey());
+
+        $syncDatabaseService = new SyncDatabaseService();
+        $syncDatabaseService->run(['table' => 'ocean_account_funds']);
+
         return true;
     }
 }
