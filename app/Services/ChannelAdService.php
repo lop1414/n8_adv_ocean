@@ -211,6 +211,8 @@ class ChannelAdService extends BaseService
 
         foreach($res['list'] as $ad){
             unset($ad['extends']);
+
+            $ad->ocean_account;
             if(!empty($ad->ocean_ad_extends)){
                 $ad->convert_callback_strategy = $ad->ocean_ad_extends->convert_callback_strategy;
                 $ad->convert_callback_strategy_group = $ad->ocean_ad_extends->convert_callback_strategy_group;
