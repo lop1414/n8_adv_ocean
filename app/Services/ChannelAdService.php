@@ -6,8 +6,6 @@ use App\Common\Enums\AdvAliasEnum;
 use App\Common\Enums\PlatformEnum;
 use App\Common\Helpers\Advs;
 use App\Common\Helpers\Functions;
-use App\Common\Models\ConvertCallbackStrategyGroupModel;
-use App\Common\Models\ConvertCallbackStrategyModel;
 use App\Common\Services\BaseService;
 use App\Common\Services\SystemApi\CenterApiService;
 use App\Common\Services\SystemApi\NoticeApiService;
@@ -209,26 +207,23 @@ class ChannelAdService extends BaseService
             $builder = $builder->filtering($data['filtering']);
         }
 
-        $ads = $builder->get();
+        $res = $builder->listPage($data['page'] ?? 1, $data['pageSize'] ?? 10);
 
-        foreach($ads as $k => $v){
-            unset($ads[$k]['extends']);
-        }
+        foreach($res['list'] as $ad){
+            unset($ad['extends']);
 
-        foreach($ads as $ad){
+            $ad->ocean_account;
             if(!empty($ad->ocean_ad_extends)){
-                $ad->convert_callback_strategy = ConvertCallbackStrategyModel::find($ad->ocean_ad_extends->convert_callback_strategy_id);
-                $ad->convert_callback_strategy_group = ConvertCallbackStrategyGroupModel::find($ad->ocean_ad_extends->convert_callback_strategy_group_id);
+                $ad->convert_callback_strategy = $ad->ocean_ad_extends->convert_callback_strategy;
+                $ad->convert_callback_strategy_group = $ad->ocean_ad_extends->convert_callback_strategy_group;
             }else{
                 $ad->convert_callback_strategy = null;
                 $ad->convert_callback_strategy_group = null;
             }
         }
 
-        return [
-            'channel_id' => $data['channel_id'],
-            'list' => $ads
-        ];
+        $res['channel_id'] = $data['channel_id'];
+        return $res;
     }
 
     /**
