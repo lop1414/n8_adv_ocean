@@ -5,6 +5,7 @@ namespace App\Services\Ocean;
 use App\Common\Enums\NoticeStatusEnum;
 use App\Common\Helpers\Functions;
 use App\Common\Services\SystemApi\NoticeApiService;
+use App\Enums\Ocean\OceanAdStatusEnum;
 use App\Enums\Ocean\OceanCreativeStatusEnum;
 use App\Models\Ocean\OceanAccountModel;
 use App\Models\Ocean\OceanAdModel;
@@ -63,12 +64,23 @@ class OceanCreativeLogService extends OceanService
                 OceanCreativeStatusEnum::CREATIVE_STATUS_DELETE,
             ];
 
-            if(in_array($oceanCreativeLog->after_status, $noticeCreativeStatus)){
-                $key = $oceanCreativeLog->ad_id .'|###|'. $oceanCreativeLog->after_status;
-                $group[$key][] = $oceanCreativeLog;
-                $oceanCreativeLog->notice_status = NoticeStatusEnum::SUCCESS;
-            }else{
+            $oceanAdModel = new OceanAdModel();
+            $oceanAd = $oceanAdModel->find($oceanCreativeLog->ad_id);
+            if(!empty($oceanAd) && in_array($oceanAd->status, [
+                    OceanAdStatusEnum::AD_STATUS_DELETE,
+                    OceanAdStatusEnum::AD_STATUS_DISABLE,
+                    OceanAdStatusEnum::AD_STATUS_CAMPAIGN_DISABLE,
+                ])
+            ){
                 $oceanCreativeLog->notice_status = NoticeStatusEnum::DONT;
+            }else{
+                if(in_array($oceanCreativeLog->after_status, $noticeCreativeStatus)){
+                    $key = $oceanCreativeLog->ad_id .'|###|'. $oceanCreativeLog->after_status;
+                    $group[$key][] = $oceanCreativeLog;
+                    $oceanCreativeLog->notice_status = NoticeStatusEnum::SUCCESS;
+                }else{
+                    $oceanCreativeLog->notice_status = NoticeStatusEnum::DONT;
+                }
             }
 
             $oceanCreativeLog->save();
