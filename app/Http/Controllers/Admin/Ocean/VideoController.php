@@ -77,11 +77,19 @@ class VideoController extends OceanController
         $accountIds = $request->post('account_ids');
         $videoIds = $request->post('video_ids');
 
-        $maxAccount = 2;
+        $maxAccount = 3;
         if(count($accountIds) > $maxAccount){
             throw new CustomException([
                 'code' => 'MORE_THAN_MAX_ACCOUNT',
                 'message' => "每次最多同步{$maxAccount}个账户",
+            ]);
+        }
+
+        $maxVideo = 3;
+        if(count($videoIds) > $maxVideo){
+            throw new CustomException([
+                'code' => 'MORE_THAN_MAX_VIDEO',
+                'message' => "每次最多同步{$maxVideo}个视频",
             ]);
         }
 
