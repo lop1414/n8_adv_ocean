@@ -85,7 +85,7 @@ class VideoController extends OceanController
             ]);
         }
 
-        $maxVideo = 3;
+        $maxVideo = 10;
         if(count($videoIds) > $maxVideo){
             throw new CustomException([
                 'code' => 'MORE_THAN_MAX_VIDEO',
